@@ -1,20 +1,31 @@
-﻿namespace Isu.Entities
+﻿using System;
+using Isu.Tools;
+
+namespace Isu.Entities
 {
     public class GroupNumber
     {
-        private string _value;   // aka "05"
-
         public GroupNumber(string value)
         {
-            _value = value;
-        }
-
-        public string Value
-        {
-            get
+            try
             {
-                return _value;
+                int v = int.Parse(value);
+                if (v is >= 0 and <= 99)
+                {
+                    Value = value;
+                }
+                else
+                {
+                    throw new IsuException("Exception: wrong group number");
+                }
+            }
+            catch (IsuException e)
+            {
+                Console.WriteLine(e);
+                throw;
             }
         }
+
+        public string Value { get; }
     }
 }

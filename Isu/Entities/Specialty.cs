@@ -1,20 +1,22 @@
-﻿namespace Isu.Entities
+﻿using System;
+using Isu.Tools;
+
+namespace Isu.Entities
 {
     public class Specialty
     {
-        private string _value;  // aka "M31"
-
         public Specialty(string value)
         {
-            _value = value;
-        }
-
-        public string Value
-        {
-            get
+            if (value == "M3")
             {
-                return _value;
+                Value = value;
+            }
+            else
+            {
+                throw new IsuException("Exception: wrong speciality");
             }
         }
+
+        public string Value { get; } // aka "M31"
     }
 }

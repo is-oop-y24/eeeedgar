@@ -1,20 +1,31 @@
-﻿namespace Isu.Entities
+﻿using System;
+using Isu.Tools;
+
+namespace Isu.Entities
 {
     public class CourseNumber
     {
-        private string _value;    // aka "1"
-
         public CourseNumber(string value)
         {
-            _value = value;
-        }
-
-        public string Value
-        {
-            get
+            try
             {
-                return _value;
+                int v = int.Parse(value);
+                if (v is >= 1 and <= 4)
+                {
+                    Value = value;
+                }
+                else
+                {
+                    throw new IsuException("Exception: wrong course number");
+                }
+            }
+            catch (IsuException e)
+            {
+                Console.WriteLine(e);
+                throw;
             }
         }
+
+        public string Value { get; } // aka "1"
     }
 }
