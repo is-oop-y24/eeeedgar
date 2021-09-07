@@ -22,7 +22,7 @@ namespace Isu.Services
         {
             if (_groups.Find(gr => gr.Name().Equals(name)) != null)
             {
-                throw new IsuException("Error: max group size was reached.\n");
+                throw new IsuException("Error: the group with that name already exists.\n");
             }
 
             var group = new Group(name);
@@ -33,7 +33,7 @@ namespace Isu.Services
         public Student AddStudent(Group group, string name)
         {
             if (group.Students.Count >= _maxGroupSize)
-                throw new IsuException();
+                throw new IsuException("Error: max group size was reached.\n");
             var student = new Student(_currentId++, name);
             group.AddStudent(student);
             return student;

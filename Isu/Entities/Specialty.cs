@@ -1,5 +1,4 @@
-﻿using System;
-using Isu.Tools;
+﻿using Isu.Tools;
 
 namespace Isu.Entities
 {
@@ -7,16 +6,14 @@ namespace Isu.Entities
     {
         public Specialty(string value)
         {
-            if (Equals(value, "M3"))
-            {
-                Value = value;
-            }
-            else
+            if (!value.Equals("M3"))
             {
                 throw new IsuException("Exception: wrong speciality");
             }
+
+            Value = value;
         }
 
-        public string Value { get; } // aka "M31"
+        public string Value { get; }
     }
 }
