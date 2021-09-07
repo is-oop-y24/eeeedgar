@@ -27,5 +27,10 @@ namespace Isu.Entities
         {
             return Students.Remove(student);
         }
+
+        public Student FindStudent(int id)
+        {
+            return Students.Find(student => student.Id == id);
+        }
     }
 }

@@ -7,21 +7,17 @@ namespace Isu.Entities
     {
         public GroupNumber(string value)
         {
-            if (int.TryParse(value, NumberStyles.Integer, new NumberFormatInfo(), out int v))
+            if (!int.TryParse(value, NumberStyles.Integer, new NumberFormatInfo(), out int numberValue))
             {
-                if (v is >= 0 and <= 99)
-                {
-                    Value = value;
-                }
-                else
-                {
-                    throw new IsuException("Error: wrong group number (2).\n");
-                }
+                throw new IsuException("Error: group number must be nonnegative number.\n");
             }
-            else
+
+            if (numberValue < 0)
             {
-                throw new IsuException("Error: wrong group number (1).\n");
+                throw new IsuException("Error: group number can't be negative.\n");
             }
+
+            Value = value;
         }
 
         public string Value { get; }

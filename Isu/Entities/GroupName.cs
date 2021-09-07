@@ -7,15 +7,15 @@ namespace Isu.Entities
     {
         public GroupName(string name)
         {
-            Specialty = new Specialty(name[..2]);
-            if (int.TryParse(name.Substring(2, 1), NumberStyles.Integer, new NumberFormatInfo(), out int courseNumber))
+            Specialty = new Specialty(name.Substring(0, 2));
+            if (!int.TryParse(name.Substring(2, 1), NumberStyles.Integer, new NumberFormatInfo(), out int courseNumber))
             {
-                if (courseNumber is > 4 or < 1)
-                    throw new IsuException();
+                throw new IsuException("Error: Course number must be a number from 1 to 4.\n");
             }
-            else
+
+            if (courseNumber is > 4 or < 1)
             {
-                throw new IsuException();
+                throw new IsuException("Error: Course number must be from 1 to 4.\n");
             }
 
             CourseNumber = (CourseNumber)courseNumber;
@@ -25,15 +25,6 @@ namespace Isu.Entities
         public Specialty Specialty { get; }
         public CourseNumber CourseNumber { get; }
         public GroupNumber GroupNumber { get; }
-        public string Name
-        {
-            get
-            {
-                string value = Specialty.Value;
-                value += (int)CourseNumber;
-                value += GroupNumber.Value;
-                return value;
-            }
-        }
+        public string Name => $"{Specialty.Value + (int)CourseNumber + GroupNumber.Value}";
     }
 }
