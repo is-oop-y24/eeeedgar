@@ -22,5 +22,10 @@ namespace Isu.Entities
         {
             Students.Add(student);
         }
+
+        public bool RemoveStudent(Student student)
+        {
+            return Students.Remove(student);
+        }
     }
 }

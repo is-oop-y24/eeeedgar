@@ -58,13 +58,7 @@ namespace Isu.Services
 
         public List<Student> FindStudents(CourseNumber courseNumber)
         {
-            var students = new List<Student>();
-            foreach (Group group in FindGroups(courseNumber))
-            {
-                students.AddRange(group.Students);
-            }
-
-            return students;
+            return FindGroups(courseNumber).SelectMany(group => group.Students).ToList();
         }
 
         public Group FindGroup(string groupName)
@@ -79,8 +73,10 @@ namespace Isu.Services
 
         public void ChangeStudentGroup(Student student, Group newGroup)
         {
-            if (!_groups.Any(group => group.Students.Remove(student))) return;
-            newGroup.AddStudent(student);
+            if (_groups.Find(group => group.RemoveStudent(student)) != null)
+            {
+                newGroup.AddStudent(student);
+            }
         }
     }
 }
