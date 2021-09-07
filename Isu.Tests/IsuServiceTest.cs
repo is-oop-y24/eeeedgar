@@ -12,14 +12,13 @@ namespace Isu.Tests
         [SetUp]
         public void Setup()
         {
-            //TODO: implement
             _isuService = new IsuService(22);
         }
 
         [Test]
         public void AddStudentToGroup_StudentHasGroupAndGroupContainsStudent()
         {
-            string studentName = "Ivan";
+            const string studentName = "Ivan";
             Group group = _isuService.AddGroup("M3105");
             Student student = _isuService.AddStudent(group, studentName);
             Assert.Contains(student, group.Students);
@@ -28,7 +27,7 @@ namespace Isu.Tests
         [Test]
         public void ReachMaxStudentPerGroup_ThrowException()
         {
-            string studentBaseName = "kriper200";
+            const string studentBaseName = "kriper200";
             Group nonRubberGroup = _isuService.AddGroup("M3114");
             Assert.Catch<IsuException>(() =>
             {
@@ -52,7 +51,7 @@ namespace Isu.Tests
         [Test]
         public void TransferStudentToAnotherGroup_GroupChanged()
         {
-            string studentName = "Ivan";
+            const string studentName = "Ivan";
             Group oldGroup = _isuService.AddGroup("M3105");
             Student student = _isuService.AddStudent(oldGroup, studentName);
             Group newGroup = _isuService.AddGroup("M3200");

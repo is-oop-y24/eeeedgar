@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using Isu.Tools;
 
 namespace Isu.Entities
@@ -9,9 +10,12 @@ namespace Isu.Entities
         {
             try
             {
-                Specialty = new Specialty(name[0].ToString() + name[1].ToString());
-                CourseNumber = new CourseNumber(name[2].ToString());
-                GroupNumber = new GroupNumber(name[3].ToString() + name[4].ToString());
+                Specialty = new Specialty(name[..2]);
+                int.TryParse(name.Substring(2, 1), NumberStyles.Integer, new NumberFormatInfo(), out int courseNumber);
+                if (courseNumber is > 4 or < 1)
+                    throw new IsuException();
+                CourseNumber = (CourseNumber)courseNumber;
+                GroupNumber = new GroupNumber(name.Substring(3, 2));
             }
             catch (IsuException e)
             {
@@ -23,6 +27,15 @@ namespace Isu.Entities
         public Specialty Specialty { get; }
         public CourseNumber CourseNumber { get; }
         public GroupNumber GroupNumber { get; }
-        public string Name => Specialty.Value + CourseNumber.Value + GroupNumber.Value;
+        public string Name
+        {
+            get
+            {
+                string value = Specialty.Value;
+                value += (int)CourseNumber;
+                value += GroupNumber.Value;
+                return value;
+            }
+        }
     }
 }

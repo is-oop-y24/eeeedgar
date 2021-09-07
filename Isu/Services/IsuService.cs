@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using Isu.Entities;
 using Isu.Tools;
 
@@ -19,20 +20,19 @@ namespace Isu.Services
 
         public Group AddGroup(string name)
         {
-            foreach (Group gr in _groups)
+            if (_groups.Find(gr => gr.Name() == name) != null)
             {
-                if (gr.Name() == name)
-                    throw new IsuException();
+                throw new IsuException();
             }
 
-            Group group = new Group(name);
+            var group = new Group(name);
             _groups.Add(group);
             return group;
         }
 
         public Student AddStudent(Group group, string name)
         {
-            if (group.Students.Count == _maxGroupSize)
+            if (group.Students.Count >= _maxGroupSize)
                 throw new IsuException();
             var student = new Student(_currentId++, name);
             group.AddStudent(student);
@@ -41,57 +41,27 @@ namespace Isu.Services
 
         public Student GetStudent(int id)
         {
-            foreach (Group group in _groups)
-            {
-                foreach (Student student in group.Students)
-                {
-                    if (student.Id == id)
-                        return student;
-                }
-            }
-
-            return null;
+            return _groups.Select(group => group.Students.Find(student => student.Id == id))
+                .FirstOrDefault(st => st != null);
         }
 
         public Student FindStudent(string name)
         {
-            foreach (Group group in _groups)
-            {
-                foreach (Student student in group.Students)
-                {
-                    if (student.Name == name)
-                        return student;
-                }
-            }
-
-            return null;
+            return _groups.Select(group => group.Students.Find(student => student.Name == name))
+                .FirstOrDefault(st => st != null);
         }
 
         public List<Student> FindStudents(string groupName)
         {
-            foreach (Group group in _groups)
-            {
-                if (group.Name() == groupName)
-                {
-                    return group.Students;
-                }
-            }
-
-            return null;
+            return _groups.Find(group => group.Name() == groupName)?.Students;
         }
 
         public List<Student> FindStudents(CourseNumber courseNumber)
         {
             var students = new List<Student>();
-            foreach (Group group in _groups)
+            foreach (Group group in FindGroups(courseNumber))
             {
-                if (group.GroupName.CourseNumber == courseNumber)
-                {
-                    foreach (Student student in group.Students)
-                    {
-                        students.Add(student);
-                    }
-                }
+                students.AddRange(group.Students);
             }
 
             return students;
@@ -99,41 +69,18 @@ namespace Isu.Services
 
         public Group FindGroup(string groupName)
         {
-            foreach (Group group in _groups)
-            {
-                if (group.Name() == groupName)
-                {
-                    return group;
-                }
-            }
-
-            return null;
+            return _groups.Find(group => group.Name() == groupName);
         }
 
         public List<Group> FindGroups(CourseNumber courseNumber)
         {
-            var groups = new List<Group>();
-            foreach (Group group in _groups)
-            {
-                if (group.GroupName.CourseNumber == courseNumber)
-                {
-                    groups.Add(group);
-                }
-            }
-
-            return groups;
+            return _groups.Where(group => Equals(group.GroupName.CourseNumber, courseNumber)).ToList();
         }
 
         public void ChangeStudentGroup(Student student, Group newGroup)
         {
-            foreach (Group group in _groups)
-            {
-                if (group.Students.Remove(student))
-                {
-                    newGroup.AddStudent(student);
-                    return;
-                }
-            }
+            if (!_groups.Any(group => group.Students.Remove(student))) return;
+            newGroup.AddStudent(student);
         }
     }
 }

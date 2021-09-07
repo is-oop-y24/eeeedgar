@@ -7,7 +7,7 @@ namespace Isu.Entities
     {
         public Specialty(string value)
         {
-            if (value == "M3")
+            if (Equals(value, "M3"))
             {
                 Value = value;
             }

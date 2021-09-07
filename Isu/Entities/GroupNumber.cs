@@ -1,4 +1,4 @@
-﻿using System;
+﻿using System.Globalization;
 using Isu.Tools;
 
 namespace Isu.Entities
@@ -7,22 +7,20 @@ namespace Isu.Entities
     {
         public GroupNumber(string value)
         {
-            try
+            if (int.TryParse(value, NumberStyles.Integer, new NumberFormatInfo(), out int v))
             {
-                int v = int.Parse(value);
                 if (v is >= 0 and <= 99)
                 {
                     Value = value;
                 }
                 else
                 {
-                    throw new IsuException("Exception: wrong group number");
+                    throw new IsuException("Error: wrong group number (2).\n");
                 }
             }
-            catch (IsuException e)
+            else
             {
-                Console.WriteLine(e);
-                throw;
+                throw new IsuException("Error: wrong group number (1).\n");
             }
         }
 
