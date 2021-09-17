@@ -2,7 +2,7 @@
 
 namespace Shops.Services
 {
-    public interface IMarketDatabase
+    public interface IShopManager
     {
         Product RegisterProduct(string productName);
         Shop RegisterShop(string shopName, string shopAddress);

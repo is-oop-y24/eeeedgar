@@ -3,24 +3,32 @@ using Shops.Entities;
 
 namespace Shops.Services
 {
-    public class MarketDatabase : IMarketDatabase
+    public class ShopManager : IShopManager
     {
         private List<Shop> _shops;
+        private List<Person> _persons;
         private List<Product> _products;
+        private Bank _bank;
 
-        private MarketDatabase()
+        private ShopManager()
         {
             _shops = new List<Shop>();
+            _persons = new List<Person>();
             _products = new List<Product>();
+            _bank = Bank.CreateInstance();
         }
 
         // i can get an access to shops and use their methods.
         // do i want to control shops without TaxOffice.GetShop(int id)?
         // public IReadOnlyList<Shop> RegisteredShops => _shops; // do i need it?
         // public IReadOnlyList<Product> RegisteredProducts => _products; // and this. i'm not sure
-        public static MarketDatabase CreateInstance()
+        public IReadOnlyList<Shop> Shops => _shops;
+        public IReadOnlyList<Person> Persons => _persons;
+        public IReadOnlyList<Product> Products => _products;
+        public Bank Bank => _bank;
+        public static ShopManager CreateInstance()
         {
-            return new MarketDatabase();
+            return new ShopManager();
         }
 
         public Product RegisterProduct(string productName)
@@ -38,7 +46,18 @@ namespace Shops.Services
         {
             var shop = Shop.CreateInstance(shopName, shopAddress);
             _shops.Add(shop);
+
+            _bank.RegisterProfile(shop);
             return shop;
+        }
+
+        public Person RegisterPerson(string name)
+        {
+            var person = Person.CreateInstance(name);
+            _persons.Add(person);
+
+            _bank.RegisterProfile(person);
+            return person;
         }
 
         public Product GetProduct(int id)
@@ -49,6 +68,14 @@ namespace Shops.Services
         public Shop GetShop(int id)
         {
             return _shops.Find(shop => shop.Id == id);
+        }
+
+        public void MakeDeal(Person person, Shop shop)
+        {
+            int cost = shop.PossibleCost(person.WishList);
+            if (!_bank.IsTransactionPossible(person, cost)) return;
+            _bank.MakeTransaction(person.Id, shop.Id, cost);
+            shop.Sell(person.WishList);
         }
     }
 }
