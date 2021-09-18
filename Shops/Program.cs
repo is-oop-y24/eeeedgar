@@ -1,7 +1,4 @@
-﻿using Shops.Entities;
-using Shops.Services;
-using Shops.UI;
-using Spectre.Console;
+﻿using Shops.Services;
 
 namespace Shops
 {
@@ -11,7 +8,9 @@ namespace Shops
         {
             var market = ShopManager.CreateInstance();
 
-            ShopManagerUI.Menu(market);
+            var controller = Controller.Controller.CreateInstance(market);
+
+            controller.Run();
         }
     }
 }

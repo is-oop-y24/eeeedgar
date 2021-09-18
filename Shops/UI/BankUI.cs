@@ -6,7 +6,7 @@ namespace Shops.UI
 {
     public class BankUI
     {
-        public static void Menu(Bank bank)
+        public static string Menu()
         {
             var commands = new List<string>();
             commands.Add("Profiles");
@@ -19,33 +19,7 @@ namespace Shops.UI
                     .PageSize(10)
                     .AddChoices(commands));
             AnsiConsole.Clear();
-
-            switch (choice)
-            {
-                case "Profiles":
-                {
-                    DisplayProfiles(bank);
-                    AnsiConsole.Confirm("type to exit");
-                    AnsiConsole.Clear();
-                    Menu(bank);
-                    break;
-                }
-
-                case "Make a Gift":
-                {
-                    bank.GiveMoney(Clarifier.AskNumber("person id"), Clarifier.AskNumber("money amount"));
-                    AnsiConsole.Clear();
-                    Menu(bank);
-                    break;
-                }
-
-                case "Back to Shop Manager":
-                {
-                    AnsiConsole.Clear();
-                    ShopManagerUI.Menu(bank.ShopManager);
-                    break;
-                }
-            }
+            return choice;
         }
 
         private static void DisplayProfiles(Bank bank)

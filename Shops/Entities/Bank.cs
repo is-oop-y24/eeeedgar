@@ -8,18 +8,16 @@ namespace Shops.Entities
     {
         private List<BankProfile> _profiles;
 
-        private Bank(ShopManager shopManager)
+        private Bank()
         {
             _profiles = new List<BankProfile>();
-            ShopManager = shopManager;
         }
 
         public IReadOnlyList<BankProfile> Profiles => _profiles;
-        public ShopManager ShopManager { get; }
 
-        public static Bank CreateInstance(ShopManager shopManager)
+        public static Bank CreateInstance()
         {
-            return new Bank(shopManager);
+            return new Bank();
         }
 
         public bool IsTransactionPossible(BankClient sender, int transactionValue)

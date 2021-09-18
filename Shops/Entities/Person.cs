@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Dynamic;
+using System.Linq;
 using Shops.Services;
 
 namespace Shops.Entities
@@ -8,26 +9,28 @@ namespace Shops.Entities
     {
         private List<Purchase> _wishList;
 
-        private Person(string name, ShopManager shopManager)
+        private Person(string name, IReadOnlyList<Product> permittedProducts)
         {
             Name = name;
             _wishList = new List<Purchase>();
-            ShopManager = shopManager;
+            PermittedProducts = permittedProducts;
         }
 
         public string Name { get; }
         public IReadOnlyList<Purchase> WishList => _wishList;
-        public ShopManager ShopManager { get; }
+        public IReadOnlyList<Product> PermittedProducts { get; }
 
-        public static Person CreateInstance(string name, ShopManager shopManager)
+        public static Person CreateInstance(string name, IReadOnlyList<Product> permittedProducts)
         {
-            return new Person(name, shopManager);
+            return new Person(name, permittedProducts);
         }
 
+        /*
         public void Buy(Shop shop)
         {
             shop.MakeDeal(this);
         }
+        */
 
         public void AddItemToWishList(Product product, int amount = 1)
         {
@@ -36,7 +39,7 @@ namespace Shops.Entities
 
         public void AddItemToWishList(int id, int amount)
         {
-            Product product = ShopManager.GetProduct(id);
+            Product product = PermittedProducts.FirstOrDefault(p => p.Id == id);
             AddItemToWishList(product, amount);
         }
     }

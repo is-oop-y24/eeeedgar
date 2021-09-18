@@ -15,7 +15,7 @@ namespace Shops.Services
             _shops = new List<Shop>();
             _persons = new List<Person>();
             _products = new List<Product>();
-            _bank = Bank.CreateInstance(this);
+            _bank = Bank.CreateInstance();
         }
 
         // i can get an access to shops and use their methods.
@@ -44,7 +44,7 @@ namespace Shops.Services
 
         public Shop RegisterShop(string shopName, string shopAddress)
         {
-            var shop = Shop.CreateInstance(shopName, shopAddress, _products, this);
+            var shop = Shop.CreateInstance(shopName, shopAddress, _products);
             _shops.Add(shop);
 
             _bank.RegisterProfile(shop);
@@ -53,7 +53,7 @@ namespace Shops.Services
 
         public Person RegisterPerson(string name)
         {
-            var person = Person.CreateInstance(name, this);
+            var person = Person.CreateInstance(name, _products);
             _persons.Add(person);
 
             _bank.RegisterProfile(person);

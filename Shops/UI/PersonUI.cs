@@ -8,7 +8,7 @@ namespace Shops.UI
 {
     public class PersonUI
     {
-        public static void Menu(Person person)
+        public static string Menu(int id, string name)
         {
             var commands = new List<string>();
             commands.Add("Wishlist");
@@ -18,47 +18,23 @@ namespace Shops.UI
 
             string choice = AnsiConsole.Prompt(
                 new SelectionPrompt<string>()
-                    .Title($"Person {person.Id} {person.Name}")
+                    .Title($"Person {id} {name}")
                     .PageSize(10)
                     .AddChoices(commands));
             AnsiConsole.Clear();
 
-            switch (choice)
-            {
-                case "Wishlist":
-                {
-                    DisplayWishList(person);
-                    AnsiConsole.Confirm("type to exit");
-                    AnsiConsole.Clear();
-                    Menu(person);
-                    break;
-                }
-
-                case "Add Item to Wishlist":
-                {
-                    person.AddItemToWishList(Clarifier.AskNumber("product id"), Clarifier.AskNumber("amount"));
-                    AnsiConsole.Clear();
-                    Menu(person);
-                    break;
-                }
-
-                case "Back to Shop Manager":
-                {
-                    ShopManagerUI.Menu(person.ShopManager);
-                    break;
-                }
-            }
+            return choice;
         }
 
-        private static void DisplayWishList(Person person)
+        public static void DisplayWishList(int id, string name, IReadOnlyList<Purchase> wishlist)
         {
             var table = new Table();
 
-            table.Title = new TableTitle($"Person {person.Id} {person.Name} WishList");
+            table.Title = new TableTitle($"Person {id} {name} WishList");
 
             table.AddColumns("id", "Product Name", "Amount");
 
-            foreach (Purchase purchase in person.WishList)
+            foreach (Purchase purchase in wishlist)
             {
                 table.AddRow(purchase.Product.Id.ToString(), purchase.Product.Name, purchase.Amount.ToString());
             }

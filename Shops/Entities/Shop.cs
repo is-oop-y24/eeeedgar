@@ -7,13 +7,12 @@ namespace Shops.Entities
     public class Shop : BankClient, IShop
     {
         private List<Position> _stock;
-        private Shop(string name, string address, IReadOnlyList<Product> permittedProducts, ShopManager shopManager)
+        private Shop(string name, string address, IReadOnlyList<Product> permittedProducts)
         {
             Name = name;
             Address = address;
             _stock = new List<Position>();
             PermittedProducts = permittedProducts;
-            ShopManager = shopManager;
         }
 
         public string Name { get; }
@@ -21,12 +20,11 @@ namespace Shops.Entities
 
         // doubly connected for ui :[
         public IReadOnlyList<Product> PermittedProducts { get; }
-        public ShopManager ShopManager { get; }
         public IReadOnlyList<Position> Stock => _stock;
 
-        public static Shop CreateInstance(string name, string address, IReadOnlyList<Product> registeredProducts, ShopManager shopManager)
+        public static Shop CreateInstance(string name, string address, IReadOnlyList<Product> registeredProducts)
         {
-            return new Shop(name, address, registeredProducts, shopManager);
+            return new Shop(name, address, registeredProducts);
         }
 
         public void AddPosition(Product product)
@@ -76,6 +74,12 @@ namespace Shops.Entities
                 position.Cost = price;
         }
 
+        public void SetProductPrice(int id, int price)
+        {
+            Product product = FindProductInPermittedBase(id);
+            SetProductPrice(product, price);
+        }
+
         public bool CanSell(Product product, int amount)
         {
             Position position = FindPosition(product);
@@ -103,6 +107,7 @@ namespace Shops.Entities
             }
         }
 
+        /*
         public void MakeDeal(Person person)
         {
             int cost = PossibleCost(person.WishList);
@@ -116,6 +121,7 @@ namespace Shops.Entities
             Person person = ShopManager.Persons.FirstOrDefault(p => p.Id == id);
             MakeDeal(person);
         }
+        */
 
         private Position FindPosition(Product product)
         {

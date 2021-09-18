@@ -7,7 +7,7 @@ namespace Shops.UI
 {
     public class ShopUI
     {
-        public static void Menu(Shop shop)
+        public static string Menu(string name, string address)
         {
             var commands = new List<string>();
             commands.Add("Stock");
@@ -19,74 +19,22 @@ namespace Shops.UI
 
             string choice = AnsiConsole.Prompt(
                 new SelectionPrompt<string>()
-                    .Title($"{shop.Name} on {shop.Address} Menu")
+                    .Title($"{name} on {address} Menu")
                     .PageSize(10)
                     .AddChoices(commands));
             AnsiConsole.Clear();
-
-            switch (choice)
-            {
-                case "Stock":
-                {
-                    DisplayStock(shop);
-                    AnsiConsole.Confirm("type to exit");
-                    AnsiConsole.Clear();
-                    Menu(shop);
-                    break;
-                }
-
-                case "Show Permitted Products":
-                {
-                    DisplayPermittedProducts(shop);
-                    AnsiConsole.Confirm("type to exit");
-                    AnsiConsole.Clear();
-                    Menu(shop);
-                    break;
-                }
-
-                case "Add Position":
-                {
-                    shop.AddPosition(Clarifier.AskNumber("product id"));
-                    AnsiConsole.Clear();
-                    Menu(shop);
-                    break;
-                }
-
-                case "Make Delivery":
-                {
-                    AnsiConsole.Clear();
-                    shop.AddProducts(Clarifier.AskNumber("product id"), Clarifier.AskNumber("amount"));
-                    AnsiConsole.Clear();
-                    Menu(shop);
-                    break;
-                }
-
-                case "Set Price":
-                {
-                    shop.SetProductPrice(shop.GetPosition(Clarifier.AskNumber("product id")).Product, Clarifier.AskNumber("new product price"));
-                    AnsiConsole.Clear();
-                    Menu(shop);
-                    break;
-                }
-
-                case "Back to Shop Manager":
-                {
-                    AnsiConsole.Clear();
-                    ShopManagerUI.Menu(shop.ShopManager);
-                    break;
-                }
-            }
+            return choice;
         }
 
-        private static void DisplayStock(Shop shop)
+        public static void DisplayStock(int id, string name, IReadOnlyList<Position> positions)
         {
             var table = new Table();
 
-            table.Title = new TableTitle($"Shop {shop.Id} {shop.Name} Stock");
+            table.Title = new TableTitle($"Shop {id} {name} Stock");
 
             table.AddColumns("id", "Product Name", "Amount", "Cost");
 
-            foreach (Position position in shop.Stock)
+            foreach (Position position in positions)
             {
                 if (position != null)
                 {
@@ -97,15 +45,15 @@ namespace Shops.UI
             AnsiConsole.Render(table);
         }
 
-        private static void DisplayPermittedProducts(Shop shop)
+        public static void DisplayPermittedProducts(int id, string name, IReadOnlyList<Product> products)
         {
             var table = new Table();
 
-            table.Title = new TableTitle($"Shop {shop.Id} {shop.Name} Stock");
+            table.Title = new TableTitle($"Shop {id} {name} Stock");
 
             table.AddColumns("id", "Product Name");
 
-            foreach (Product product in shop.PermittedProducts)
+            foreach (Product product in products)
             {
                 table.AddRow(product.Id.ToString(), product.Name);
             }
