@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Shops.Services;
 
 namespace Shops.Entities
 {
@@ -7,16 +8,18 @@ namespace Shops.Entities
     {
         private List<BankProfile> _profiles;
 
-        private Bank()
+        private Bank(ShopManager shopManager)
         {
             _profiles = new List<BankProfile>();
+            ShopManager = shopManager;
         }
 
         public IReadOnlyList<BankProfile> Profiles => _profiles;
+        public ShopManager ShopManager { get; }
 
-        public static Bank CreateInstance()
+        public static Bank CreateInstance(ShopManager shopManager)
         {
-            return new Bank();
+            return new Bank(shopManager);
         }
 
         public bool IsTransactionPossible(BankClient sender, int transactionValue)

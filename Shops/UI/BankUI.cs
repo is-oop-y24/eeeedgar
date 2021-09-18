@@ -1,23 +1,54 @@
-﻿using Shops.Entities;
+﻿using System.Collections.Generic;
+using Shops.Entities;
 using Spectre.Console;
 
 namespace Shops.UI
 {
     public class BankUI
     {
-        private Bank _bank;
-
-        private BankUI(Bank bank)
+        public static void Menu(Bank bank)
         {
-            _bank = bank;
+            var commands = new List<string>();
+            commands.Add("Profiles");
+            commands.Add("Make a Gift");
+            commands.Add("Back to Shop Manager");
+
+            string choice = AnsiConsole.Prompt(
+                new SelectionPrompt<string>()
+                    .Title("Bank Menu")
+                    .PageSize(10)
+                    .AddChoices(commands));
+            AnsiConsole.Clear();
+
+            switch (choice)
+            {
+                case "Profiles":
+                {
+                    DisplayProfiles(bank);
+                    AnsiConsole.Confirm("type to exit");
+                    AnsiConsole.Clear();
+                    Menu(bank);
+                    break;
+                }
+
+                case "Make a Gift":
+                {
+                    bank.GiveMoney(Clarifier.AskNumber("person id"), Clarifier.AskNumber("money amount"));
+                    AnsiConsole.Clear();
+                    Menu(bank);
+                    break;
+                }
+
+                case "Back to Shop Manager":
+                {
+                    AnsiConsole.Clear();
+                    ShopManagerUI.Menu(bank.ShopManager);
+                    break;
+                }
+            }
         }
 
-        public static BankUI CreateInstance(Bank bank)
-        {
-            return new BankUI(bank);
-        }
-
-        public void DisplayProfiles()
+        private static void DisplayProfiles(Bank bank)
         {
             var table = new Table();
 
@@ -25,7 +56,7 @@ namespace Shops.UI
 
             table.AddColumns("id", "Type", "Balance");
 
-            foreach (BankProfile profile in _bank.Profiles)
+            foreach (BankProfile profile in bank.Profiles)
             {
                 table.AddRow(profile.BankClient.Id.ToString(), profile.BankClient.GetType().ToString(), profile.Balance.ToString());
             }

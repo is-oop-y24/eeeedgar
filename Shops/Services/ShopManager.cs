@@ -15,7 +15,7 @@ namespace Shops.Services
             _shops = new List<Shop>();
             _persons = new List<Person>();
             _products = new List<Product>();
-            _bank = Bank.CreateInstance();
+            _bank = Bank.CreateInstance(this);
         }
 
         // i can get an access to shops and use their methods.
@@ -53,7 +53,7 @@ namespace Shops.Services
 
         public Person RegisterPerson(string name)
         {
-            var person = Person.CreateInstance(name);
+            var person = Person.CreateInstance(name, this);
             _persons.Add(person);
 
             _bank.RegisterProfile(person);
@@ -70,6 +70,12 @@ namespace Shops.Services
             return _shops.Find(shop => shop.Id == id);
         }
 
+        public Person GetPerson(int id)
+        {
+            return _persons.Find(person => person.Id == id);
+        }
+
+        /*
         public void MakeDeal(Person person, Shop shop)
         {
             int cost = shop.PossibleCost(person.WishList);
@@ -77,5 +83,13 @@ namespace Shops.Services
             _bank.MakeTransaction(person.Id, shop.Id, cost);
             shop.Sell(person.WishList);
         }
+
+        public void MakeDeal(int personId, int shopId)
+        {
+            Person person = _persons.Find(p => p.Id == personId);
+            Shop shop = _shops.Find(s => s.Id == shopId);
+            MakeDeal(person, shop);
+        }
+        */
     }
 }

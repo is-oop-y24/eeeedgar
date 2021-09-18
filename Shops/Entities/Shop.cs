@@ -103,6 +103,20 @@ namespace Shops.Entities
             }
         }
 
+        public void MakeDeal(Person person)
+        {
+            int cost = PossibleCost(person.WishList);
+            if (!ShopManager.Bank.IsTransactionPossible(person, cost)) return;
+            ShopManager.Bank.MakeTransaction(person.Id, Id, cost);
+            Sell(person.WishList);
+        }
+
+        public void MakeDeal(int id)
+        {
+            Person person = ShopManager.Persons.FirstOrDefault(p => p.Id == id);
+            MakeDeal(person);
+        }
+
         private Position FindPosition(Product product)
         {
             return
