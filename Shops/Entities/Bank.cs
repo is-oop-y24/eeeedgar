@@ -40,7 +40,10 @@ namespace Shops.Entities
         public void GiveMoney(int id, int money)
         {
             BankProfile bankProfile = FindProfile(id);
-            bankProfile.Balance += money;
+            if (bankProfile != null)
+            {
+                bankProfile.Balance += money;
+            }
         }
 
         private BankProfile FindProfile(int id)
@@ -61,6 +64,11 @@ namespace Shops.Entities
         private void MakeTransaction(BankProfile sender, BankProfile recipient, int transactionValue)
         {
             sender.Balance -= transactionValue;
+            if (sender.Balance < 0)
+            {
+                throw new Exception("invalig transaction commited");
+            }
+
             recipient.Balance += transactionValue;
         }
     }

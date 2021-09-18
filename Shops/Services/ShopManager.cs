@@ -44,7 +44,7 @@ namespace Shops.Services
 
         public Shop RegisterShop(string shopName, string shopAddress)
         {
-            var shop = Shop.CreateInstance(shopName, shopAddress);
+            var shop = Shop.CreateInstance(shopName, shopAddress, _products, this);
             _shops.Add(shop);
 
             _bank.RegisterProfile(shop);
