@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Shops.Services;
+using Spectre.Console;
 
 namespace Shops.Entities
 {
@@ -54,6 +55,11 @@ namespace Shops.Entities
         public int ProfileBalance(int id)
         {
             return (from profile in _profiles where profile.BankClient.Id == id select profile.Balance).FirstOrDefault();
+        }
+
+        public bool HasProfile(int id)
+        {
+            return _profiles.Find(profile => profile.BankClient.Id == id) != null;
         }
 
         private BankProfile FindProfile(int id)

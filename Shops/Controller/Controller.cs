@@ -194,7 +194,7 @@ namespace Shops.Controller
             {
                 case "Money":
                 {
-                    AnsiConsole.WriteLine("Money: ", _person.Money);
+                    AnsiConsole.WriteLine($"Money: {_person.Money}");
                     AnsiConsole.Confirm("type to exit");
                     AnsiConsole.Clear();
                     CheckPersonUiChoice(PersonUI.Menu(_person.Id, _person.Name));

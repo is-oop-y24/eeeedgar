@@ -41,7 +41,16 @@ namespace Shops.Entities
 
         public Position GetPosition(int id)
         {
-            return _stock.Find(position => position.Product.Id == id);
+            return
+                _stock
+                    .Find(position => position.Product.Id == id);
+        }
+
+        public Position GetPosition(Product product)
+        {
+            return
+                _stock
+                    .Find(position => position.Product == product);
         }
 
         public bool HasPosition(Product product)
@@ -83,7 +92,7 @@ namespace Shops.Entities
         public bool CanSell(Product product, int amount)
         {
             Position position = FindPosition(product);
-            return position.Amount > amount;
+            return position.Amount >= amount;
         }
 
         public int Cost(IReadOnlyList<Purchase> wishList)
