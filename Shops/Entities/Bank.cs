@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Shops.Services;
 
 namespace Shops.Entities
@@ -26,11 +27,14 @@ namespace Shops.Entities
             return IsTransactionPossible(bankProfile, transactionValue);
         }
 
-        public void MakeTransaction(int senderId, int recipientId, int transactionValue)
+        public bool MakeTransaction(int senderId, int recipientId, int transactionValue)
         {
             BankProfile senderProfile = FindProfile(senderId);
             BankProfile recipientProfile = FindProfile(recipientId);
+            if (!IsTransactionPossible(senderProfile, transactionValue))
+                return false;
             MakeTransaction(senderProfile, recipientProfile, transactionValue);
+            return true;
         }
 
         public void RegisterProfile(BankClient bankClient)
@@ -45,6 +49,11 @@ namespace Shops.Entities
             {
                 bankProfile.Balance += money;
             }
+        }
+
+        public int ProfileBalance(int id)
+        {
+            return (from profile in _profiles where profile.BankClient.Id == id select profile.Balance).FirstOrDefault();
         }
 
         private BankProfile FindProfile(int id)
@@ -67,7 +76,7 @@ namespace Shops.Entities
             sender.Balance -= transactionValue;
             if (sender.Balance < 0)
             {
-                throw new Exception("invalig transaction commited");
+                throw new Exception("invalid transaction committed");
             }
 
             recipient.Balance += transactionValue;

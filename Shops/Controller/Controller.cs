@@ -110,7 +110,7 @@ namespace Shops.Controller
                     ShopManagerUI.DisplayPersons(_shopManager.Persons);
                     _person = _shopManager.GetPerson(Clarifier.AskNumber("person id"));
                     AnsiConsole.Clear();
-                    
+
                     CheckPersonUiChoice(PersonUI.Menu(_person.Id, _person.Name));
                     break;
                 }
@@ -120,7 +120,7 @@ namespace Shops.Controller
                     AnsiConsole.Clear();
 
                     // todo complete or reject BankUi
-                    BankUI.Menu();
+                    CheckBankUiChoice(BankUI.Menu());
                     break;
                 }
 
@@ -182,7 +182,6 @@ namespace Shops.Controller
 
                 case "Back to Shop Manager":
                 {
-                    AnsiConsole.Clear();
                     CheckShopManagerUiChoice(ShopManagerUI.Menu());
                     break;
                 }
@@ -193,6 +192,15 @@ namespace Shops.Controller
         {
             switch (choice)
             {
+                case "Money":
+                {
+                    AnsiConsole.WriteLine("Money: ", _person.Money);
+                    AnsiConsole.Confirm("type to exit");
+                    AnsiConsole.Clear();
+                    CheckPersonUiChoice(PersonUI.Menu(_person.Id, _person.Name));
+                    break;
+                }
+
                 case "Wishlist":
                 {
                     PersonUI.DisplayWishList(_person.Id, _person.Name, _person.WishList);
@@ -213,7 +221,44 @@ namespace Shops.Controller
 
                 case "Back to Shop Manager":
                 {
+                    CheckShopManagerUiChoice(ShopManagerUI.Menu());
+                    break;
+                }
+
+                case "Buy":
+                {
+                    ShopManagerUI.DisplayShops(_shopManager.Shops);
+                    int shopId = Clarifier.AskNumber("shop id");
                     AnsiConsole.Clear();
+                    Shop shop = _shopManager.GetShop(shopId);
+                    ShopUI.DisplayStock(shop.Id, shop.Name, shop.Stock);
+                    AnsiConsole.WriteLine("Money: ", _person.Money);
+                    int productId = Clarifier.AskNumber("product id");
+                    int productAmount = Clarifier.AskNumber("amount");
+                    Product product = _shopManager.GetProduct(productId);
+                    _person.Buy(shop, product, productAmount);
+                    AnsiConsole.Clear();
+                    CheckPersonUiChoice(PersonUI.Menu(_person.Id, _person.Name));
+                    break;
+                }
+            }
+        }
+
+        private void CheckBankUiChoice(string choice)
+        {
+            switch (choice)
+            {
+                case "Profiles":
+                {
+                    BankUI.DisplayProfiles(_shopManager.Bank);
+                    AnsiConsole.Confirm("type to exit");
+                    AnsiConsole.Clear();
+                    CheckBankUiChoice(BankUI.Menu());
+                    break;
+                }
+
+                case "Back to Shop Manager":
+                {
                     CheckShopManagerUiChoice(ShopManagerUI.Menu());
                     break;
                 }

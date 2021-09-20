@@ -86,42 +86,30 @@ namespace Shops.Entities
             return position.Amount > amount;
         }
 
-        public int PossibleCost(IReadOnlyList<Purchase> wishList)
+        public int Cost(IReadOnlyList<Purchase> wishList)
         {
-            int cost = 0;
-            foreach (Purchase purchase in wishList)
-            {
-                Position position = FindPosition(purchase.Product);
-                cost += purchase.Amount * position.Cost;
-            }
+            return wishList.Sum(purchase => Cost(purchase.Product, purchase.Amount));
+        }
 
-            return cost;
+        public int Cost(Product product, int amount)
+        {
+            Position position = FindPosition(product);
+            return position.Cost * amount;
         }
 
         public void Sell(IReadOnlyList<Purchase> wishList)
         {
             foreach (Purchase purchase in wishList)
             {
-                Position position = FindPosition(purchase.Product);
-                position.Amount -= purchase.Amount;
+                Sell(purchase.Product, purchase.Amount);
             }
         }
 
-        /*
-        public void MakeDeal(Person person)
+        public void Sell(Product product, int amount)
         {
-            int cost = PossibleCost(person.WishList);
-            if (!ShopManager.Bank.IsTransactionPossible(person, cost)) return;
-            ShopManager.Bank.MakeTransaction(person.Id, Id, cost);
-            Sell(person.WishList);
+            Position position = FindPosition(product);
+            position.Amount -= amount;
         }
-
-        public void MakeDeal(int id)
-        {
-            Person person = ShopManager.Persons.FirstOrDefault(p => p.Id == id);
-            MakeDeal(person);
-        }
-        */
 
         private Position FindPosition(Product product)
         {

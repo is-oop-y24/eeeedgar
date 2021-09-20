@@ -11,9 +11,9 @@ namespace Shops.UI
         public static string Menu(int id, string name)
         {
             var commands = new List<string>();
-            commands.Add("Wishlist");
-            commands.Add("Add Item to Wishlist");
-            commands.Add("Buy (!)");
+            commands.Add("Money");
+
+            commands.Add("Buy");
             commands.Add("Back to Shop Manager");
 
             string choice = AnsiConsole.Prompt(

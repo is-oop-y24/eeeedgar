@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Shops.Entities;
+using Spectre.Console;
 
 namespace Shops.Services
 {
@@ -53,7 +55,7 @@ namespace Shops.Services
 
         public Person RegisterPerson(string name)
         {
-            var person = Person.CreateInstance(name, _products);
+            var person = Person.CreateInstance(name, _products, _bank);
             _persons.Add(person);
 
             _bank.RegisterProfile(person);
@@ -62,34 +64,26 @@ namespace Shops.Services
 
         public Product GetProduct(int id)
         {
-            return _products.Find(product => product.Id == id);
+            Product product = _products.Find(pr => pr.Id == id);
+            if (product != null)
+                return product;
+            throw new Exception("wrong product id");
         }
 
         public Shop GetShop(int id)
         {
-            return _shops.Find(shop => shop.Id == id);
+            Shop shop = _shops.Find(sh => sh.Id == id);
+            if (shop != null)
+                return shop;
+            throw new Exception("wrong shop id");
         }
 
         public Person GetPerson(int id)
         {
-            return _persons.Find(person => person.Id == id);
+            Person person = _persons.Find(per => per.Id == id);
+            if (person != null)
+                return person;
+            throw new Exception("wrong person id");
         }
-
-        /*
-        public void MakeDeal(Person person, Shop shop)
-        {
-            int cost = shop.PossibleCost(person.WishList);
-            if (!_bank.IsTransactionPossible(person, cost)) return;
-            _bank.MakeTransaction(person.Id, shop.Id, cost);
-            shop.Sell(person.WishList);
-        }
-
-        public void MakeDeal(int personId, int shopId)
-        {
-            Person person = _persons.Find(p => p.Id == personId);
-            Shop shop = _shops.Find(s => s.Id == shopId);
-            MakeDeal(person, shop);
-        }
-        */
     }
 }

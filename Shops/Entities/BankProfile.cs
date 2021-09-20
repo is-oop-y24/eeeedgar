@@ -11,7 +11,7 @@
         public BankClient BankClient { get; }
         public int Balance { get; set; }
 
-        public static BankProfile CreateInstance(BankClient bankClient, int balance = 0)
+        public static BankProfile CreateInstance(BankClient bankClient, int balance = 100)
         {
             return new BankProfile(bankClient, balance);
         }

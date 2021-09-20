@@ -10,7 +10,8 @@ namespace Shops.UI
         {
             var commands = new List<string>();
             commands.Add("Profiles");
-            commands.Add("Make a Gift");
+
+            // commands.Add("Make a Gift");
             commands.Add("Back to Shop Manager");
 
             string choice = AnsiConsole.Prompt(
@@ -22,7 +23,7 @@ namespace Shops.UI
             return choice;
         }
 
-        private static void DisplayProfiles(Bank bank)
+        public static void DisplayProfiles(Bank bank)
         {
             var table = new Table();
 
