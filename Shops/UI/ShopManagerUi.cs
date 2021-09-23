@@ -1,25 +1,28 @@
 ﻿using System.Collections.Generic;
-using System.Net;
 using Shops.Entities;
-using Shops.Services;
 using Spectre.Console;
 
 namespace Shops.UI
 {
-    public class ShopManagerUI
+    public class ShopManagerUi
     {
         public static string Menu()
         {
-            var commands = new List<string>();
-            commands.Add("Create shop");
-            commands.Add("Register product");
-            commands.Add("Add customer");
-            commands.Add("Shop List");
-            commands.Add("Customer List");
-            commands.Add("Product List");
-            commands.Add("Select shop");
-            commands.Add("Select customer");
-            commands.Add("Bank");
+            var commands = new List<string>
+            {
+                "Register Shop",
+                "Register Product",
+                "Register Customer",
+
+                "Shop List",
+                "Customer List",
+                "Product List",
+
+                "Select Shop",
+                "Select Customer",
+
+                "Exit",
+            };
 
             string choice = AnsiConsole.Prompt(
                 new SelectionPrompt<string>()

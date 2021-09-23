@@ -1,4 +1,6 @@
-﻿using Shops.Services;
+﻿using System;
+using Shops.Entities;
+using Shops.Services;
 
 namespace Shops
 {
@@ -6,10 +8,8 @@ namespace Shops
     {
         private static void Main()
         {
-            var market = ShopManager.CreateInstance();
-
-            var controller = Controller.Controller.CreateInstance(market);
-
+            var shopManager = ShopManager.CreateInstance();
+            var controller = Controller.Controller.CreateInstance(shopManager);
             controller.Run();
         }
     }

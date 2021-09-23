@@ -1,8 +1,8 @@
-﻿using Shops.Entities;
+﻿using System;
+using Shops.Entities;
 using Shops.Services;
 using Shops.UI;
 using Spectre.Console;
-using Spectre.Console.Cli;
 
 namespace Shops.Controller
 {
@@ -24,109 +24,96 @@ namespace Shops.Controller
 
         public void Run()
         {
-            CheckShopManagerUiChoice(ShopManagerUI.Menu());
+            CheckShopManagerUiChoice(ShopManagerUi.Menu());
         }
 
         private void CheckShopManagerUiChoice(string choice)
         {
             switch (choice)
             {
-                case "Create shop":
+                case "Register Shop":
                 {
-                    /*
-                     * вынести три строки в функцию в UI
-                     */
-                    string shopName = Clarifier.AskString("shop name");
-                    string shopAddress = Clarifier.AskString("shop address");
+                    string shopName = Clarifier.AskString("Shop Name");
+                    string shopAddress = Clarifier.AskString("Shop Address");
                     AnsiConsole.Clear();
-
                     _shopManager.RegisterShop(shopName, shopAddress);
-                    CheckShopManagerUiChoice(ShopManagerUI.Menu());
+                    CheckShopManagerUiChoice(ShopManagerUi.Menu());
                     break;
                 }
 
-                case "Register product":
+                case "Register Product":
                 {
-                    string productName = Clarifier.AskString("product name");
+                    string productName = Clarifier.AskString("Product Name");
                     AnsiConsole.Clear();
-
                     _shopManager.RegisterProduct(productName);
-                    CheckShopManagerUiChoice(ShopManagerUI.Menu());
+                    CheckShopManagerUiChoice(ShopManagerUi.Menu());
                     break;
                 }
 
-                case "Add customer":
+                case "Register Customer":
                 {
-                    string customerName = Clarifier.AskString("customer name");
+                    string customerName = Clarifier.AskString("Customer Name");
                     AnsiConsole.Clear();
-
                     _shopManager.RegisterPerson(customerName);
-                    CheckShopManagerUiChoice(ShopManagerUI.Menu());
+                    CheckShopManagerUiChoice(ShopManagerUi.Menu());
                     break;
                 }
 
                 case "Shop List":
                 {
-                    ShopManagerUI.DisplayShops(_shopManager.Shops);
-                    AnsiConsole.Confirm("type to exit");
+                    ShopManagerUi.DisplayShops(_shopManager.Shops);
+                    AnsiConsole.Confirm("type to continue");
                     AnsiConsole.Clear();
-
-                    CheckShopManagerUiChoice(ShopManagerUI.Menu());
+                    CheckShopManagerUiChoice(ShopManagerUi.Menu());
                     break;
                 }
 
                 case "Customer List":
                 {
-                    ShopManagerUI.DisplayPersons(_shopManager.Persons);
-                    AnsiConsole.Confirm("type to exit");
+                    ShopManagerUi.DisplayPersons(_shopManager.Persons);
+                    AnsiConsole.Confirm("type to continue");
                     AnsiConsole.Clear();
-
-                    CheckShopManagerUiChoice(ShopManagerUI.Menu());
+                    CheckShopManagerUiChoice(ShopManagerUi.Menu());
                     break;
                 }
 
                 case "Product List":
                 {
-                    ShopManagerUI.DisplayProducts(_shopManager.Products);
-                    AnsiConsole.Confirm("type to exit");
+                    ShopManagerUi.DisplayProducts(_shopManager.Products);
+                    AnsiConsole.Confirm("type to continue");
                     AnsiConsole.Clear();
-
-                    CheckShopManagerUiChoice(ShopManagerUI.Menu());
+                    CheckShopManagerUiChoice(ShopManagerUi.Menu());
                     break;
                 }
 
-                case "Select shop":
+                case "Select Shop":
                 {
-                    ShopManagerUI.DisplayShops(_shopManager.Shops);
-                    _shop = _shopManager.GetShop(Clarifier.AskNumber("shop id"));
+                    ShopManagerUi.DisplayShops(_shopManager.Shops);
+                    int shopId = Clarifier.AskNumber("Shop Id");
                     AnsiConsole.Clear();
-
-                    CheckShopUiChoice(ShopUI.Menu(_shop.Name, _shop.Address));
+                    _shop = _shopManager.GetShop(shopId);
+                    CheckShopUiChoice(ShopUi.Menu(_shop.Name, _shop.Address));
                     break;
                 }
 
-                case "Select customer":
+                case "Select Customer":
                 {
-                    ShopManagerUI.DisplayPersons(_shopManager.Persons);
-                    _person = _shopManager.GetPerson(Clarifier.AskNumber("person id"));
+                    ShopManagerUi.DisplayPersons(_shopManager.Persons);
+                    int customerId = Clarifier.AskNumber("Customer Id");
                     AnsiConsole.Clear();
-
-                    CheckPersonUiChoice(PersonUI.Menu(_person.Id, _person.Name));
-                    break;
-                }
-
-                case "Bank":
-                {
-                    AnsiConsole.Clear();
-
-                    // todo complete or reject BankUi
-                    CheckBankUiChoice(BankUI.Menu());
+                    _person = _shopManager.GetPerson(customerId);
+                    CheckPersonUiChoice(PersonUi.Menu(_person.Name, _person.Money));
                     break;
                 }
 
                 case "Exit":
                 {
                     break;
+                }
+
+                default:
+                {
+                    throw new Exception("input error");
                 }
             }
         }
@@ -137,53 +124,55 @@ namespace Shops.Controller
             {
                 case "Stock":
                 {
-                    ShopUI.DisplayStock(_shop.Id, _shop.Name, _shop.Stock);
-                    AnsiConsole.Confirm("type to exit");
+                    ShopUi.DisplayStock(_shop.Name, _shop.Address, _shop.Stock);
+                    AnsiConsole.Confirm("type to continue");
                     AnsiConsole.Clear();
-                    CheckShopUiChoice(ShopUI.Menu(_shop.Name, _shop.Address));
-                    break;
-                }
-
-                case "Show Permitted Products":
-                {
-                    ShopManagerUI.DisplayProducts(_shopManager.Products);
-                    AnsiConsole.Confirm("type to exit");
-                    AnsiConsole.Clear();
-                    CheckShopUiChoice(ShopUI.Menu(_shop.Name, _shop.Address));
+                    CheckShopUiChoice(ShopUi.Menu(_shop.Name, _shop.Address));
                     break;
                 }
 
                 case "Add Position":
                 {
-                    ShopUI.DisplayPermittedProducts(_shop.Id, _shop.Name, _shop.PermittedProducts);
-                    _shop.AddPosition(Clarifier.AskNumber("product id"));
+                    ShopManagerUi.DisplayProducts(_shopManager.Products);
+                    int productId = Clarifier.AskNumber("Product Id");
                     AnsiConsole.Clear();
-                    CheckShopUiChoice(ShopUI.Menu(_shop.Name, _shop.Address));
+                    _shop.AddPosition(productId);
+                    CheckShopUiChoice(ShopUi.Menu(_shop.Name, _shop.Address));
                     break;
                 }
 
                 case "Make Delivery":
                 {
-                    ShopUI.DisplayStock(_shop.Id, _shop.Name, _shop.Stock);
-                    _shop.AddProducts(Clarifier.AskNumber("product id"), Clarifier.AskNumber("product amount"));
+                    ShopUi.DisplayStock(_shop.Name, _shop.Address, _shop.Stock);
+                    int productId = Clarifier.AskNumber("Product Id");
+                    int productAmount = Clarifier.AskNumber("Product Amount");
                     AnsiConsole.Clear();
-                    CheckShopUiChoice(ShopUI.Menu(_shop.Name, _shop.Address));
+                    _shop.AddProducts(productId, productAmount);
+                    CheckShopUiChoice(ShopUi.Menu(_shop.Name, _shop.Address));
                     break;
                 }
 
                 case "Set Price":
                 {
-                    ShopUI.DisplayStock(_shop.Id, _shop.Name, _shop.Stock);
-                    _shop.SetProductPrice(Clarifier.AskNumber("product id"), Clarifier.AskNumber("price"));
+                    ShopUi.DisplayStock(_shop.Name, _shop.Address, _shop.Stock);
+                    int productId = Clarifier.AskNumber("Product Id");
+                    int productPrice = Clarifier.AskNumber("New Price");
+                    _shop.SetProductPrice(productId, productPrice);
                     AnsiConsole.Clear();
-                    CheckShopUiChoice(ShopUI.Menu(_shop.Name, _shop.Address));
+                    CheckShopUiChoice(ShopUi.Menu(_shop.Name, _shop.Address));
                     break;
                 }
 
                 case "Back to Shop Manager":
                 {
-                    CheckShopManagerUiChoice(ShopManagerUI.Menu());
+                    AnsiConsole.Clear();
+                    CheckShopManagerUiChoice(ShopManagerUi.Menu());
                     break;
+                }
+
+                default:
+                {
+                    throw new Exception("input error");
                 }
             }
         }
@@ -192,75 +181,43 @@ namespace Shops.Controller
         {
             switch (choice)
             {
-                case "Money":
+                case "Show Shop Stock":
                 {
-                    AnsiConsole.WriteLine($"Money: {_person.Money}");
-                    AnsiConsole.Confirm("type to exit");
+                    int shopId = Clarifier.AskNumber("Shop Id");
                     AnsiConsole.Clear();
-                    CheckPersonUiChoice(PersonUI.Menu(_person.Id, _person.Name));
-                    break;
-                }
-
-                case "Wishlist":
-                {
-                    PersonUI.DisplayWishList(_person.Id, _person.Name, _person.WishList);
-                    AnsiConsole.Confirm("type to exit");
+                    _shop = _shopManager.GetShop(shopId);
+                    ShopUi.DisplayStock(_shop.Name, _shop.Address, _shop.Stock);
+                    AnsiConsole.Confirm("type to continue");
                     AnsiConsole.Clear();
-                    CheckPersonUiChoice(PersonUI.Menu(_person.Id, _person.Name));
-                    break;
-                }
-
-                case "Add Item to Wishlist":
-                {
-                    ShopManagerUI.DisplayProducts(_shopManager.Products);
-                    _person.AddItemToWishList(Clarifier.AskNumber("product id"), Clarifier.AskNumber("amount"));
-                    AnsiConsole.Clear();
-                    CheckPersonUiChoice(PersonUI.Menu(_person.Id, _person.Name));
-                    break;
-                }
-
-                case "Back to Shop Manager":
-                {
-                    CheckShopManagerUiChoice(ShopManagerUI.Menu());
+                    CheckPersonUiChoice(PersonUi.Menu(_person.Name, _person.Money));
                     break;
                 }
 
                 case "Buy":
                 {
-                    ShopManagerUI.DisplayShops(_shopManager.Shops);
-                    int shopId = Clarifier.AskNumber("shop id");
+                    ShopManagerUi.DisplayShops(_shopManager.Shops);
+                    int shopId = Clarifier.AskNumber("Shop Id");
                     AnsiConsole.Clear();
                     Shop shop = _shopManager.GetShop(shopId);
-                    ShopUI.DisplayStock(shop.Id, shop.Name, shop.Stock);
-                    AnsiConsole.WriteLine("Money: ", _person.Money);
-                    int productId = Clarifier.AskNumber("product id");
-                    int productAmount = Clarifier.AskNumber("amount");
-                    Product product = _shopManager.GetProduct(productId);
-                    _person.Buy(shop, product, productAmount);
+                    ShopUi.DisplayStock(shop.Name, shop.Address, shop.Stock);
+                    int productId = Clarifier.AskNumber("Product Id");
+                    int productAmount = Clarifier.AskNumber("Product Amount");
                     AnsiConsole.Clear();
-                    CheckPersonUiChoice(PersonUI.Menu(_person.Id, _person.Name));
-                    break;
-                }
-            }
-        }
-
-        private void CheckBankUiChoice(string choice)
-        {
-            switch (choice)
-            {
-                case "Profiles":
-                {
-                    BankUI.DisplayProfiles(_shopManager.Bank);
-                    AnsiConsole.Confirm("type to exit");
-                    AnsiConsole.Clear();
-                    CheckBankUiChoice(BankUI.Menu());
+                    _person.MakePurchase(shopId, productId, productAmount);
+                    CheckPersonUiChoice(PersonUi.Menu(_person.Name, _person.Money));
                     break;
                 }
 
                 case "Back to Shop Manager":
                 {
-                    CheckShopManagerUiChoice(ShopManagerUI.Menu());
+                    AnsiConsole.Clear();
+                    CheckShopManagerUiChoice(ShopManagerUi.Menu());
                     break;
+                }
+
+                default:
+                {
+                    throw new Exception("input error");
                 }
             }
         }

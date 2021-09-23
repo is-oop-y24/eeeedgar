@@ -1,12 +1,13 @@
-﻿using Shops.Entities;
-
-namespace Shops.Entities
+﻿namespace Shops.Entities
 {
     public interface IShop
     {
-        void AddPosition(Product product);
-        bool HasPosition(Product product);
-        void AddProducts(Product product, int amount);
-        void SetProductPrice(Product product, int price);
+        void AddPosition(int id);
+        bool HasPosition(int id);
+        void AddProducts(int id, int amount);
+        void SetProductPrice(int id, int price);
+        bool CanSell(int id, int amount);
+        int PurchaseCost(int id, int amount);
+        void Sell(int id, int amount);
     }
 }

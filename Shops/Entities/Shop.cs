@@ -1,25 +1,28 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
-using Shops.Services;
 
 namespace Shops.Entities
 {
     public class Shop : BankClient, IShop
     {
         private List<Position> _stock;
-        private Shop(string name, string address, IReadOnlyList<Product> permittedProducts)
+        private Shop(string name, string address, IReadOnlyList<Product> globalProductBase)
         {
+            if (string.IsNullOrWhiteSpace(name))
+                throw new Exception("wrong shop name");
+            if (string.IsNullOrWhiteSpace(address))
+                throw new Exception("wrong shop address");
             Name = name;
             Address = address;
             _stock = new List<Position>();
-            PermittedProducts = permittedProducts;
+            GlobalProductBase = globalProductBase;
         }
 
         public string Name { get; }
         public string Address { get; }
 
-        // doubly connected for ui :[
-        public IReadOnlyList<Product> PermittedProducts { get; }
+        public IReadOnlyList<Product> GlobalProductBase { get; }
         public IReadOnlyList<Position> Stock => _stock;
 
         public static Shop CreateInstance(string name, string address, IReadOnlyList<Product> registeredProducts)
@@ -27,109 +30,60 @@ namespace Shops.Entities
             return new Shop(name, address, registeredProducts);
         }
 
-        public void AddPosition(Product product)
-        {
-            var position = Position.CreateInstance(product);
-            _stock.Add(position);
-        }
-
         public void AddPosition(int id)
         {
-            var position = Position.CreateInstance(FindProductInPermittedBase(id));
+            if (HasPosition(id))
+                throw new Exception("shop contains this position already");
+
+            var position = Position.CreateInstance(FindProductInGlobalGlobalBase(id));
             _stock.Add(position);
         }
 
-        public Position GetPosition(int id)
+        public bool HasPosition(int id)
         {
-            return
-                _stock
-                    .Find(position => position.Product.Id == id);
-        }
-
-        public Position GetPosition(Product product)
-        {
-            return
-                _stock
-                    .Find(position => position.Product == product);
-        }
-
-        public bool HasPosition(Product product)
-        {
-            return
-                _stock
-                    .Find(position => position.Product == product)
-                != null;
-        }
-
-        public void AddProducts(Product product, int amount)
-        {
-            Position position = _stock.Find(pos => pos.Product == product);
-            if (position != null)
-                position.Amount += amount;
+            return _stock.Find(position => position.Product.Id == id) != null;
         }
 
         public void AddProducts(int id, int amount)
         {
-            Product product = FindProductInPermittedBase(id);
-            Position position = _stock.Find(pos => pos.Product == product);
-            if (position != null)
-                position.Amount += amount;
-        }
-
-        public void SetProductPrice(Product product, int price)
-        {
-            Position position = _stock.Find(pos => pos.Product == product);
-            if (position != null)
-                position.Cost = price;
+            FindPositionInStock(id).Amount += amount;
         }
 
         public void SetProductPrice(int id, int price)
         {
-            Product product = FindProductInPermittedBase(id);
-            SetProductPrice(product, price);
+            FindPositionInStock(id).Cost = price;
         }
 
-        public bool CanSell(Product product, int amount)
+        public bool CanSell(int id, int amount)
         {
-            Position position = FindPosition(product);
-            return position.Amount >= amount;
+            return FindPositionInStock(id).Amount >= amount;
         }
 
-        public int Cost(IReadOnlyList<Purchase> wishList)
+        public int PurchaseCost(int id, int amount)
         {
-            return wishList.Sum(purchase => Cost(purchase.Product, purchase.Amount));
+            return FindPositionInStock(id).Cost * amount;
         }
 
-        public int Cost(Product product, int amount)
+        public void Sell(int id, int amount)
         {
-            Position position = FindPosition(product);
-            return position.Cost * amount;
+            Position position = _stock.Find(pos => pos.Product.Id == id);
+            if (position != null) position.Amount -= amount;
         }
 
-        public void Sell(IReadOnlyList<Purchase> wishList)
+        private Position FindPositionInStock(int id)
         {
-            foreach (Purchase purchase in wishList)
-            {
-                Sell(purchase.Product, purchase.Amount);
-            }
+            Position position = _stock.FirstOrDefault(pos => pos.Product.Id == id);
+            if (position == null)
+                throw new Exception("wrong position id___");
+            return position;
         }
 
-        public void Sell(Product product, int amount)
+        private Product FindProductInGlobalGlobalBase(int id)
         {
-            Position position = FindPosition(product);
-            position.Amount -= amount;
-        }
-
-        private Position FindPosition(Product product)
-        {
-            return
-                _stock
-                    .Find(pos => pos.Product.Equals(product));
-        }
-
-        private Product FindProductInPermittedBase(int id)
-        {
-            return PermittedProducts.FirstOrDefault(product => product.Id == id);
+            Product product = GlobalProductBase.FirstOrDefault(prod => prod.Id == id);
+            if (product == null)
+                throw new Exception("product is not in global base");
+            return product;
         }
     }
 }

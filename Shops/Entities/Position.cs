@@ -1,6 +1,6 @@
 ﻿namespace Shops.Entities
 {
-    public class Position // i must return no public references for objects of this class anywhere
+    public class Position
     {
         private Position(Product product)
         {

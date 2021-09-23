@@ -1,51 +1,59 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Shops.Entities
 {
-    public class Person : BankClient
+    public class Person : BankClient, ISubject, IPerson
     {
-        private List<Purchase> _wishList;
+        private List<IObserver> _observers;
         private Bank _bank;
 
-        private Person(string name, IReadOnlyList<Product> permittedProducts, Bank bank)
+        private Person(string name, Bank bank)
         {
+            if (string.IsNullOrWhiteSpace(name))
+                throw new Exception("wrong person name");
             Name = name;
-            _wishList = new List<Purchase>();
             _bank = bank;
-            PermittedProducts = permittedProducts;
+            _observers = new List<IObserver>();
         }
 
         public string Name { get; }
-        public IReadOnlyList<Purchase> WishList => _wishList;
-        public IReadOnlyList<Product> PermittedProducts { get; }
+        public int SelectedShopId { get; private set; }
+
+        public int SelectedProductId { get; private set; }
+        public int SelectedProductAmount { get; private set; }
 
         public int Money => _bank.ProfileBalance(Id);
 
-        public static Person CreateInstance(string name, IReadOnlyList<Product> permittedProducts, Bank bank)
+        public static Person CreateInstance(string name, Bank bank)
         {
-            return new Person(name, permittedProducts, bank);
+            return new Person(name, bank);
         }
 
-        public void Buy(Shop shop, Product product, int amount)
+        public void MakePurchase(int shopId, int productId, int productAmount)
         {
-            if (!shop.HasPosition(product))
-                return;
-            if (!shop.CanSell(product, amount))
-                return;
-            if (_bank.MakeTransaction(Id, shop.Id, shop.Cost(product, amount)))
-                shop.Sell(product, amount);
+            SelectedShopId = shopId;
+            SelectedProductId = productId;
+            SelectedProductAmount = productAmount;
+            Notify();
         }
 
-        public void AddItemToWishList(Product product, int amount = 1)
+        public void Attach(IObserver observer)
         {
-            _wishList.Add(Purchase.CreateInstance(product, amount));
+            _observers.Add(observer);
         }
 
-        public void AddItemToWishList(int id, int amount)
+        public void Detach(IObserver observer)
         {
-            Product product = PermittedProducts.FirstOrDefault(p => p.Id == id);
-            AddItemToWishList(product, amount);
+            _observers.Remove(observer);
+        }
+
+        public void Notify()
+        {
+            foreach (IObserver observer in _observers)
+            {
+                observer.Update(this);
+            }
         }
     }
 }

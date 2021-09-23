@@ -2,43 +2,38 @@
 using System.Collections.Generic;
 using NUnit.Framework;
 using Shops.Entities;
+using Shops.Services;
 
 namespace Shops.Tests
 {
     public class PersonTests
     {
+        private ShopManager _shopManager;
         private Person _person;
-        private Bank _bank;
         private Shop _shop;
-        private List<Product> _registeredProducts;
-        private Product _parrot;
+        private Product _product;
 
         [SetUp]
         public void Setup()
         {
-            _bank = Bank.CreateInstance();
-            
-            _registeredProducts = new List<Product>();
-            _parrot = Product.CreateInstance("parrot");
-            _registeredProducts.Add(_parrot);
+            _shopManager = ShopManager.CreateInstance();
+            _product = _shopManager.RegisterProduct("parrot");
+            _shop = _shopManager.RegisterShop("dixy", "kronva");
+            _person = _shopManager.RegisterPerson("well");
 
-            
-            _shop = Shop.CreateInstance("okay", "i hope it's okay", _registeredProducts);
-            _shop.AddPosition(_parrot);
-
-            _person = Person.CreateInstance("well", _registeredProducts, _bank);
-            
-            _bank.RegisterProfile(_shop);
-            _bank.RegisterProfile(_person);
+            const int productAmount = 100;
+            _shop.AddPosition(_product.Id);
+            _shop.AddProducts(_product.Id, productAmount);
         }
 
         [Test]
         public void MakePurchaseWithoutEnoughMoney_MoneyNotSpent()
         {
+            const int bigPrice = 99999;
             int personBalanceBeforeAttempt = _person.Money;
-            _shop.SetProductPrice(1, 9999);
-            _person.Buy(_shop, _parrot, 1);
-            Assert.That(_person.Money == personBalanceBeforeAttempt);
+            _shop.SetProductPrice(_product.Id, bigPrice);
+            _person.MakePurchase(_shop.Id, _product.Id, 1);
+            Assert.AreEqual(_person.Money, personBalanceBeforeAttempt);
         }
         
         [Test]
@@ -46,11 +41,10 @@ namespace Shops.Tests
         {
             int personBalanceBeforeAttempt = _person.Money;
             const int price = 1;
-            const int amount = 2;
-            _shop.SetProductPrice(1, price);
-            _shop.AddProducts(1, amount);
-            _person.Buy(_shop, _parrot, amount);
-            Assert.That(_person.Money == personBalanceBeforeAttempt - amount * price);
+            const int amountToBuy = 2;
+            _shop.SetProductPrice(_product.Id, price);
+            _person.MakePurchase(_shop.Id, _product.Id, amountToBuy);
+            Assert.AreEqual(personBalanceBeforeAttempt - amountToBuy * price, _person.Money);
         }
     }
 }

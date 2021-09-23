@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using Shops.Entities;
-using Spectre.Console;
 
 namespace Shops.Services
 {
-    public class ShopManager : IShopManager
+    public class ShopManager : IShopManager, IObserver
     {
         private List<Shop> _shops;
         private List<Person> _persons;
@@ -20,14 +19,10 @@ namespace Shops.Services
             _bank = Bank.CreateInstance();
         }
 
-        // i can get an access to shops and use their methods.
-        // do i want to control shops without TaxOffice.GetShop(int id)?
-        // public IReadOnlyList<Shop> RegisteredShops => _shops; // do i need it?
-        // public IReadOnlyList<Product> RegisteredProducts => _products; // and this. i'm not sure
         public IReadOnlyList<Shop> Shops => _shops;
         public IReadOnlyList<Person> Persons => _persons;
         public IReadOnlyList<Product> Products => _products;
-        public Bank Bank => _bank;
+
         public static ShopManager CreateInstance()
         {
             return new ShopManager();
@@ -55,10 +50,11 @@ namespace Shops.Services
 
         public Person RegisterPerson(string name)
         {
-            var person = Person.CreateInstance(name, _products, _bank);
+            var person = Person.CreateInstance(name, _bank);
             _persons.Add(person);
 
             _bank.RegisterProfile(person);
+            person.Attach(this);
             return person;
         }
 
@@ -84,6 +80,30 @@ namespace Shops.Services
             if (person != null)
                 return person;
             throw new Exception("wrong person id");
+        }
+
+        public void Update(ISubject subject)
+        {
+            MakeDeal((Person)subject);
+        }
+
+        private bool MakeDeal(Person person)
+        {
+            Shop shop = GetShop(person.SelectedShopId);
+            int productId = person.SelectedProductId;
+            int productAmountToBuy = person.SelectedProductAmount;
+            if (!shop.CanSell(productId, productAmountToBuy))
+            {
+                return false;
+            }
+
+            if (!_bank.MakeTransaction(person.Id, shop.Id, shop.PurchaseCost(productId, productAmountToBuy)))
+            {
+                return false;
+            }
+
+            shop.Sell(productId, productAmountToBuy);
+            return true;
         }
     }
 }

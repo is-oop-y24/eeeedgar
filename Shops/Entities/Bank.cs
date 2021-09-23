@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Shops.Services;
-using Spectre.Console;
 
 namespace Shops.Entities
 {
-    public class Bank
+    public class Bank : IBank
     {
         private List<BankProfile> _profiles;
 
@@ -15,41 +13,26 @@ namespace Shops.Entities
             _profiles = new List<BankProfile>();
         }
 
-        public IReadOnlyList<BankProfile> Profiles => _profiles;
-
         public static Bank CreateInstance()
         {
             return new Bank();
         }
 
-        public bool IsTransactionPossible(BankClient sender, int transactionValue)
-        {
-            BankProfile bankProfile = FindProfile(sender);
-            return IsTransactionPossible(bankProfile, transactionValue);
-        }
-
         public bool MakeTransaction(int senderId, int recipientId, int transactionValue)
         {
-            BankProfile senderProfile = FindProfile(senderId);
-            BankProfile recipientProfile = FindProfile(recipientId);
-            if (!IsTransactionPossible(senderProfile, transactionValue))
+            BankProfile senderProfile = GetProfile(senderId);
+            BankProfile recipientProfile = GetProfile(recipientId);
+            if (senderProfile.Balance < transactionValue)
                 return false;
-            MakeTransaction(senderProfile, recipientProfile, transactionValue);
+
+            senderProfile.Balance -= transactionValue;
+            recipientProfile.Balance += transactionValue;
             return true;
         }
 
         public void RegisterProfile(BankClient bankClient)
         {
             _profiles.Add(BankProfile.CreateInstance(bankClient));
-        }
-
-        public void GiveMoney(int id, int money)
-        {
-            BankProfile bankProfile = FindProfile(id);
-            if (bankProfile != null)
-            {
-                bankProfile.Balance += money;
-            }
         }
 
         public int ProfileBalance(int id)
@@ -62,30 +45,12 @@ namespace Shops.Entities
             return _profiles.Find(profile => profile.BankClient.Id == id) != null;
         }
 
-        private BankProfile FindProfile(int id)
+        private BankProfile GetProfile(int id)
         {
-            return _profiles.Find(profile => profile.BankClient.Id == id);
-        }
-
-        private BankProfile FindProfile(BankClient bankClient)
-        {
-            return _profiles.Find(profile => profile.BankClient == bankClient);
-        }
-
-        private bool IsTransactionPossible(BankProfile sender, int transactionValue)
-        {
-            return sender.Balance >= transactionValue;
-        }
-
-        private void MakeTransaction(BankProfile sender, BankProfile recipient, int transactionValue)
-        {
-            sender.Balance -= transactionValue;
-            if (sender.Balance < 0)
-            {
-                throw new Exception("invalid transaction committed");
-            }
-
-            recipient.Balance += transactionValue;
+            BankProfile profile = _profiles.Find(prof => prof.BankClient.Id == id);
+            if (profile == null)
+                throw new Exception("wrong profile id");
+            return profile;
         }
     }
 }
