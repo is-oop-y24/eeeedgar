@@ -41,7 +41,7 @@ namespace Shops.Entities
 
         public bool HasPosition(int id)
         {
-            return _stock.Find(position => position.Product.Id == id) != null;
+            return _stock.Any(position => position.Product.Id == id);
         }
 
         public void AddProducts(int id, int amount)
@@ -67,12 +67,13 @@ namespace Shops.Entities
         public void Sell(int id, int amount)
         {
             Position position = _stock.Find(pos => pos.Product.Id == id);
-            if (position != null) position.Amount -= amount;
+            if (position != null)
+                position.Amount -= amount;
         }
 
         private Position FindPositionInStock(int id)
         {
-            Position position = _stock.FirstOrDefault(pos => pos.Product.Id == id);
+            Position position = _stock.Find(pos => pos.Product.Id == id);
             if (position == null)
                 throw new Exception("wrong position id___");
             return position;

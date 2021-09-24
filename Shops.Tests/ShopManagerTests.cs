@@ -19,21 +19,21 @@ namespace Shops.Tests
         [Test]
         public void AddShop_ShopManagerContainsShop()
         {
-            Shop shop = _shopManager.RegisterShop("Spar", "Furshtatskaya");
+            Shop shop = _shopManager.CreateShop("Spar", "Furshtatskaya");
             Assert.Contains(shop, _shopManager.Shops.ToList());
         }
         
         [Test]
         public void AddPerson_ShopManagerContainsPerson()
         {
-            Person person = _shopManager.RegisterPerson("edgar");
-            Assert.Contains(person, _shopManager.Persons.ToList());
+            Customer customer = _shopManager.CreateCustomer("edgar");
+            Assert.Contains(customer, _shopManager.Customers.ToList());
         }
         
         [Test]
         public void AddProduct_ShopManagerContainsProduct()
         {
-            Product product = _shopManager.RegisterProduct("corn");
+            Product product = _shopManager.CreateProduct("corn");
             Assert.Contains(product, _shopManager.Products.ToList());
         }
     }

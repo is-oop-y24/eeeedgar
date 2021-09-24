@@ -17,20 +17,20 @@ namespace Shops.Tests
         [Test]
         public void RegisterClient_ClientWasAdded()
         {
-            var person = Person.CreateInstance("well", _bank);
+            var person = Customer.CreateInstance("well", _bank);
             _bank.RegisterProfile(person);
             
             var shop = Shop.CreateInstance("oh", "no", new List<Product>());
             _bank.RegisterProfile(shop);
             
-            Assert.That(_bank.HasProfile(person.Id));
-            Assert.That(_bank.HasProfile(shop.Id));
+            Assert.IsTrue(_bank.HasProfile(person.Id));
+            Assert.IsTrue(_bank.HasProfile(shop.Id));
         }
 
         [Test]
         public void MakeTransaction_BalancesChangedCorrectly()
         {
-            var person = Person.CreateInstance("well", _bank);
+            var person = Customer.CreateInstance("well", _bank);
             _bank.RegisterProfile(person);
             
             var shop = Shop.CreateInstance("oh", "no", new List<Product>());
@@ -44,7 +44,7 @@ namespace Shops.Tests
         [Test]
         public void TryToMakeTransactionWithoutEnoughMoney_BalancesDontChange()
         {
-            var person = Person.CreateInstance("well", _bank);
+            var person = Customer.CreateInstance("well", _bank);
             _bank.RegisterProfile(person);
             
             var shop = Shop.CreateInstance("oh", "no", new List<Product>());

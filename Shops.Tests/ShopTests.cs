@@ -17,8 +17,8 @@ namespace Shops.Tests
         public void SetUp()
         {
             _shopManager = ShopManager.CreateInstance();
-            _product = _shopManager.RegisterProduct("corn");
-            _shop = _shopManager.RegisterShop("spar", "fursh");
+            _product = _shopManager.CreateProduct("corn");
+            _shop = _shopManager.CreateShop("spar", "fursh");
         }
         [Test]
         public void AddPositionToShop_ShopHasPosition()

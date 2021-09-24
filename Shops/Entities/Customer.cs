@@ -3,12 +3,12 @@ using System.Collections.Generic;
 
 namespace Shops.Entities
 {
-    public class Person : BankClient, ISubject, IPerson
+    public class Customer : BankClient, ISubject, IPerson
     {
         private List<IObserver> _observers;
         private Bank _bank;
 
-        private Person(string name, Bank bank)
+        private Customer(string name, Bank bank)
         {
             if (string.IsNullOrWhiteSpace(name))
                 throw new Exception("wrong person name");
@@ -25,9 +25,9 @@ namespace Shops.Entities
 
         public int Money => _bank.ProfileBalance(Id);
 
-        public static Person CreateInstance(string name, Bank bank)
+        public static Customer CreateInstance(string name, Bank bank)
         {
-            return new Person(name, bank);
+            return new Customer(name, bank);
         }
 
         public void MakePurchase(int shopId, int productId, int productAmount)

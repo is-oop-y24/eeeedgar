@@ -49,7 +49,7 @@ namespace Shops.UI
             AnsiConsole.Render(table);
         }
 
-        public static void DisplayPersons(IReadOnlyList<Person> persons)
+        public static void DisplayPersons(IReadOnlyList<Customer> persons)
         {
             var table = new Table();
 
@@ -57,7 +57,7 @@ namespace Shops.UI
 
             table.AddColumns("id", "Person Name");
 
-            foreach (Person person in persons)
+            foreach (Customer person in persons)
             {
                 table.AddRow(person.Id.ToString(), person.Name);
             }

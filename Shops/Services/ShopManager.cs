@@ -7,20 +7,20 @@ namespace Shops.Services
     public class ShopManager : IShopManager, IObserver
     {
         private List<Shop> _shops;
-        private List<Person> _persons;
+        private List<Customer> _customers;
         private List<Product> _products;
         private Bank _bank;
 
         private ShopManager()
         {
             _shops = new List<Shop>();
-            _persons = new List<Person>();
+            _customers = new List<Customer>();
             _products = new List<Product>();
             _bank = Bank.CreateInstance();
         }
 
         public IReadOnlyList<Shop> Shops => _shops;
-        public IReadOnlyList<Person> Persons => _persons;
+        public IReadOnlyList<Customer> Customers => _customers;
         public IReadOnlyList<Product> Products => _products;
 
         public static ShopManager CreateInstance()
@@ -28,7 +28,7 @@ namespace Shops.Services
             return new ShopManager();
         }
 
-        public Product RegisterProduct(string productName)
+        public Product CreateProduct(string productName)
         {
             Product product = _products.Find(pr => pr.Name.Equals(productName));
             if (product != null)
@@ -39,7 +39,7 @@ namespace Shops.Services
             return product;
         }
 
-        public Shop RegisterShop(string shopName, string shopAddress)
+        public Shop CreateShop(string shopName, string shopAddress)
         {
             var shop = Shop.CreateInstance(shopName, shopAddress, _products);
             _shops.Add(shop);
@@ -48,10 +48,10 @@ namespace Shops.Services
             return shop;
         }
 
-        public Person RegisterPerson(string name)
+        public Customer CreateCustomer(string name)
         {
-            var person = Person.CreateInstance(name, _bank);
-            _persons.Add(person);
+            var person = Customer.CreateInstance(name, _bank);
+            _customers.Add(person);
 
             _bank.RegisterProfile(person);
             person.Attach(this);
@@ -61,43 +61,43 @@ namespace Shops.Services
         public Product GetProduct(int id)
         {
             Product product = _products.Find(pr => pr.Id == id);
-            if (product != null)
-                return product;
-            throw new Exception("wrong product id");
+            if (product == null)
+                throw new Exception("wrong product id");
+            return product;
         }
 
         public Shop GetShop(int id)
         {
             Shop shop = _shops.Find(sh => sh.Id == id);
-            if (shop != null)
-                return shop;
-            throw new Exception("wrong shop id");
+            if (shop == null)
+                throw new Exception("wrong shop id");
+            return shop;
         }
 
-        public Person GetPerson(int id)
+        public Customer GetPerson(int id)
         {
-            Person person = _persons.Find(per => per.Id == id);
-            if (person != null)
-                return person;
-            throw new Exception("wrong person id");
+            Customer customer = _customers.Find(per => per.Id == id);
+            if (customer == null)
+                throw new Exception("wrong person id");
+            return customer;
         }
 
         public void Update(ISubject subject)
         {
-            MakeDeal((Person)subject);
+            MakeDeal((Customer)subject);
         }
 
-        private bool MakeDeal(Person person)
+        private bool MakeDeal(Customer customer)
         {
-            Shop shop = GetShop(person.SelectedShopId);
-            int productId = person.SelectedProductId;
-            int productAmountToBuy = person.SelectedProductAmount;
+            Shop shop = GetShop(customer.SelectedShopId);
+            int productId = customer.SelectedProductId;
+            int productAmountToBuy = customer.SelectedProductAmount;
             if (!shop.CanSell(productId, productAmountToBuy))
             {
                 return false;
             }
 
-            if (!_bank.MakeTransaction(person.Id, shop.Id, shop.PurchaseCost(productId, productAmountToBuy)))
+            if (!_bank.MakeTransaction(customer.Id, shop.Id, shop.PurchaseCost(productId, productAmountToBuy)))
             {
                 return false;
             }

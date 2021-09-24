@@ -10,8 +10,8 @@
         }
 
         public Product Product { get; }
-        public int Cost { get; set; }
-        public int Amount { get; set; }
+        public int Cost { get; internal set; }
+        public int Amount { get; internal set; }
 
         public static Position CreateInstance(Product product)
         {
