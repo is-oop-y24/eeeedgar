@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Shops.Entities;
 using NUnit.Framework;
+using Shops.Tools;
 
 namespace Shops.Tests
 {
@@ -11,26 +12,13 @@ namespace Shops.Tests
         [SetUp]
         public void SetUp()
         {
-            _bank = Bank.CreateInstance();
-        }
-
-        [Test]
-        public void RegisterClient_ClientWasAdded()
-        {
-            var person = Customer.CreateInstance("well", _bank);
-            _bank.RegisterProfile(person);
-            
-            var shop = Shop.CreateInstance("oh", "no", new List<Product>());
-            _bank.RegisterProfile(shop);
-            
-            Assert.IsTrue(_bank.HasProfile(person.Id));
-            Assert.IsTrue(_bank.HasProfile(shop.Id));
+            _bank = new Bank();
         }
 
         [Test]
         public void MakeTransaction_BalancesChangedCorrectly()
         {
-            var person = Customer.CreateInstance("well", _bank);
+            var person = Customer.CreateInstance("well");
             _bank.RegisterProfile(person);
             
             var shop = Shop.CreateInstance("oh", "no", new List<Product>());
@@ -42,17 +30,19 @@ namespace Shops.Tests
         }
 
         [Test]
-        public void TryToMakeTransactionWithoutEnoughMoney_BalancesDontChange()
+        public void TryToMakeTransactionWithoutEnoughMoney_ThrowException()
         {
-            var person = Customer.CreateInstance("well", _bank);
+            
+            var person = Customer.CreateInstance("well");
             _bank.RegisterProfile(person);
             
             var shop = Shop.CreateInstance("oh", "no", new List<Product>());
             _bank.RegisterProfile(shop);
 
-            _bank.MakeTransaction(person.Id, shop.Id, 999);
-            Assert.AreEqual(_bank.ProfileBalance(person.Id), 100);
-            Assert.AreEqual(_bank.ProfileBalance(shop.Id), 100);
+            Assert.Catch<ShopException>(() =>
+            {
+                _bank.MakeTransaction(person.Id, shop.Id, 999);
+            });
         }
     }
 }

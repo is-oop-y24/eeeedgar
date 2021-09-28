@@ -1,8 +1,10 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Linq;
 using NUnit.Framework;
 using Shops.Entities;
 using Shops.Services;
+using Shops.Tools;
 
 namespace Shops.Tests
 {
@@ -13,28 +15,64 @@ namespace Shops.Tests
         [SetUp]
         public void Setup()
         {
-            _shopManager = ShopManager.CreateInstance();
+            _shopManager = new ShopManager();
         }
 
         [Test]
         public void AddShop_ShopManagerContainsShop()
         {
-            Shop shop = _shopManager.CreateShop("Spar", "Furshtatskaya");
+            Shop shop = _shopManager.RegisterShop("Spar", "Furshtatskaya");
             Assert.Contains(shop, _shopManager.Shops.ToList());
         }
         
         [Test]
-        public void AddPerson_ShopManagerContainsPerson()
+        public void AddCustomer_ShopManagerContainsCustomer()
         {
-            Customer customer = _shopManager.CreateCustomer("edgar");
+            const int startBalance = 100;
+            Customer customer = _shopManager.RegisterCustomer("edgar", startBalance);
             Assert.Contains(customer, _shopManager.Customers.ToList());
         }
         
         [Test]
         public void AddProduct_ShopManagerContainsProduct()
         {
-            Product product = _shopManager.CreateProduct("corn");
+            Product product = _shopManager.RegisterProduct("corn");
             Assert.Contains(product, _shopManager.Products.ToList());
+        }
+
+        [Test]
+        public void MakePurchaseWithoutEnoughMoney_ThrowException()
+        {
+
+            const int bigPrice = 99999;
+            const int productAmount = 100;
+            const int startBalance = 100;
+            Customer kolyan = _shopManager.RegisterCustomer("nikolai", startBalance);
+            Shop shop = _shopManager.RegisterShop("pyatyorochka", "smolenskaya");
+            Product product = _shopManager.RegisterProduct("bepis");
+            shop.AddPosition(product.Id);
+            shop.SetProductPrice(product.Id, bigPrice);
+            shop.AddProducts(product.Id, productAmount);
+            Assert.Catch<ShopException>(() =>
+            {
+                _shopManager.MakeDeal(kolyan, shop, product.Id, productAmount);
+            });
+        }
+
+        [Test]
+        public void MakePurchaseWithEnoughMoney_MoneySpentCorrectly()
+        {
+            const int lowPrice = 1;
+            const int productAmount = 100;
+            const int startBalance = 100;
+            Customer kolyan = _shopManager.RegisterCustomer("nikolai", startBalance);
+            Shop shop = _shopManager.RegisterShop("pyatyorochka", "smolenskaya");
+            Product product = _shopManager.RegisterProduct("bepis");
+            shop.AddPosition(product.Id);
+            shop.SetProductPrice(product.Id, lowPrice);
+            shop.AddProducts(product.Id, productAmount);
+            _shopManager.MakeDeal(kolyan, shop, product.Id, productAmount);
+            Assert.AreEqual(_shopManager.Balance(kolyan.Id), startBalance - lowPrice * productAmount);
         }
     }
 }

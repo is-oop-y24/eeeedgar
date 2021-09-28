@@ -1,45 +1,41 @@
 ﻿using System;
 using System.Collections.Generic;
 using Shops.Entities;
+using Shops.Tools;
 
 namespace Shops.Services
 {
-    public class ShopManager : IShopManager, IObserver
+    public class ShopManager : IShopManager
     {
         private List<Shop> _shops;
         private List<Customer> _customers;
         private List<Product> _products;
         private Bank _bank;
 
-        private ShopManager()
+        public ShopManager()
         {
             _shops = new List<Shop>();
             _customers = new List<Customer>();
             _products = new List<Product>();
-            _bank = Bank.CreateInstance();
+            _bank = new Bank();
         }
 
         public IReadOnlyList<Shop> Shops => _shops;
         public IReadOnlyList<Customer> Customers => _customers;
         public IReadOnlyList<Product> Products => _products;
 
-        public static ShopManager CreateInstance()
+        public Product RegisterProduct(string productName)
         {
-            return new ShopManager();
-        }
-
-        public Product CreateProduct(string productName)
-        {
-            Product product = _products.Find(pr => pr.Name.Equals(productName));
+            Product product = FindProduct(productName);
             if (product != null)
-                return product;
+                throw new Exception("product with this name is already registered");
 
             product = Product.CreateInstance(productName);
             _products.Add(product);
             return product;
         }
 
-        public Shop CreateShop(string shopName, string shopAddress)
+        public Shop RegisterShop(string shopName, string shopAddress)
         {
             var shop = Shop.CreateInstance(shopName, shopAddress, _products);
             _shops.Add(shop);
@@ -48,62 +44,47 @@ namespace Shops.Services
             return shop;
         }
 
-        public Customer CreateCustomer(string name)
+        public Customer RegisterCustomer(string name, int balance)
         {
-            var person = Customer.CreateInstance(name, _bank);
-            _customers.Add(person);
+            var customer = Customer.CreateInstance(name);
+            _customers.Add(customer);
 
-            _bank.RegisterProfile(person);
-            person.Attach(this);
-            return person;
-        }
-
-        public Product GetProduct(int id)
-        {
-            Product product = _products.Find(pr => pr.Id == id);
-            if (product == null)
-                throw new Exception("wrong product id");
-            return product;
-        }
-
-        public Shop GetShop(int id)
-        {
-            Shop shop = _shops.Find(sh => sh.Id == id);
-            if (shop == null)
-                throw new Exception("wrong shop id");
-            return shop;
-        }
-
-        public Customer GetPerson(int id)
-        {
-            Customer customer = _customers.Find(per => per.Id == id);
-            if (customer == null)
-                throw new Exception("wrong person id");
+            _bank.RegisterProfile(customer, balance);
             return customer;
         }
 
-        public void Update(ISubject subject)
+        public Product GetProduct(int productId)
         {
-            MakeDeal((Customer)subject);
+            return _products.Find(pr => pr.Id == productId) ?? throw new ShopException("wrong product id");
         }
 
-        private bool MakeDeal(Customer customer)
+        public Shop GetShop(int shopId)
         {
-            Shop shop = GetShop(customer.SelectedShopId);
-            int productId = customer.SelectedProductId;
-            int productAmountToBuy = customer.SelectedProductAmount;
-            if (!shop.CanSell(productId, productAmountToBuy))
-            {
-                return false;
-            }
+            return _shops.Find(sh => sh.Id == shopId) ?? throw new ShopException("wrong shop id");
+        }
 
-            if (!_bank.MakeTransaction(customer.Id, shop.Id, shop.PurchaseCost(productId, productAmountToBuy)))
-            {
-                return false;
-            }
+        public Customer GetCustomer(int customerId)
+        {
+            return _customers.Find(per => per.Id == customerId) ?? throw new ShopException("wrong person id");
+        }
 
-            shop.Sell(productId, productAmountToBuy);
-            return true;
+        public void MakeDeal(Customer customer, Shop shop, int productId, int productAmount)
+        {
+            if (!shop.CanSell(productId, productAmount))
+                throw new ShopException("shop can't sell it");
+            int purchasePrice = shop.PurchasePrice(productId, productAmount);
+            _bank.MakeTransaction(customer.Id, shop.Id, purchasePrice);
+            shop.Sell(productId, productAmount);
+        }
+
+        public int Balance(int clientId)
+        {
+            return _bank.ProfileBalance(clientId);
+        }
+
+        private Product FindProduct(string productName)
+        {
+            return _products.Find(product => product.Name.Equals(productName));
         }
     }
 }

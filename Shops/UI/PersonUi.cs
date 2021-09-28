@@ -5,7 +5,7 @@ namespace Shops.UI
 {
     public class PersonUi
     {
-        public static string Menu(string name, int money)
+        public static string Menu(string name)
         {
             var commands = new List<string>
             {
@@ -16,7 +16,7 @@ namespace Shops.UI
 
             string choice = AnsiConsole.Prompt(
                 new SelectionPrompt<string>()
-                    .Title($"Person {name}\nBalance: {money}")
+                    .Title($"Person {name}")
                     .PageSize(10)
                     .AddChoices(commands));
             AnsiConsole.Clear();

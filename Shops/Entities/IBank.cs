@@ -2,8 +2,8 @@
 {
     public interface IBank
     {
-        bool MakeTransaction(int senderId, int recipientId, int transactionValue);
-        void RegisterProfile(BankClient bankClient);
-        int ProfileBalance(int id);
+        void RegisterProfile(BankClient bankClient, int balance);
+        int ProfileBalance(int clientId);
+        void MakeTransaction(int senderId, int recipientId, int transactionValue);
     }
 }

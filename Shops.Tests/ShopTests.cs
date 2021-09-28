@@ -16,16 +16,15 @@ namespace Shops.Tests
         [SetUp]
         public void SetUp()
         {
-            _shopManager = ShopManager.CreateInstance();
-            _product = _shopManager.CreateProduct("corn");
-            _shop = _shopManager.CreateShop("spar", "fursh");
+            _shopManager = new ShopManager();
+            _product = _shopManager.RegisterProduct("corn");
+            _shop = _shopManager.RegisterShop("spar", "fursh");
         }
         [Test]
         public void AddPositionToShop_ShopHasPosition()
         {
             _shop.AddPosition(_product.Id);
-            Assert.AreEqual(_shop.HasPosition(_product.Id), true);
-            Assert.Pass();
+            Assert.IsTrue(_shop.Stock.ToList().Find(position => position.Product.Name == _product.Name) != null);
         }
 
         [Test]

@@ -166,7 +166,7 @@ namespace Shops.Controller
             string shopName = Clarifier.AskString("Shop Name");
             string shopAddress = Clarifier.AskString("Shop Address");
             AnsiConsole.Clear();
-            _shopManager.CreateShop(shopName, shopAddress);
+            _shopManager.RegisterShop(shopName, shopAddress);
             CheckShopManagerUiChoice(ShopManagerUi.Menu());
         }
 
@@ -174,15 +174,16 @@ namespace Shops.Controller
         {
             string productName = Clarifier.AskString("Product Name");
             AnsiConsole.Clear();
-            _shopManager.CreateProduct(productName);
+            _shopManager.RegisterProduct(productName);
             CheckShopManagerUiChoice(ShopManagerUi.Menu());
         }
 
         private void RegisterCustomer()
         {
             string customerName = Clarifier.AskString("Customer Name");
+            int customerBalance = Clarifier.AskNumber("Customer Balance");
             AnsiConsole.Clear();
-            _shopManager.CreateCustomer(customerName);
+            _shopManager.RegisterCustomer(customerName, customerBalance);
             CheckShopManagerUiChoice(ShopManagerUi.Menu());
         }
 
@@ -224,8 +225,8 @@ namespace Shops.Controller
             ShopManagerUi.DisplayPersons(_shopManager.Customers);
             int customerId = Clarifier.AskNumber("Customer Id");
             AnsiConsole.Clear();
-            _customer = _shopManager.GetPerson(customerId);
-            CheckPersonUiChoice(PersonUi.Menu(_customer.Name, _customer.Money));
+            _customer = _shopManager.GetCustomer(customerId);
+            CheckPersonUiChoice(PersonUi.Menu(_customer.Name));
         }
 
         private void Stock()
@@ -273,13 +274,14 @@ namespace Shops.Controller
 
         private void ShowShopStock()
         {
+            ShopManagerUi.DisplayShops(_shopManager.Shops);
             int shopId = Clarifier.AskNumber("Shop Id");
             AnsiConsole.Clear();
             _shop = _shopManager.GetShop(shopId);
             ShopUi.DisplayStock(_shop.Name, _shop.Address, _shop.Stock);
             AnsiConsole.Confirm("type to continue");
             AnsiConsole.Clear();
-            CheckPersonUiChoice(PersonUi.Menu(_customer.Name, _customer.Money));
+            CheckPersonUiChoice(PersonUi.Menu(_customer.Name));
         }
 
         private void Buy()
@@ -292,8 +294,8 @@ namespace Shops.Controller
             int productId = Clarifier.AskNumber("Product Id");
             int productAmount = Clarifier.AskNumber("Product Amount");
             AnsiConsole.Clear();
-            _customer.MakePurchase(shopId, productId, productAmount);
-            CheckPersonUiChoice(PersonUi.Menu(_customer.Name, _customer.Money));
+            _shopManager.MakeDeal(_customer, shop, productId, productAmount);
+            CheckPersonUiChoice(PersonUi.Menu(_customer.Name));
         }
     }
 }

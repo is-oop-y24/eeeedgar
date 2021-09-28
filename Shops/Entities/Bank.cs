@@ -1,56 +1,43 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
+using Shops.Tools;
 
 namespace Shops.Entities
 {
     public class Bank : IBank
     {
+        private const int BonusForNewClients = 100;
         private List<BankProfile> _profiles;
 
-        private Bank()
+        public Bank()
         {
             _profiles = new List<BankProfile>();
         }
 
-        public static Bank CreateInstance()
+        public void RegisterProfile(BankClient bankClient, int balance = BonusForNewClients)
         {
-            return new Bank();
+            _profiles.Add(BankProfile.CreateInstance(bankClient, balance));
         }
 
-        public bool MakeTransaction(int senderId, int recipientId, int transactionValue)
+        public int ProfileBalance(int clientId)
+        {
+            BankProfile profile = GetProfile(clientId);
+            return profile.Balance;
+        }
+
+        public void MakeTransaction(int senderId, int recipientId, int transactionValue)
         {
             BankProfile senderProfile = GetProfile(senderId);
             BankProfile recipientProfile = GetProfile(recipientId);
             if (senderProfile.Balance < transactionValue)
-                return false;
+                throw new ShopException("insufficient funds for the operation");
 
             senderProfile.Balance -= transactionValue;
             recipientProfile.Balance += transactionValue;
-            return true;
-        }
-
-        public void RegisterProfile(BankClient bankClient)
-        {
-            _profiles.Add(BankProfile.CreateInstance(bankClient));
-        }
-
-        public int ProfileBalance(int id)
-        {
-            return (from profile in _profiles where profile.BankClient.Id == id select profile.Balance).FirstOrDefault();
-        }
-
-        public bool HasProfile(int id)
-        {
-            return _profiles.Find(profile => profile.BankClient.Id == id) != null;
         }
 
         private BankProfile GetProfile(int id)
         {
-            BankProfile profile = _profiles.Find(prof => prof.BankClient.Id == id);
-            if (profile == null)
-                throw new Exception("wrong profile id");
-            return profile;
+            return _profiles.Find(prof => prof.BankClient.Id == id) ?? throw new ShopException("wrong profile id");
         }
     }
 }
