@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections;
-using System.Linq;
+﻿using System.Linq;
 using NUnit.Framework;
 using Shops.Entities;
 using Shops.Services;
@@ -47,7 +45,7 @@ namespace Shops.Tests
             const int bigPrice = 99999;
             const int productAmount = 100;
             const int startBalance = 100;
-            Customer kolyan = _shopManager.RegisterCustomer("nikolai", startBalance);
+            Customer customer = _shopManager.RegisterCustomer("nikolai", startBalance);
             Shop shop = _shopManager.RegisterShop("pyatyorochka", "smolenskaya");
             Product product = _shopManager.RegisterProduct("bepis");
             shop.AddPosition(product.Id);
@@ -55,7 +53,7 @@ namespace Shops.Tests
             shop.AddProducts(product.Id, productAmount);
             Assert.Catch<ShopException>(() =>
             {
-                _shopManager.MakeDeal(kolyan, shop, product.Id, productAmount);
+                _shopManager.MakeDeal(customer, shop, product.Id, productAmount);
             });
         }
 
@@ -65,14 +63,14 @@ namespace Shops.Tests
             const int lowPrice = 1;
             const int productAmount = 100;
             const int startBalance = 100;
-            Customer kolyan = _shopManager.RegisterCustomer("nikolai", startBalance);
+            Customer customer = _shopManager.RegisterCustomer("nikolai", startBalance);
             Shop shop = _shopManager.RegisterShop("pyatyorochka", "smolenskaya");
             Product product = _shopManager.RegisterProduct("bepis");
             shop.AddPosition(product.Id);
             shop.SetProductPrice(product.Id, lowPrice);
             shop.AddProducts(product.Id, productAmount);
-            _shopManager.MakeDeal(kolyan, shop, product.Id, productAmount);
-            Assert.AreEqual(_shopManager.Balance(kolyan.Id), startBalance - lowPrice * productAmount);
+            _shopManager.MakeDeal(customer, shop, product.Id, productAmount);
+            Assert.AreEqual(_shopManager.Balance(customer.Id), startBalance - lowPrice * productAmount);
         }
     }
 }

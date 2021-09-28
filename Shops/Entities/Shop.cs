@@ -22,8 +22,8 @@ namespace Shops.Entities
         public string Name { get; }
         public string Address { get; }
 
-        public IReadOnlyList<Product> GlobalProductBase { get; }
         public IReadOnlyList<Position> Stock => _stock;
+        private IReadOnlyList<Product> GlobalProductBase { get; }
 
         public static Shop CreateInstance(string name, string address, IReadOnlyList<Product> registeredProducts)
         {
@@ -32,7 +32,7 @@ namespace Shops.Entities
 
         public void AddPosition(int productId)
         {
-            if (_stock.Find(pos => pos.Product.Id == productId) != null)
+            if (_stock.Any(pos => pos.Product.Id == productId))
                 throw new ShopException("shop contains this position already");
 
             var position = Position.CreateInstance(GetProductInGlobalBase(productId));
