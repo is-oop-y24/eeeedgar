@@ -34,20 +34,19 @@ namespace Shops.Tests
         [Test]
         public void AddProduct_ShopManagerContainsProduct()
         {
-            Product product = _shopManager.RegisterProduct("corn");
-            Assert.Contains(product, _shopManager.Products.ToList());
+            Product product = GlobalProductBase.RegisterProduct("corn");
+            Assert.Contains(product, GlobalProductBase.GetInstance().ToList());
         }
 
         [Test]
         public void MakePurchaseWithoutEnoughMoney_ThrowException()
         {
-
             const int bigPrice = 99999;
             const int productAmount = 100;
             const int startBalance = 100;
             Customer customer = _shopManager.RegisterCustomer("nikolai", startBalance);
             Shop shop = _shopManager.RegisterShop("pyatyorochka", "smolenskaya");
-            Product product = _shopManager.RegisterProduct("bepis");
+            Product product = GlobalProductBase.RegisterProduct("bepiss");
             shop.AddPosition(product.Id);
             shop.SetProductPrice(product.Id, bigPrice);
             shop.AddProducts(product.Id, productAmount);
@@ -65,7 +64,7 @@ namespace Shops.Tests
             const int startBalance = 100;
             Customer customer = _shopManager.RegisterCustomer("nikolai", startBalance);
             Shop shop = _shopManager.RegisterShop("pyatyorochka", "smolenskaya");
-            Product product = _shopManager.RegisterProduct("bepis");
+            Product product = GlobalProductBase.RegisterProduct("bepis");
             shop.AddPosition(product.Id);
             shop.SetProductPrice(product.Id, lowPrice);
             shop.AddProducts(product.Id, productAmount);

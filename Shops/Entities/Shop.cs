@@ -4,10 +4,10 @@ using Shops.Tools;
 
 namespace Shops.Entities
 {
-    public class Shop : BankClient, IShop
+    public class Shop : PaymentSystemUser
     {
-        private List<Position> _stock;
-        private Shop(string name, string address, IReadOnlyList<Product> globalProductBase)
+        private List<StockPosition> _stock;
+        public Shop(string name, string address)
         {
             if (string.IsNullOrWhiteSpace(name))
                 throw new ShopException("wrong shop name");
@@ -15,27 +15,20 @@ namespace Shops.Entities
                 throw new ShopException("wrong shop address");
             Name = name;
             Address = address;
-            _stock = new List<Position>();
-            GlobalProductBase = globalProductBase;
+            _stock = new List<StockPosition>();
         }
 
         public string Name { get; }
         public string Address { get; }
 
-        public IReadOnlyList<Position> Stock => _stock;
-        private IReadOnlyList<Product> GlobalProductBase { get; }
-
-        public static Shop CreateInstance(string name, string address, IReadOnlyList<Product> registeredProducts)
-        {
-            return new Shop(name, address, registeredProducts);
-        }
+        public IReadOnlyList<StockPosition> Stock => _stock;
 
         public void AddPosition(int productId)
         {
             if (_stock.Any(pos => pos.Product.Id == productId))
                 throw new ShopException("shop contains this position already");
 
-            var position = Position.CreateInstance(GetProductInGlobalBase(productId));
+            var position = new StockPosition(GlobalProductBase.GetProduct(productId));
             _stock.Add(position);
         }
 
@@ -61,19 +54,14 @@ namespace Shops.Entities
 
         public void Sell(int productId, int productAmount)
         {
-            Position position = _stock.Find(pos => pos.Product.Id == productId);
-            if (position != null)
-                position.Amount -= productAmount;
+            StockPosition stockPosition = _stock.Find(pos => pos.Product.Id == productId);
+            if (stockPosition == null) throw new ShopException("wrong product id");
+            stockPosition.Amount -= productAmount;
         }
 
-        private Position GetPositionInStock(int id)
+        private StockPosition GetPositionInStock(int id)
         {
             return _stock.Find(pos => pos.Product.Id == id) ?? throw new ShopException("wrong position id");
-        }
-
-        private Product GetProductInGlobalBase(int id)
-        {
-            return GlobalProductBase.FirstOrDefault(prod => prod.Id == id) ?? throw new ShopException("product is not in global base");
         }
     }
 }

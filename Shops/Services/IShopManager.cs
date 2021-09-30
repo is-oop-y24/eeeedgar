@@ -4,7 +4,6 @@ namespace Shops.Services
 {
     public interface IShopManager
     {
-        Product RegisterProduct(string productName);
         Shop RegisterShop(string shopName, string shopAddress);
         Customer RegisterCustomer(string name, int balance);
         Product GetProduct(int productId);

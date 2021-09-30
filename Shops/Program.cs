@@ -1,4 +1,5 @@
-﻿using Shops.Services;
+﻿using Shops.Controllers;
+using Shops.Services;
 
 namespace Shops
 {
@@ -7,7 +8,7 @@ namespace Shops
         private static void Main()
         {
             var shopManager = new ShopManager();
-            var controller = Controller.Controller.CreateInstance(shopManager);
+            var controller = Controller.CreateInstance(shopManager);
             controller.Run();
         }
     }

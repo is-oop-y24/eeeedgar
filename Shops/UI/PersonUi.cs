@@ -5,7 +5,7 @@ namespace Shops.UI
 {
     public class PersonUi
     {
-        public static string Menu(string name)
+        public static string DisplayMenu(string name)
         {
             var commands = new List<string>
             {

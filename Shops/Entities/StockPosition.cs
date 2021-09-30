@@ -1,8 +1,8 @@
 ﻿namespace Shops.Entities
 {
-    public class Position
+    public class StockPosition
     {
-        private Position(Product product)
+        public StockPosition(Product product)
         {
             Product = product;
             Cost = 0;
@@ -12,10 +12,5 @@
         public Product Product { get; }
         public int Cost { get; internal set; }
         public int Amount { get; internal set; }
-
-        public static Position CreateInstance(Product product)
-        {
-            return new Position(product);
-        }
     }
 }

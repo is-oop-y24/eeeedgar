@@ -7,41 +7,40 @@ namespace Shops.Tests
 {
     public class BankTests
     {
-        private Bank _bank;
+        private PaymentSystem _paymentSystem;
         
         [SetUp]
         public void SetUp()
         {
-            _bank = new Bank();
+            _paymentSystem = new PaymentSystem();
         }
 
         [Test]
         public void MakeTransaction_BalancesChangedCorrectly()
         {
             var person = Customer.CreateInstance("well");
-            _bank.RegisterProfile(person);
+            PaymentSystem.RegisterProfile(person);
             
-            var shop = Shop.CreateInstance("oh", "no", new List<Product>());
-            _bank.RegisterProfile(shop);
+            var shop = new Shop("oh", "no");
+            PaymentSystem.RegisterProfile(shop);
 
-            _bank.MakeTransaction(person.Id, shop.Id, 100);
-            Assert.AreEqual(_bank.ProfileBalance(person.Id), 0);
-            Assert.AreEqual(_bank.ProfileBalance(shop.Id), 200);
+            PaymentSystem.MakeTransaction(person.Id, shop.Id, 100);
+            Assert.AreEqual(PaymentSystem.ProfileBalance(person.Id), 0);
+            Assert.AreEqual(PaymentSystem.ProfileBalance(shop.Id), 200);
         }
 
         [Test]
         public void TryToMakeTransactionWithoutEnoughMoney_ThrowException()
         {
-            
             var person = Customer.CreateInstance("well");
-            _bank.RegisterProfile(person);
+            PaymentSystem.RegisterProfile(person);
             
-            var shop = Shop.CreateInstance("oh", "no", new List<Product>());
-            _bank.RegisterProfile(shop);
+            var shop = new Shop("oh", "no");
+            PaymentSystem.RegisterProfile(shop);
 
             Assert.Catch<ShopException>(() =>
             {
-                _bank.MakeTransaction(person.Id, shop.Id, 999);
+                PaymentSystem.MakeTransaction(person.Id, shop.Id, 999);
             });
         }
     }

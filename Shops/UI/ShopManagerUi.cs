@@ -6,7 +6,7 @@ namespace Shops.UI
 {
     public class ShopManagerUi
     {
-        public static string Menu()
+        public static string DisplayMenu()
         {
             var commands = new List<string>
             {

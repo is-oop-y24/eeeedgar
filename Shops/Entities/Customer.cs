@@ -2,7 +2,7 @@
 
 namespace Shops.Entities
 {
-    public class Customer : BankClient, ICustomer
+    public class Customer : PaymentSystemUser
     {
         private Customer(string name)
         {

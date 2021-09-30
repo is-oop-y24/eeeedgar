@@ -1,10 +1,10 @@
 ﻿namespace Shops.Entities
 {
-    public class BankClient
+    public class PaymentSystemUser
     {
         private static int _id;
 
-        public BankClient()
+        public PaymentSystemUser()
         {
             Id = ++_id;
         }

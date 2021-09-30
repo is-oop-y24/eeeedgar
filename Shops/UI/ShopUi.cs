@@ -6,7 +6,7 @@ namespace Shops.UI
 {
     public class ShopUi
     {
-        public static string Menu(string name, string address)
+        public static string DisplayMenu(string name, string address)
         {
             var commands = new List<string>
             {
@@ -26,7 +26,7 @@ namespace Shops.UI
             return choice;
         }
 
-        public static void DisplayStock(string shopName, string shopAddress, IReadOnlyList<Position> positions)
+        public static void DisplayStock(string shopName, string shopAddress, IReadOnlyList<StockPosition> positions)
         {
             var table = new Table();
 
@@ -34,7 +34,7 @@ namespace Shops.UI
 
             table.AddColumns("id", "Product Name", "Amount", "Cost");
 
-            foreach (Position position in positions)
+            foreach (StockPosition position in positions)
             {
                 if (position != null)
                 {

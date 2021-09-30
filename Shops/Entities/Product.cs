@@ -3,18 +3,13 @@
     public class Product
     {
         private static int _lastCreatedProductId;
-        private Product(int id, string name)
+        public Product(string name)
         {
-            Id = id;
+            Id = ++_lastCreatedProductId;
             Name = name;
         }
 
         public int Id { get; }
         public string Name { get; }
-
-        public static Product CreateInstance(string name)
-        {
-            return new Product(++_lastCreatedProductId, name);
-        }
     }
 }
