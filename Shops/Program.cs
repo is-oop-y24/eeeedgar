@@ -8,8 +8,7 @@ namespace Shops
         private static void Main()
         {
             var shopManager = new ShopManager();
-            var controller = Controller.CreateInstance(shopManager);
-            controller.Run();
+            MainController.Run(shopManager);
         }
     }
 }
