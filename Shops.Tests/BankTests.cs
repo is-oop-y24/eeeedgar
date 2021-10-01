@@ -6,33 +6,26 @@ using Shops.Tools;
 namespace Shops.Tests
 {
     public class BankTests
-    {
-        private PaymentSystem _paymentSystem;
-        
-        [SetUp]
-        public void SetUp()
-        {
-            _paymentSystem = new PaymentSystem();
-        }
-
+    { 
         [Test]
         public void MakeTransaction_BalancesChangedCorrectly()
         {
-            var person = Customer.CreateInstance("well");
-            PaymentSystem.RegisterProfile(person);
+            const int transactionValue = 100;
+            var person = new Customer("well");
+            PaymentSystem.RegisterProfile(person, transactionValue);
             
             var shop = new Shop("oh", "no");
             PaymentSystem.RegisterProfile(shop);
 
-            PaymentSystem.MakeTransaction(person.Id, shop.Id, 100);
+            PaymentSystem.MakeTransaction(person.Id, shop.Id, transactionValue);
             Assert.AreEqual(PaymentSystem.ProfileBalance(person.Id), 0);
-            Assert.AreEqual(PaymentSystem.ProfileBalance(shop.Id), 200);
+            Assert.AreEqual(PaymentSystem.ProfileBalance(shop.Id), transactionValue);
         }
 
         [Test]
         public void TryToMakeTransactionWithoutEnoughMoney_ThrowException()
         {
-            var person = Customer.CreateInstance("well");
+            var person = new Customer("well");
             PaymentSystem.RegisterProfile(person);
             
             var shop = new Shop("oh", "no");

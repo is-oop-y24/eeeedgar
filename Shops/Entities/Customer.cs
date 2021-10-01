@@ -4,7 +4,7 @@ namespace Shops.Entities
 {
     public class Customer : PaymentSystemUser
     {
-        private Customer(string name)
+        public Customer(string name)
         {
             if (string.IsNullOrWhiteSpace(name))
                 throw new ShopException("wrong person name");
@@ -12,9 +12,5 @@ namespace Shops.Entities
         }
 
         public string Name { get; }
-        public static Customer CreateInstance(string name)
-        {
-            return new Customer(name);
-        }
     }
 }

@@ -5,28 +5,24 @@ namespace Shops.Entities
 {
     public class PaymentSystem
     {
-        private const int BonusForNewClients = 100;
         private static List<PaymentSystemUserProfile> _profiles;
 
-        public static void RegisterProfile(PaymentSystemUser paymentSystemUser, int balance = BonusForNewClients)
+        public static void RegisterProfile(PaymentSystemUser paymentSystemUser, int balance = 0)
         {
-            if (_profiles == null)
-                _profiles = new List<PaymentSystemUserProfile>();
+            _profiles ??= new List<PaymentSystemUserProfile>();
             _profiles.Add(new PaymentSystemUserProfile(paymentSystemUser, balance));
         }
 
         public static int ProfileBalance(int clientId)
         {
-            if (_profiles == null)
-                _profiles = new List<PaymentSystemUserProfile>();
+            _profiles ??= new List<PaymentSystemUserProfile>();
             PaymentSystemUserProfile profile = GetProfile(clientId);
             return profile.Balance;
         }
 
         public static void MakeTransaction(int senderId, int recipientId, int transactionValue)
         {
-            if (_profiles == null)
-                _profiles = new List<PaymentSystemUserProfile>();
+            _profiles ??= new List<PaymentSystemUserProfile>();
             PaymentSystemUserProfile senderProfile = GetProfile(senderId);
             PaymentSystemUserProfile recipientProfile = GetProfile(recipientId);
             if (senderProfile.Balance < transactionValue)
@@ -38,8 +34,7 @@ namespace Shops.Entities
 
         private static PaymentSystemUserProfile GetProfile(int id)
         {
-            if (_profiles == null)
-                _profiles = new List<PaymentSystemUserProfile>();
+            _profiles ??= new List<PaymentSystemUserProfile>();
             return _profiles.Find(prof => prof.PaymentSystemUser.Id == id) ?? throw new ShopException("wrong profile id");
         }
     }

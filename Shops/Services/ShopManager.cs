@@ -30,7 +30,7 @@ namespace Shops.Services
 
         public Customer RegisterCustomer(string name, int balance)
         {
-            var customer = Customer.CreateInstance(name);
+            var customer = new Customer(name);
             _customers.Add(customer);
 
             PaymentSystem.RegisterProfile(customer, balance);
