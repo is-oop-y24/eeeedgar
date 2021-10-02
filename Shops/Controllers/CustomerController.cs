@@ -58,8 +58,9 @@ namespace Shops.Controllers
             ShopUi.DisplayStock(shop.Name, shop.Address, shop.Stock);
             int productId = Clarifier.AskNumber("Product Id");
             int productAmount = Clarifier.AskNumber("Product Amount");
+            Product product = shopManager.GetProduct(productId);
             AnsiConsole.Clear();
-            shopManager.MakeDeal(customer, shop, productId, productAmount);
+            shopManager.MakeDeal(customer, shop, new Purchase(product, productAmount));
             CheckCustomerUiChoice(PersonUi.DisplayMenu(customer.Name), customer, shopManager);
         }
 

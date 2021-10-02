@@ -52,7 +52,7 @@ namespace Shops.Tests
             shop.AddProducts(product.Id, productAmount);
             Assert.Catch<ShopException>(() =>
             {
-                _shopManager.MakeDeal(customer, shop, product.Id, productAmount);
+                _shopManager.MakeDeal(customer, shop, new Purchase(product, productAmount));
             });
         }
 
@@ -68,7 +68,7 @@ namespace Shops.Tests
             shop.AddPosition(product.Id);
             shop.SetProductPrice(product.Id, lowPrice);
             shop.AddProducts(product.Id, productAmount);
-            _shopManager.MakeDeal(customer, shop, product.Id, productAmount);
+            _shopManager.MakeDeal(customer, shop, new Purchase(product, productAmount));
             Assert.AreEqual(_shopManager.Balance(customer.Id), startBalance - lowPrice * productAmount);
         }
     }

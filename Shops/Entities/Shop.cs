@@ -42,21 +42,21 @@ namespace Shops.Entities
             GetPositionInStock(productId).Cost = productPrice;
         }
 
-        public bool CanSell(int productId, int productAmount)
+        public bool CanSell(Purchase purchase)
         {
-            return GetPositionInStock(productId).Amount >= productAmount;
+            return GetPositionInStock(purchase.Product.Id).Amount >= purchase.Amount;
         }
 
-        public int PurchasePrice(int productId, int productAmount)
+        public int PurchasePrice(Purchase purchase)
         {
-            return GetPositionInStock(productId).Cost * productAmount;
+            return GetPositionInStock(purchase.Product.Id).Cost * purchase.Amount;
         }
 
-        public void Sell(int productId, int productAmount)
+        public void Sell(Purchase purchase)
         {
-            StockPosition stockPosition = _stock.Find(pos => pos.Product.Id == productId);
+            StockPosition stockPosition = _stock.Find(pos => pos.Product.Id == purchase.Product.Id);
             if (stockPosition == null) throw new ShopException("wrong product id");
-            stockPosition.Amount -= productAmount;
+            stockPosition.Amount -= purchase.Amount;
         }
 
         private StockPosition GetPositionInStock(int id)

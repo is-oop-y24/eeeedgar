@@ -36,7 +36,7 @@ namespace Shops.Tests
             Product product = GlobalProductBase.RegisterProduct("lalalalala");
             _shop.AddPosition(product.Id);
             _shop.AddProducts(product.Id, addedAmount);
-            _shop.Sell(product.Id, soldAmount);
+            _shop.Sell(new Purchase(product, soldAmount));
             StockPosition stockPosition = _shop.Stock.ToList().Find(pos => pos.Product.Id == product.Id);
             Assert.That(stockPosition is {Amount: addedAmount - soldAmount});
         }

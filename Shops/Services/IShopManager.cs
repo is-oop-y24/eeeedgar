@@ -9,6 +9,6 @@ namespace Shops.Services
         Product GetProduct(int productId);
         Shop GetShop(int shopId);
         Customer GetCustomer(int customerId);
-        public void MakeDeal(Customer customer, Shop shop, int productId, int productAmount);
+        public void MakeDeal(Customer customer, Shop shop, Purchase purchase);
     }
 }

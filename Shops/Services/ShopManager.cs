@@ -52,13 +52,13 @@ namespace Shops.Services
             return _customers.Find(per => per.Id == customerId) ?? throw new ShopException("wrong person id");
         }
 
-        public void MakeDeal(Customer customer, Shop shop, int productId, int productAmount)
+        public void MakeDeal(Customer customer, Shop shop, Purchase purchase)
         {
-            if (!shop.CanSell(productId, productAmount))
+            if (!shop.CanSell(purchase))
                 throw new ShopException("shop can't sell it");
-            int purchasePrice = shop.PurchasePrice(productId, productAmount);
+            int purchasePrice = shop.PurchasePrice(purchase);
             PaymentSystem.MakeTransaction(customer.Id, shop.Id, purchasePrice);
-            shop.Sell(productId, productAmount);
+            shop.Sell(purchase);
         }
 
         public int Balance(int clientId)
