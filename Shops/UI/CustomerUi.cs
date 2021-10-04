@@ -3,7 +3,7 @@ using Spectre.Console;
 
 namespace Shops.UI
 {
-    public class PersonUi
+    public class CustomerUi
     {
         public static string DisplayMenu(string name)
         {

@@ -19,7 +19,7 @@ namespace Shops.Entities
         {
             if (_products == null)
                 _products = new List<Product>();
-            if (_products.Any(product => product.Name.Equals(name)))
+            if (_products.Any(prod => prod.Name.Equals(name)))
                 throw new ShopException("can't add already existing product");
             var product = new Product(name);
             _products.Add(product);
