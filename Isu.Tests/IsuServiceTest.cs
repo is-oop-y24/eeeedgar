@@ -7,12 +7,12 @@ namespace Isu.Tests
 {
     public class Tests
     {
-        private IIsuService _isuService;
+        private IsuService _isuService;
 
         [SetUp]
         public void Setup()
         {
-            _isuService = new IsuService(22);
+            _isuService = new IsuService();
         }
 
         [Test]
@@ -44,7 +44,15 @@ namespace Isu.Tests
         {
             Assert.Catch<IsuException>(() =>
             {
+                _isuService.AddGroup("M34-1");
+            });
+            Assert.Catch<IsuException>(() =>
+            {
                 _isuService.AddGroup("omg");
+            });
+            Assert.Catch<IsuException>(() =>
+            {
+                _isuService.AddGroup("M2222");
             });
         }
 

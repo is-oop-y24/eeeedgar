@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using Isu.Entities;
 using Isu.Tools;
@@ -7,60 +8,58 @@ namespace Isu.Services
 {
     public class IsuService : IIsuService
     {
-        private List<Group> _groups;
-        private int _currentId;
-        private int _maxGroupSize;
+        private const int LastCourseNumber = 4;
 
-        public IsuService(int maxGroupSize)
+        public IsuService()
         {
-            _groups = new List<Group>();
-            _currentId = 0;
-            _maxGroupSize = maxGroupSize;
+            CourseNumbers = new List<CourseNumber>();
+            for (int courseNumber = 1; courseNumber <= LastCourseNumber; courseNumber++)
+            {
+                CourseNumbers.Add(CourseNumber.CreateInstance(courseNumber));
+            }
         }
+
+        private List<CourseNumber> CourseNumbers { get; }
 
         public Group AddGroup(string name)
         {
-            if (_groups.Find(gr => gr.Name().Equals(name)) != null)
-            {
-                throw new IsuException("Error: the group with that name already exists.\n");
-            }
-
             var group = new Group(name);
-            _groups.Add(group);
+            int courseNumber = group.Name.CourseNumber;
+            CourseNumber course = GetCourse(courseNumber);
+            course.AddGroup(group);
             return group;
         }
 
         public Student AddStudent(Group group, string name)
         {
-            if (group.Students.Count >= _maxGroupSize)
-                throw new IsuException("Error: max group size was reached.\n");
-            var student = new Student(_currentId++, name);
+            var student = Student.CreateInstance(name, group);
             group.AddStudent(student);
             return student;
         }
 
         public Student GetStudent(int id)
         {
-            return
-                _groups
-                .Select(group => group.FindStudent(id))
-                .FirstOrDefault(st => st != null);
+            foreach (
+                Student student in CourseNumbers
+                .SelectMany(courseNumber => courseNumber.Groups, (courseNumber, @group) => @group.Students
+                .Find(st => st.Id == id))
+                .Where(student => student != null))
+            {
+                return student;
+            }
+
+            throw new IsuException("INVALID_STUDENT_ID");
         }
 
         public Student FindStudent(string name)
         {
-            return
-                _groups
-                .Select(group => group.Students.Find(student => student.Name.Equals(name)))
-                .FirstOrDefault(st => st != null);
+            return (from courseNumber in CourseNumbers from @group in courseNumber.Groups select @group.Students.Find(st => st.Name == name))
+                .FirstOrDefault(student => student != null);
         }
 
         public List<Student> FindStudents(string groupName)
         {
-            return
-                _groups
-                .Find(group => group.Name().Equals(groupName))?
-                .Students;
+            return FindGroup(groupName).Students;
         }
 
         public List<Student> FindStudents(CourseNumber courseNumber)
@@ -73,27 +72,41 @@ namespace Isu.Services
 
         public Group FindGroup(string groupName)
         {
-            return
-                _groups
-                .Find(group => group.Name().Equals(groupName));
+            CourseNumber course = GetCourse(GetGroupCourseNumber(groupName));
+            Group group = course.Groups.Find(gr => gr.Name.Equals(groupName));
+            if (group == null)
+                throw new IsuException("NONEXISTENT_GROUP");
+            return group;
         }
 
         public List<Group> FindGroups(CourseNumber courseNumber)
         {
-            return
-                _groups
-                .Where(group => Equals(group.GroupName.CourseNumber, courseNumber))
-                .ToList();
+            return courseNumber.Groups;
         }
 
         public void ChangeStudentGroup(Student student, Group newGroup)
         {
-            if (_groups
-                .Find(group => group.RemoveStudent(student))
-                != null)
+            student.Group.RemoveStudent(student);
+            newGroup.AddStudent(student);
+            student.Group = newGroup;
+        }
+
+        private CourseNumber GetCourse(int courseNumber)
+        {
+            CourseNumber course = CourseNumbers.Find(c => c.Number == courseNumber);
+            if (course == null)
+                throw new IsuException("INVALID_COURSE_NUMBER");
+            return course;
+        }
+
+        private int GetGroupCourseNumber(string groupName)
+        {
+            if (!int.TryParse(groupName.Substring(2, 1), NumberStyles.Integer, new NumberFormatInfo(), out int courseNumber))
             {
-                newGroup.AddStudent(student);
+                throw new IsuException("INVALID_GROUP_NAME: course must be a number");
             }
+
+            return courseNumber;
         }
     }
 }

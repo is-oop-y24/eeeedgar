@@ -7,24 +7,48 @@ namespace Isu.Entities
     {
         public GroupName(string name)
         {
-            Specialty = new Specialty(name.Substring(0, 2));
-            if (!int.TryParse(name.Substring(2, 1), NumberStyles.Integer, new NumberFormatInfo(), out int courseNumber))
-            {
-                throw new IsuException("Error: Course number must be a number from 1 to 4.\n");
-            }
-
-            if (courseNumber is > 4 or < 1)
-            {
-                throw new IsuException("Error: Course number must be from 1 to 4.\n");
-            }
-
-            CourseNumber = (CourseNumber)courseNumber;
-            GroupNumber = new GroupNumber(name.Substring(3, 2));
+            CheckNameValidity(name);
+            Name = name;
         }
 
-        public Specialty Specialty { get; }
-        public CourseNumber CourseNumber { get; }
-        public GroupNumber GroupNumber { get; }
-        public string Name => $"{Specialty.Value + (int)CourseNumber + GroupNumber.Value}";
+        public string Name { get; }
+
+        public int CourseNumber
+        {
+            get
+            {
+                if (!int.TryParse(Name.Substring(2, 1), NumberStyles.Integer, new NumberFormatInfo(), out int courseNumber))
+                    throw new IsuException("INVALID_GROUP_NAME: course number");
+                return courseNumber;
+            }
+        }
+
+        private void CheckNameValidity(string name)
+        {
+            CheckNameLength(name);
+            CheckHigherEducationDegree(name);
+            CheckNameNumber(name);
+        }
+
+        private void CheckNameLength(string name)
+        {
+            if (name.Length != 5)
+                throw new IsuException("INVALID_GROUP_NAME: length must be 5");
+        }
+
+        private void CheckNameNumber(string name)
+        {
+            if (!int.TryParse(name.Substring(3, 2), NumberStyles.Integer, new NumberFormatInfo(), out int groupNumber))
+                throw new IsuException("INVALID_GROUP_NAME: last two symbols must be numbers");
+
+            if (name.Substring(3, 1) == "-")
+                throw new IsuException("INVALID_GROUP_NAME: forth symbol can't be a '-'");
+        }
+
+        private void CheckHigherEducationDegree(string name)
+        {
+            if (name.Substring(1, 1) != "3")
+                throw new IsuException("INVALID_GROUP_NAME: higher education degree is bachelor, first two symbols must be '3'");
+        }
     }
 }

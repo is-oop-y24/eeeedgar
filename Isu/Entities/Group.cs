@@ -1,36 +1,31 @@
 ﻿using System.Collections.Generic;
+using System.Globalization;
+using Isu.Tools;
 
 namespace Isu.Entities
 {
     public class Group
     {
+        private const int MaxGroupSize = 20;
         public Group(string name)
         {
-            GroupName = new GroupName(name);
+            Name = new GroupName(name);
             Students = new List<Student>();
         }
 
-        public GroupName GroupName { get; }
+        public GroupName Name { get; }
         public List<Student> Students { get; }
-
-        public string Name()
-        {
-            return GroupName.Name;
-        }
 
         public void AddStudent(Student student)
         {
+            if (Students.Count >= MaxGroupSize)
+                throw new IsuException("MAX_GROUP_SIZE_REACHED");
             Students.Add(student);
         }
 
-        public bool RemoveStudent(Student student)
+        public void RemoveStudent(Student student)
         {
-            return Students.Remove(student);
-        }
-
-        public Student FindStudent(int id)
-        {
-            return Students.Find(student => student.Id == id);
+            Students.Remove(student);
         }
     }
 }
