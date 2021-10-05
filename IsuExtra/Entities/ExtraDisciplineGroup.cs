@@ -3,7 +3,7 @@ using Isu.Entities;
 
 namespace IsuExtra.Entities
 {
-    public class ExtraDisciplineGroup
+    public class ExtraDisciplineGroup // потоки
     {
         public ExtraDisciplineGroup(string name)
         {

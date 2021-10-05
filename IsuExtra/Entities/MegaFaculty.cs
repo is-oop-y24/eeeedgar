@@ -39,7 +39,7 @@ namespace IsuExtra.Entities
             ExtraDiscipline = new ExtraDiscipline(disciplineName);
         }
 
-        public ExtraDisciplineGroup AddExtraDisciplineGroup(string extraDisciplineGroupName)
+        public ExtraDisciplineGroup SetExtraDisciplineGroup(string extraDisciplineGroupName)
         {
             var extraDisciplineGroup = new ExtraDisciplineGroup(extraDisciplineGroupName);
             ExtraDisciplineGroups.Add(extraDisciplineGroup);

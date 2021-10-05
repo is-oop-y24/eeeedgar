@@ -73,7 +73,7 @@ namespace Isu.Services
         public Group FindGroup(string groupName)
         {
             CourseNumber course = GetCourse(GetGroupCourseNumber(groupName));
-            Group group = course.Groups.Find(gr => gr.Name.Equals(groupName));
+            Group group = course.Groups.Find(gr => gr.Name.Value.Equals(groupName));
             if (group == null)
                 throw new IsuException("NONEXISTENT_GROUP");
             return group;

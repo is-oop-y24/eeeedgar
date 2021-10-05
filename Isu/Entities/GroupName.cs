@@ -5,19 +5,19 @@ namespace Isu.Entities
 {
     public class GroupName
     {
-        public GroupName(string name)
+        public GroupName(string value)
         {
-            CheckNameValidity(name);
-            Name = name;
+            CheckNameValidity(value);
+            Value = value;
         }
 
-        public string Name { get; }
+        public string Value { get; }
 
         public int CourseNumber
         {
             get
             {
-                if (!int.TryParse(Name.Substring(2, 1), NumberStyles.Integer, new NumberFormatInfo(), out int courseNumber))
+                if (!int.TryParse(Value.Substring(2, 1), NumberStyles.Integer, new NumberFormatInfo(), out int courseNumber))
                     throw new IsuException("INVALID_GROUP_NAME: course number");
                 return courseNumber;
             }

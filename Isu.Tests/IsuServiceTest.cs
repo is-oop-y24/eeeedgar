@@ -7,7 +7,7 @@ namespace Isu.Tests
 {
     public class Tests
     {
-        private IsuService _isuService;
+        private IIsuService _isuService;
 
         [SetUp]
         public void Setup()
