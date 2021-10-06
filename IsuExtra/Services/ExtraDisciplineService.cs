@@ -10,22 +10,21 @@ namespace IsuExtra.Services
     {
         public ExtraDisciplineService(int lastCourseNumber)
         {
-            Courses = new List<CourseNumber>();
-            for (int courseNumber = 1; courseNumber <= lastCourseNumber; courseNumber++)
-            {
-                Courses.Add(new CourseNumber(courseNumber));
-            }
+            Groups = new List<ExtraDisciplineGroup>();
         }
 
-        public List<CourseNumber> Courses { get; }
+        public List<ExtraDisciplineGroup> Groups { get; }
 
-        public ExtraDisciplineGroup AddExtraDisciplineGroup(int courseNumber, string name)
+        public ExtraDisciplineGroup AddExtraDisciplineGroup(string name)
         {
             var extraDisciplineGroup = new ExtraDisciplineGroup(name);
-            CourseNumber course = Courses.Find(c => c.Number.Equals(courseNumber));
-            if (course == null) throw new IsuException("ATTEMPT TO ADD GROUP TO INVALID COURSE");
-            course.AddGroup(extraDisciplineGroup);
+            Groups.Add(extraDisciplineGroup);
             return extraDisciplineGroup;
+        }
+
+        public ExtraDisciplineGroup FindGroup(string name)
+        {
+            return Groups.Find(group => group.Name.Value.Equals(name));
         }
     }
 }

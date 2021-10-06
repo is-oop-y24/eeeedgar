@@ -11,11 +11,13 @@ namespace IsuExtra.Services
     public class IsuServiceExtra
     {
         private List<MegaFaculty> _megaFaculties;
-        private Dictionary<Group, Schedule> _schedule;
+        private Dictionary<Group, Schedule> _standartGroupSchedule;
+        private Dictionary<ExtraDisciplineGroup, Schedule> _extraDGroupSchedule;
         public IsuServiceExtra()
         {
             _megaFaculties = new List<MegaFaculty>();
-            _schedule = new Dictionary<Group, Schedule>();
+            _standartGroupSchedule = new Dictionary<Group, Schedule>();
+            _extraDGroupSchedule = new Dictionary<ExtraDisciplineGroup, Schedule>();
         }
 
         public MegaFaculty AddMegaFaculty(string megaFacultyName)
@@ -44,22 +46,22 @@ namespace IsuExtra.Services
             MegaFaculty megaFaculty = _megaFaculties.Find(mf => mf.AssociatedPrefixes.Contains(associatedPrefix)) ?? throw new IsuException("this group doesn't belong to any mega faculty");
 
             Group group = megaFaculty.IsuService.AddGroup(groupName);
-            if (_schedule.ContainsKey(group)) throw new IsuException("SCHEDULE FOR GROUP IS ALREADY EXISTS LOL");
-            _schedule.Add(group, new Schedule());
+            if (_standartGroupSchedule.ContainsKey(group)) throw new IsuException("SCHEDULE FOR GROUP IS ALREADY EXISTS LOL");
+            _standartGroupSchedule.Add(group, new Schedule());
             return group;
         }
 
         public ExtraDisciplineGroup AddExtraDisciplineGroup(MegaFaculty megaFaculty, int courseNumber, string groupName)
         {
-            ExtraDisciplineGroup edGroup = megaFaculty.ExtraDisciplineService.AddExtraDisciplineGroup(courseNumber, groupName);
-            if (_schedule.ContainsKey(edGroup)) throw new IsuException("SCHEDULE FOR GROUP IS ALREADY EXISTS LOL");
-            _schedule.Add(edGroup, new Schedule());
+            ExtraDisciplineGroup edGroup = megaFaculty.ExtraDisciplineService.AddExtraDisciplineGroup(groupName);
+            if (_extraDGroupSchedule.ContainsKey(edGroup)) throw new IsuException("SCHEDULE FOR GROUP IS ALREADY EXISTS LOL");
+            _extraDGroupSchedule.Add(edGroup, new Schedule());
             return edGroup;
         }
 
         public void AddStudentToExtraDisciplineGroup(ExtraDisciplineGroup extraDisciplineGroup, Student student)
         {
-            if (_schedule[FindGroupByStudent(student)].DoesOverlap(_schedule[extraDisciplineGroup]))
+            if (_standartGroupSchedule[FindGroupByStudent(student)].DoesOverlap(_extraDGroupSchedule[extraDisciplineGroup]))
                 throw new IsuException("BASE AND EXTRA DISCIPLINE GROUPS SCHEDULES OVERLAP");
             extraDisciplineGroup.AddStudent(student);
         }
@@ -77,14 +79,11 @@ namespace IsuExtra.Services
             return student.Group;
         }
 
-        public ExtraDisciplineGroup FindExtraDisciplineGroupByStudent(Student student)
+        public ExtraDisciplineGroup FindExtraDisciplineGroup(string name)
         {
-            return (
-                    from faculty in _megaFaculties
-                    from course in faculty.ExtraDisciplineService.Courses
-                    from @group in course.Groups
-                    select (ExtraDisciplineGroup)@group)
-                .FirstOrDefault(edGroup => edGroup.Students.Contains(student));
+            return _megaFaculties
+                .Select(megaFaculty => megaFaculty.ExtraDisciplineService.FindGroup(name))
+                .FirstOrDefault(group => group != null);
         }
 
         public Group FindGroup(string name)
@@ -96,7 +95,12 @@ namespace IsuExtra.Services
 
         public void AddLesson(Group group, Lesson lesson)
         {
-            _schedule[group].PlanLesson(lesson);
+            _standartGroupSchedule[group].PlanLesson(lesson);
+        }
+
+        public void AddLesson(ExtraDisciplineGroup group, Lesson lesson)
+        {
+            _extraDGroupSchedule[group].PlanLesson(lesson);
         }
     }
 }

@@ -22,14 +22,12 @@ namespace IsuExtra.Entities
 
         public List<char> AssociatedPrefixes { get; }
 
-        public ExtraDisciplineGroup AddExtraDisciplineGroup(int courseNumber, string extraDisciplineGroupName)
+        public ExtraDisciplineGroup AddExtraDisciplineGroup(string extraDisciplineGroupName)
         {
             var extraDisciplineGroup = new ExtraDisciplineGroup(extraDisciplineGroupName);
-            ExtraDisciplineService.AddExtraDisciplineGroup(courseNumber, extraDisciplineGroupName);
+            ExtraDisciplineService.AddExtraDisciplineGroup(extraDisciplineGroupName);
             return extraDisciplineGroup;
         }
-
-        
 
         public void AddStudentToExtraDisciplineGroup(Student student, ExtraDisciplineGroup extraDisciplineGroup)
         {
