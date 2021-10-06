@@ -1,20 +1,35 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Linq;
+using Isu.Tools;
 
 namespace IsuExtra.Entities
 {
     public class Schedule
     {
-        private List<Lesson> _lessons;
-
         public Schedule()
         {
-            _lessons = new List<Lesson>();
+            Lessons = new List<Lesson>();
         }
 
-        public void PlanLesson(DateTime lessonBeginTime)
+        private List<Lesson> Lessons { get; }
+
+        public void PlanLesson(Lesson lesson)
         {
-            _lessons.Add(new Lesson(lessonBeginTime));
+            if (!CanAddLesson(lesson)) throw new IsuException("INVALID SCHEDULE");
+            Lessons.Add(lesson);
+        }
+
+        public bool DoesOverlap(Schedule other)
+        {
+            return (from lesson in Lessons
+                from otherLesson in other.Lessons
+                where lesson.DoesOverlap(otherLesson)
+                select lesson).Any();
+        }
+
+        private bool CanAddLesson(Lesson lesson)
+        {
+            return Lessons.All(existingLesson => !lesson.DoesOverlap(existingLesson));
         }
     }
 }

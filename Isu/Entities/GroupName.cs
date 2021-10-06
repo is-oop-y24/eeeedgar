@@ -23,7 +23,7 @@ namespace Isu.Entities
             }
         }
 
-        private void CheckNameValidity(string name)
+        public void CheckNameValidity(string name)
         {
             CheckNameLength(name);
             CheckHigherEducationDegree(name);

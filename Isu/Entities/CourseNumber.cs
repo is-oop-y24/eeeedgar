@@ -4,7 +4,7 @@ namespace Isu.Entities
 {
     public class CourseNumber
     {
-        private CourseNumber(int courseNumber)
+        public CourseNumber(int courseNumber)
         {
             Number = courseNumber;
             Groups = new List<Group>();
@@ -13,11 +13,6 @@ namespace Isu.Entities
         public int Number { get; }
 
         public List<Group> Groups { get; }
-
-        public static CourseNumber CreateInstance(int courseNumber)
-        {
-            return new CourseNumber(courseNumber);
-        }
 
         public void AddGroup(Group group)
         {

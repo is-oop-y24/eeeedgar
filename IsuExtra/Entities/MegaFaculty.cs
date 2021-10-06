@@ -1,50 +1,35 @@
 ﻿using System.Collections.Generic;
 using Isu.Entities;
 using Isu.Services;
+using IsuExtra.Services;
 
 namespace IsuExtra.Entities
 {
     public class MegaFaculty
     {
+        private const uint LastCourseNumber = 4;
         public MegaFaculty(string megaFacultyName)
         {
             Name = megaFacultyName;
             IsuService = new IsuService();
+            ExtraDisciplineService = new ExtraDisciplineService(4);
             AssociatedPrefixes = new List<char>();
-            ExtraDisciplineGroups = new List<ExtraDisciplineGroup>();
         }
 
         public IsuService IsuService { get; }
+        public ExtraDisciplineService ExtraDisciplineService { get; }
         public string Name { get; }
-
-        public ExtraDiscipline ExtraDiscipline { get; private set; }
-
-        public List<ExtraDisciplineGroup> ExtraDisciplineGroups { get; }
 
         public List<char> AssociatedPrefixes { get; }
 
-        public void AddAssociatedPrefix(char prefix)
-        {
-            if (!AssociatedPrefixes.Contains(prefix))
-                AssociatedPrefixes.Add(prefix);
-        }
-
-        public bool IsAssociatesWithPrefix(char prefix)
-        {
-            return AssociatedPrefixes.Contains(prefix);
-        }
-
-        public void SetExtraDiscipline(string disciplineName)
-        {
-            ExtraDiscipline = new ExtraDiscipline(disciplineName);
-        }
-
-        public ExtraDisciplineGroup SetExtraDisciplineGroup(string extraDisciplineGroupName)
+        public ExtraDisciplineGroup AddExtraDisciplineGroup(int courseNumber, string extraDisciplineGroupName)
         {
             var extraDisciplineGroup = new ExtraDisciplineGroup(extraDisciplineGroupName);
-            ExtraDisciplineGroups.Add(extraDisciplineGroup);
+            ExtraDisciplineService.AddExtraDisciplineGroup(courseNumber, extraDisciplineGroupName);
             return extraDisciplineGroup;
         }
+
+        
 
         public void AddStudentToExtraDisciplineGroup(Student student, ExtraDisciplineGroup extraDisciplineGroup)
         {

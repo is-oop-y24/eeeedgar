@@ -1,23 +1,15 @@
-﻿using System.Collections.Generic;
-using Isu.Entities;
+﻿using Isu.Entities;
 
 namespace IsuExtra.Entities
 {
-    public class ExtraDisciplineGroup // потоки
+    public class ExtraDisciplineGroup : Group // потоки
     {
         public ExtraDisciplineGroup(string name)
+            : base(name)
         {
-            Name = name;
-            Students = new List<Student>();
+            Name = new ExtraDisciplineGroupName(name);
         }
 
-        public string Name { get; }
-
-        public List<Student> Students { get; }
-
-        public void AddStudent(Student student)
-        {
-            Students.Add(student);
-        }
+        public new ExtraDisciplineGroupName Name { get; }
     }
 }

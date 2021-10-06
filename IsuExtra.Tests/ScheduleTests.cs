@@ -1,17 +1,22 @@
 ﻿using System;
-using Isu.Entities;
 using IsuExtra.Entities;
-using IsuExtra.Services;
+using NUnit.Framework;
 
-namespace IsuExtra
+namespace IsuExtra.Tests
 {
-    internal class Program
+    public class ScheduleTests
     {
-        private static void Main()
+        private Schedule _schedule;
+        
+        [SetUp]
+        public void Setup()
         {
-            // var isuServiceExtra = new IsuServiceExtra();
-            // MegaFaculty megaFaculty = isuServiceExtra.AddMegaFaculty("fitip");
-            // isuServiceExtra.AddPrefixToMegaFaculty(megaFaculty, 'M');
+            _schedule = new Schedule();
+        }
+
+        [Test]
+        public void MakeNearbyLessons_Overlap()
+        {
             const string firstLessonStart = "8:20";
             const string secondLessonStart = "9:00";
             const string thirdLessonStart = "10:00";
@@ -20,9 +25,10 @@ namespace IsuExtra
             var lesson1 = new Lesson(DateTime.Parse(firstLessonStart), classroomNumber);
             var lesson2 = new Lesson(DateTime.Parse(secondLessonStart), classroomNumber);
             var lesson3 = new Lesson(DateTime.Parse(thirdLessonStart), classroomNumber);
-
-            Console.WriteLine(lesson1.BeginTime);
-            Console.WriteLine(lesson1.EndTime);
+            //Assert.True(lesson1.DoesOverlap(lesson2));
+            Assert.True(lesson2.DoesOverlap(lesson1));
+            //Assert.False(lesson1.DoesOverlap(lesson3));
+            
         }
     }
 }

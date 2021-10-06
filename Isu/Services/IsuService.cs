@@ -8,14 +8,15 @@ namespace Isu.Services
 {
     public class IsuService : IIsuService
     {
-        private const int LastCourseNumber = 4;
+        private string _prefix;
 
-        public IsuService()
+        public IsuService(int lastCourseNumber = 4, string prefix = "")
         {
+            _prefix = prefix;
             CourseNumbers = new List<CourseNumber>();
-            for (int courseNumber = 1; courseNumber <= LastCourseNumber; courseNumber++)
+            for (int courseNumber = 1; courseNumber <= lastCourseNumber; courseNumber++)
             {
-                CourseNumbers.Add(CourseNumber.CreateInstance(courseNumber));
+                CourseNumbers.Add(new CourseNumber(courseNumber));
             }
         }
 
@@ -23,6 +24,12 @@ namespace Isu.Services
 
         public Group AddGroup(string name)
         {
+            if (!_prefix.Equals(string.Empty))
+            {
+                if (name.Length < 1 || !name.Substring(0, 1).Equals(_prefix))
+                    throw new IsuException("WRONG PREFIX");
+            }
+
             var group = new Group(name);
             int courseNumber = group.Name.CourseNumber;
             CourseNumber course = GetCourse(courseNumber);
