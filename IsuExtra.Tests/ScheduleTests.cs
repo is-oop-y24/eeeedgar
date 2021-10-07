@@ -25,9 +25,21 @@ namespace IsuExtra.Tests
             var lesson1 = new Lesson(DateTime.Parse(firstLessonStart), classroomNumber);
             var lesson2 = new Lesson(DateTime.Parse(secondLessonStart), classroomNumber);
             var lesson3 = new Lesson(DateTime.Parse(thirdLessonStart), classroomNumber);
-            //Assert.True(lesson1.DoesOverlap(lesson2));
+            Assert.True(lesson1.DoesOverlap(lesson2));
             Assert.True(lesson2.DoesOverlap(lesson1));
-            //Assert.False(lesson1.DoesOverlap(lesson3));
+        }
+
+        [Test]
+        public void MakeLessonsInDifferentTime_NoOverlap()
+        {
+            const string firstLessonStart = "8:20";
+            const string thirdLessonStart = "10:00";
+            const uint classroomNumber = 229;
+
+            var lesson1 = new Lesson(DateTime.Parse(firstLessonStart), classroomNumber);
+            var lesson3 = new Lesson(DateTime.Parse(thirdLessonStart), classroomNumber);
+            Assert.False(lesson1.DoesOverlap(lesson3));
+            Assert.False(lesson3.DoesOverlap(lesson1));
             
         }
     }

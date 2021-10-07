@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Isu.Entities;
 
 namespace IsuExtra.Entities
@@ -22,6 +23,21 @@ namespace IsuExtra.Entities
         public void RemoveStudent(Student student)
         {
             Students.Remove(student);
+        }
+
+        public override bool Equals(object obj)
+        {
+            return Equals(obj as ExtraDisciplineGroup);
+        }
+
+        public bool Equals(ExtraDisciplineGroup other)
+        {
+            return other != null && Name.Equals(other.Name);
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(Name);
         }
     }
 }
