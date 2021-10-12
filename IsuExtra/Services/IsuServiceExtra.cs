@@ -42,14 +42,15 @@ namespace IsuExtra.Services
 
         public Group AddGroup(string groupName)
         {
-            if (groupName.Length < 1) throw new IsuException("INVALID_GROUP_NAME");
+            if (groupName.Length < 1)
+                throw new IsuException("INVALID_GROUP_NAME");
             char associatedPrefix = Convert.ToChar(groupName.Substring(0, 1));
             MegaFaculty megaFaculty = _megaFaculties.Find(mf => mf.AssociatedPrefixes.Contains(associatedPrefix)) ??
                                       throw new IsuException("this group doesn't belong to any mega faculty");
 
             Group group = megaFaculty.IsuService.AddGroup(groupName);
             if (_regularGroupSchedule.ContainsKey(group))
-                throw new IsuException("SCHEDULE FOR GROUP IS ALREADY EXISTS LOL");
+                throw new IsuException("GROUP WITH THAT NAME ALREADY EXISTS");
             _regularGroupSchedule.Add(group, new Schedule());
             return group;
         }
@@ -58,7 +59,7 @@ namespace IsuExtra.Services
         {
             ExtraDisciplineGroup edGroup = megaFaculty.ExtraDisciplineService.AddExtraDisciplineGroup(groupName);
             if (_extraDGroupSchedule.ContainsKey(edGroup))
-                throw new IsuException("SCHEDULE FOR GROUP IS ALREADY EXISTS LOL");
+                throw new IsuException("EXTRA DISCIPLINE GROUP WITH THAT NAME ALREADY EXISTS");
             _extraDGroupSchedule.Add(edGroup, new Schedule());
             return edGroup;
         }
@@ -119,18 +120,15 @@ namespace IsuExtra.Services
         public void RejectOfExtraDiscipline(Student student)
         {
             ExtraDisciplineGroup edGroup = FindExtraDisciplineGroupByStudent(student);
-            if (edGroup == null) throw new IsuException("STUDENT IS NOT SUBSCRIBED TO ANY EXTRA DISCIPLINE");
+            if (edGroup == null)
+                throw new IsuException("STUDENT IS NOT SUBSCRIBED TO ANY EXTRA DISCIPLINE");
             edGroup.Students.Remove(student);
         }
 
         private MegaFaculty GetMegaFacultyByExtraDisciplineGroup(ExtraDisciplineGroup edGroup)
         {
-            foreach (MegaFaculty megaFaculty in _megaFaculties.Where(megaFaculty => megaFaculty.ExtraDisciplineService.Groups.Contains(edGroup)))
-            {
-                return megaFaculty;
-            }
-
-            throw new IsuException("EXTRA DISCIPLINE DOES NOT BELONG TO ANY MEGA FACULTY");
+            return _megaFaculties.FirstOrDefault(faculty => faculty.ExtraDisciplineService.Groups.Contains(edGroup)) ??
+                   throw new IsuException("EXTRA DISCIPLINE DOES NOT BELONG TO ANY MEGA FACULTY");
         }
 
         private MegaFaculty GetMegaFacultyByGroup(Group group)

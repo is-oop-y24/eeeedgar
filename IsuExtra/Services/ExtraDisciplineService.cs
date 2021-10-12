@@ -8,7 +8,7 @@ namespace IsuExtra.Services
 {
     public class ExtraDisciplineService
     {
-        public ExtraDisciplineService(int lastCourseNumber)
+        public ExtraDisciplineService()
         {
             Groups = new List<ExtraDisciplineGroup>();
         }

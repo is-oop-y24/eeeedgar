@@ -8,12 +8,11 @@ namespace IsuExtra.Entities
 {
     public class MegaFaculty
     {
-        private const uint LastCourseNumber = 4;
         public MegaFaculty(string megaFacultyName)
         {
             Name = megaFacultyName;
             IsuService = new IsuService();
-            ExtraDisciplineService = new ExtraDisciplineService(4);
+            ExtraDisciplineService = new ExtraDisciplineService();
             AssociatedPrefixes = new List<char>();
         }
 

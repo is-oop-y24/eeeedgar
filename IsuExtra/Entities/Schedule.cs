@@ -21,10 +21,7 @@ namespace IsuExtra.Entities
 
         public bool DoesOverlap(Schedule other)
         {
-            return (from lesson in Lessons
-                from otherLesson in other.Lessons
-                where lesson.DoesOverlap(otherLesson)
-                select lesson).Any();
+            return Lessons.Any(lesson => other.Lessons.Any(lesson.DoesOverlap));
         }
 
         private bool CanAddLesson(Lesson lesson)
