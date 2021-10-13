@@ -23,6 +23,13 @@ namespace Isu.Entities
             }
         }
 
+        public static char Prefix(string name)
+        {
+            if (name.Length < 1)
+                throw new IsuException("WRONG GROUP NAME LENGTH");
+            return name[0];
+        }
+
         private void CheckNameValidity(string name)
         {
             CheckNameLength(name);

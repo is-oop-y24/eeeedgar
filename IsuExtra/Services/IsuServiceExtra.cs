@@ -42,9 +42,7 @@ namespace IsuExtra.Services
 
         public Group AddGroup(string groupName)
         {
-            if (groupName.Length < 1)
-                throw new IsuException("INVALID_GROUP_NAME");
-            char associatedPrefix = Convert.ToChar(groupName.Substring(0, 1));
+            char associatedPrefix = GroupName.Prefix(groupName);
             MegaFaculty megaFaculty = _megaFaculties.Find(mf => mf.AssociatedPrefixes.Contains(associatedPrefix)) ??
                                       throw new IsuException("this group doesn't belong to any mega faculty");
 
