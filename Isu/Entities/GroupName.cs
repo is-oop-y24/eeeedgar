@@ -7,7 +7,7 @@ namespace Isu.Entities
     {
         public GroupName(string value)
         {
-            CheckNameValidity(value);
+            CheckGroupNameValidity(value);
             Value = value;
         }
 
@@ -30,20 +30,20 @@ namespace Isu.Entities
             return name[0];
         }
 
-        private void CheckNameValidity(string name)
+        public static void CheckGroupNameValidity(string name)
         {
-            CheckNameLength(name);
-            CheckHigherEducationDegree(name);
-            CheckNameNumber(name);
+            CheckGroupNameLength(name);
+            CheckGroupNameHigherEducationDegree(name);
+            CheckGroupNameNumber(name);
         }
 
-        private void CheckNameLength(string name)
+        public static void CheckGroupNameLength(string name)
         {
             if (name.Length != 5)
                 throw new IsuException("INVALID_GROUP_NAME: length must be 5");
         }
 
-        private void CheckNameNumber(string name)
+        public static void CheckGroupNameNumber(string name)
         {
             if (!int.TryParse(name.Substring(3, 2), NumberStyles.Integer, new NumberFormatInfo(), out int groupNumber))
                 throw new IsuException("INVALID_GROUP_NAME: last two symbols must be numbers");
@@ -52,7 +52,7 @@ namespace Isu.Entities
                 throw new IsuException("INVALID_GROUP_NAME: forth symbol can't be a '-'");
         }
 
-        private void CheckHigherEducationDegree(string name)
+        public static void CheckGroupNameHigherEducationDegree(string name)
         {
             if (name.Substring(1, 1) != "3")
                 throw new IsuException("INVALID_GROUP_NAME: higher education degree is bachelor, first two symbols must be '3'");

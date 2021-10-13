@@ -1,7 +1,5 @@
 ﻿using System;
-using Isu.Entities;
 using IsuExtra.Entities;
-using IsuExtra.Services;
 
 namespace IsuExtra
 {
