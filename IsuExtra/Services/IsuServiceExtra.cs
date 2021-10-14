@@ -38,9 +38,10 @@ namespace IsuExtra.Services
             return _megaFaculties.Find(megaFaculty => megaFaculty.Name == megaFacultyName);
         }
 
-        public Group AddGroup(string groupName)
+        public Group AddGroup(string name)
         {
-            char associatedPrefix = GroupName.Prefix(groupName);
+            var groupName = new GroupName(name);
+            char associatedPrefix = groupName.Prefix;
             MegaFaculty megaFaculty = _megaFaculties.Find(mf => mf.AssociatedPrefixes.Contains(associatedPrefix)) ??
                                       throw new IsuException("this group doesn't belong to any mega faculty");
 

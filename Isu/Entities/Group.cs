@@ -13,6 +13,12 @@ namespace Isu.Entities
             Students = new List<Student>();
         }
 
+        public Group(GroupName groupName)
+        {
+            Name = groupName;
+            Students = new List<Student>();
+        }
+
         public GroupName Name { get; }
         public List<Student> Students { get; }
 

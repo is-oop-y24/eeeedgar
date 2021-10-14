@@ -37,6 +37,15 @@ namespace Isu.Services
             return group;
         }
 
+        public Group AddGroup(GroupName groupName)
+        {
+            var group = new Group(groupName);
+            int courseNumber = group.Name.CourseNumber;
+            CourseNumber course = GetCourse(courseNumber);
+            course.AddGroup(group);
+            return group;
+        }
+
         public Student AddStudent(Group group, string name)
         {
             var student = Student.CreateInstance(name, group);
