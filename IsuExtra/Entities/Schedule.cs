@@ -6,27 +6,27 @@ namespace IsuExtra.Entities
 {
     public class Schedule
     {
+        private List<Lesson> _lessons;
+
         public Schedule()
         {
-            Lessons = new List<Lesson>();
+            _lessons = new List<Lesson>();
         }
-
-        private List<Lesson> Lessons { get; }
 
         public void PlanLesson(Lesson lesson)
         {
             if (!CanAddLesson(lesson)) throw new IsuException("INVALID SCHEDULE");
-            Lessons.Add(lesson);
+            _lessons.Add(lesson);
         }
 
         public bool DoesOverlap(Schedule other)
         {
-            return Lessons.Any(lesson => other.Lessons.Any(lesson.DoesOverlap));
+            return _lessons.Any(lesson => other._lessons.Any(lesson.DoesOverlap));
         }
 
         private bool CanAddLesson(Lesson lesson)
         {
-            return Lessons.All(existingLesson => !lesson.DoesOverlap(existingLesson));
+            return _lessons.All(existingLesson => !lesson.DoesOverlap(existingLesson));
         }
     }
 }

@@ -33,32 +33,31 @@ namespace Isu.Entities
             }
         }
 
-        public void CheckGroupNameValidity(string name)
+        private void CheckGroupNameValidity(string name)
         {
-            CheckGroupNameLength(name);
-            CheckGroupNameHigherEducationDegree(name);
-            CheckGroupNameNumber(name);
-        }
-
-        public void CheckGroupNameLength(string name)
-        {
-            if (name.Length != 5)
+            if (!IsValidGroupNameLength(name))
                 throw new IsuException("INVALID_GROUP_NAME: length must be 5");
+            if (!IsValidGroupNameNumber(name))
+                throw new IsuException("INVALID_GROUP_NAME: last two symbols must be numbers");
+            if (!IsValidGroupNameHigherEducationDegree(name))
+                throw new IsuException("INVALID_GROUP_NAME: higher education degree is bachelor, first two symbols must be '3'");
         }
 
-        public void CheckGroupNameNumber(string name)
+        private bool IsValidGroupNameLength(string name)
+        {
+            return name.Length == 5;
+        }
+
+        private bool IsValidGroupNameNumber(string name)
         {
             if (!int.TryParse(name.Substring(3, 2), NumberStyles.Integer, new NumberFormatInfo(), out int groupNumber))
-                throw new IsuException("INVALID_GROUP_NAME: last two symbols must be numbers");
-
-            if (name.Substring(3, 1) == "-")
-                throw new IsuException("INVALID_GROUP_NAME: forth symbol can't be a '-'");
+                return false;
+            return name.Substring(3, 1) != "-";
         }
 
-        public void CheckGroupNameHigherEducationDegree(string name)
+        private bool IsValidGroupNameHigherEducationDegree(string name)
         {
-            if (name.Substring(1, 1) != "3")
-                throw new IsuException("INVALID_GROUP_NAME: higher education degree is bachelor, first two symbols must be '3'");
+            return name.Substring(1, 1) == "3";
         }
     }
 }

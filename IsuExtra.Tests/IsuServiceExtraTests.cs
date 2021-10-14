@@ -20,7 +20,7 @@ namespace IsuExtra.Tests
         [Test]
         public void AddGroupWithPrefix_RightMegaFacultyContainsGroup()
         {
-            const string megaFacultyName = "FITIP";
+            const string megaFacultyName = "TINT";
             const char prefix = 'M';
             string groupName = prefix + "3105";
                 
@@ -33,7 +33,7 @@ namespace IsuExtra.Tests
         [Test]
         public void AddSimilarPrefixesToDifferentMegaFaculties_ThrowException()
         {
-            const string firstMegaFacultyName = "FITIP";
+            const string firstMegaFacultyName = "TINT";
             const string secondMegaFacultyName = "KTU";
             const char prefix = 'M';
                 
@@ -52,7 +52,7 @@ namespace IsuExtra.Tests
             const string firstLessonStart = "8:20";
             const string secondLessonStart = "9:00";
             const uint classroomNumber = 229;
-            const string megaFacultyName = "FITIP";
+            const string megaFacultyName = "TINT";
             const char prefix = 'M';
             string groupName = prefix + "3105";
             
@@ -77,7 +77,7 @@ namespace IsuExtra.Tests
             const string firstLessonStart = "8:20";
             const string secondLessonStart = "9:00";
             const uint classroomNumber = 229;
-            const string firstMegaFacultyName = "FITIP";
+            const string firstMegaFacultyName = "TINT";
             const string secondMegaFacultyName = "KTU";
             const char firstPrefix = 'M';
             const char secondPrefix = 'K';
@@ -109,7 +109,7 @@ namespace IsuExtra.Tests
         [Test]
         public void AddGroupWithNonAssociatedPrefix_ThrowException()
         {
-            const string megaFacultyName = "FITIP";
+            const string megaFacultyName = "TINT";
             const char prefix = 'M';
             const char nonExistingPrefix = 'S';
             const int courseNumber = 2;
@@ -127,7 +127,7 @@ namespace IsuExtra.Tests
         [Test]
         public void AddStudentToExtraDisciplineGroupThatAlreadyBelongsToAnotherOne_ThrowException()
         {
-            const string megaFacultyName = "FITIP";
+            const string megaFacultyName = "TINT";
             const char prefix = 'M';
             const int courseNumber = 2;
             string groupName = prefix + "3" + courseNumber + "05";
@@ -149,7 +149,7 @@ namespace IsuExtra.Tests
         [Test]
         public void AddStudentToExtraDisciplineGroupBelongsHisMegaFaculty_ThrowException()
         {
-            const string megaFacultyName = "FITIP";
+            const string megaFacultyName = "TINT";
             const char firstPrefix = 'M';
             string groupName = firstPrefix + "3205";
             const string extraDisciplineGroupName = "DDD4.1";
@@ -171,7 +171,7 @@ namespace IsuExtra.Tests
         [Test]
         public void ChangeStudentExtraDiscipline_DisciplineChanged()
         {
-            const string firstMegaFacultyName = "FITIP";
+            const string firstMegaFacultyName = "TINT";
             const string secondMegaFacultyName = "KTU";
             const string thirdMegaFacultyName = "NoZH";
             const char firstPrefix = 'M';

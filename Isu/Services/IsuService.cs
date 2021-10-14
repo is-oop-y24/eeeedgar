@@ -55,22 +55,15 @@ namespace Isu.Services
 
         public Student GetStudent(int id)
         {
-            foreach (
-                Student student in CourseNumbers
-                .SelectMany(courseNumber => courseNumber.Groups, (courseNumber, @group) => @group.Students
-                .Find(st => st.Id == id))
-                .Where(student => student != null))
-            {
-                return student;
-            }
-
-            throw new IsuException("INVALID_STUDENT_ID");
+            return CourseNumbers.SelectMany(c => c.Groups).SelectMany(g => g.Students)
+                .FirstOrDefault(student => student.Id == id) ??
+                   throw new IsuException("INVALID_STUDENT_ID");
         }
 
         public Student FindStudent(string name)
         {
-            return (from courseNumber in CourseNumbers from @group in courseNumber.Groups select @group.Students.Find(st => st.Name == name))
-                .FirstOrDefault(student => student != null);
+            return CourseNumbers.SelectMany(c => c.Groups).SelectMany(g => g.Students)
+                .FirstOrDefault(student => student.Name.Equals(name));
         }
 
         public List<Student> FindStudents(string groupName)

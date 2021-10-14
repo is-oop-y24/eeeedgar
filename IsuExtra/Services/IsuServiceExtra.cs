@@ -38,6 +38,11 @@ namespace IsuExtra.Services
             return _megaFaculties.Find(megaFaculty => megaFaculty.Name == megaFacultyName);
         }
 
+        public MegaFaculty FindMegaFacultyByPrefix(char prefix)
+        {
+            return _megaFaculties.Find(megaFaculty => megaFaculty.AssociatedPrefixes.Contains(prefix));
+        }
+
         public Group AddGroup(string name)
         {
             var groupName = new GroupName(name);
@@ -130,12 +135,8 @@ namespace IsuExtra.Services
 
         private MegaFaculty GetMegaFacultyByGroup(Group group)
         {
-            foreach (MegaFaculty megaFaculty in from megaFaculty in _megaFaculties let gr = megaFaculty.IsuService.FindGroup(@group.Name.Value) where gr != null select megaFaculty)
-            {
-                return megaFaculty;
-            }
-
-            throw new IsuException("EXTRA DISCIPLINE DOES NOT BELONG TO ANY MEGA FACULTY");
+            return FindMegaFacultyByPrefix(group.Name.Prefix) ??
+                   throw new IsuException("EXTRA DISCIPLINE DOES NOT BELONG TO ANY MEGA FACULTY");
         }
     }
 }
