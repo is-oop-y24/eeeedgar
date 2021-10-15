@@ -1,31 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
-using Isu.Tools;
+using Isu.Entities;
 
-namespace Isu.Entities
+namespace IsuExtra.Entities
 {
-    public class Group
+    public class ExtraDisciplineGroup
     {
-        private const int MaxGroupSize = 20;
-        public Group(string name)
+        public ExtraDisciplineGroup(string name)
         {
-            Name = new GroupName(name);
             Students = new List<Student>();
+            Name = new ExtraDisciplineGroupName(name);
         }
 
-        public Group(GroupName groupName)
-        {
-            Name = groupName;
-            Students = new List<Student>();
-        }
-
-        public GroupName Name { get; }
+        public ExtraDisciplineGroupName Name { get; }
         public List<Student> Students { get; }
 
         public void AddStudent(Student student)
         {
-            if (Students.Count >= MaxGroupSize)
-                throw new IsuException("MAX_GROUP_SIZE_REACHED");
             Students.Add(student);
         }
 
@@ -36,10 +27,10 @@ namespace Isu.Entities
 
         public override bool Equals(object obj)
         {
-            return Equals(obj as Group);
+            return Equals(obj as ExtraDisciplineGroup);
         }
 
-        public bool Equals(Group other)
+        public bool Equals(ExtraDisciplineGroup other)
         {
             return other != null && Name.Equals(other.Name);
         }
