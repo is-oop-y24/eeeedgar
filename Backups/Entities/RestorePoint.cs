@@ -4,16 +4,13 @@ namespace Backups.Entities
 {
     public class RestorePoint
     {
-        public RestorePoint(bool isSplit)
+        public RestorePoint(string path)
         {
             DateTime = DateTime.Now;
-            if (isSplit)
-                ZipStorage = new SplitZipStorage();
-            else
-                ZipStorage = new SingleZipStorage();
+            Path = path;
         }
 
-        public IZipStorage ZipStorage { get; }
         public DateTime DateTime { get; }
+        public string Path { get; }
     }
 }

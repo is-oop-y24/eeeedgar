@@ -6,12 +6,12 @@ namespace Backups.Entities
 {
     public class SplitZipStorage : IZipStorage
     {
-        public void Archive(List<JobObject> jobObjects, string archivePath)
+        public void Create(List<JobObject> jobObjects, string archivePath)
         {
             Directory.CreateDirectory(archivePath);
-            using var zip = new ZipFile();
             foreach (JobObject jobObject in jobObjects)
             {
+                using var zip = new ZipFile();
                 zip.AddItem(jobObject.FilePath);
                 zip.Save($"{archivePath}/{jobObject.FileNameWithoutExtension}_{jobObject.FileExtension}.zip");
             }
