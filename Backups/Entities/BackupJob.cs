@@ -9,14 +9,14 @@ namespace Backups.Entities
     public class BackupJob
     {
         private Server _server;
-        public BackupJob(string backupPath, bool makeZipStorageSplit, IPAddress ipAddress = null, int port = 0)
+        private Client _client;
+        public BackupJob(string backupPath, bool makeZipStorageSplit, Server server = null, Client client = null)
         {
             BackupPath = backupPath;
-            if (ipAddress != null)
+            if (server != null)
             {
-                IpAddress = ipAddress;
-                Port = port;
-                _server = new Server(IpAddress, Port, backupPath);
+                _server = server;
+                _client = client;
                 if (makeZipStorageSplit)
                     throw new NotImplementedException();
                 else
@@ -24,7 +24,6 @@ namespace Backups.Entities
             }
             else
             {
-                RestorePoints = new List<RestorePoint>();
                 if (!Directory.Exists(BackupPath))
                     Directory.CreateDirectory(backupPath);
                 if (makeZipStorageSplit)
@@ -37,13 +36,9 @@ namespace Backups.Entities
         }
 
         public List<JobObject> JobObjects { get; }
-        public List<RestorePoint> RestorePoints { get; }
         public string BackupPath { get; }
         public IZipStorage LocalZipStorage { get; }
         public IExternalZipStorage ExternalZipStorage { get; }
-
-        public IPAddress IpAddress { get; }
-        public int Port { get; }
 
         public void AddJobObject(string filePath)
         {
@@ -59,14 +54,12 @@ namespace Backups.Entities
         public void MakeBackup()
         {
             string backupPath = $"{BackupPath}/{ArchiveName()}";
-            RestorePoints.Add(new RestorePoint(backupPath));
             LocalZipStorage.Create(JobObjects, backupPath);
         }
 
         public void MakeExternalBackup()
         {
-            // RestorePoints.Add(new RestorePoint());
-            ExternalZipStorage.Create(JobObjects, _server);
+            ExternalZipStorage.Create(JobObjects, _server, _client);
         }
 
         private string ArchiveName()

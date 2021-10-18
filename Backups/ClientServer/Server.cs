@@ -15,33 +15,23 @@ namespace Backups.ClientServer
         {
             IpAddress = ipAddress;
             Port = port;
-            IpEndPoint = new IPEndPoint(IpAddress, Port);
             Location = location;
             if (!Directory.Exists(Location))
                 Directory.CreateDirectory(Location);
             Console.WriteLine($"server location: {Location}");
+            ListenSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+            IpEndPoint = new IPEndPoint(IpAddress, Port);
+            ListenSocket.Bind(IpEndPoint);
         }
 
         public IPAddress IpAddress { get; }
 
         public int Port { get; }
 
-        public IPEndPoint IpEndPoint { get; }
-
-        public Socket ListenSocket
-        {
-            get;
-            set;
-        }
-
         public string Location { get; }
 
-        public void Run()
-        {
-            ListenSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-            ListenSocket.Bind(IpEndPoint);
-            ListenSocket.Listen(10);
-        }
+        public Socket ListenSocket { get; }
+        public IPEndPoint IpEndPoint { get; }
 
         public void StartListening()
         {
@@ -55,6 +45,10 @@ namespace Backups.ClientServer
 
         public string GetFilePath()
         {
+            // var listenSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+            // var ipEndPoint = new IPEndPoint(IpAddress, Port);
+            // listenSocket.Bind(ipEndPoint);
+            // listenSocket.Listen(10);
             Socket handler = ListenSocket.Accept();
             const int bufferSize = 512;
             byte[] buffer = new byte[bufferSize];
@@ -64,11 +58,17 @@ namespace Backups.ClientServer
             string filePath = Encoding.Unicode.GetString(buffer, 0, bufferRealSize);
             Console.WriteLine($"server: filepath received: {filePath}");
             _expectedFileName = filePath;
+
+            // handler.Close();
+            // listenSocket.Close();
             return filePath;
         }
 
         public int GetFileSize()
         {
+            // var listenSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+            // var ipEndPoint = new IPEndPoint(IpAddress, Port);
+            // listenSocket.Bind(ipEndPoint);
             Socket handler = ListenSocket.Accept();
             const int bufferSize = 512;
             byte[] buffer = new byte[bufferSize];
@@ -78,11 +78,18 @@ namespace Backups.ClientServer
             int fileSize = int.Parse(Encoding.Unicode.GetString(buffer, 0, bufferRealSize));
             Console.WriteLine($"server: filepath received: {fileSize}");
             _expectedFileSize = fileSize;
+
+            // handler.Close();
+            // listenSocket.Close();
             return fileSize;
         }
 
         public byte[] GetFileData()
         {
+            // var listenSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+            // var ipEndPoint = new IPEndPoint(IpAddress, Port);
+            // listenSocket.Bind(ipEndPoint);
+            // listenSocket.Listen(10);
             Socket handler = ListenSocket.Accept();
             byte[] buffer = new byte[_expectedFileSize];
             if (handler.Available <= 0)
@@ -91,6 +98,9 @@ namespace Backups.ClientServer
             Console.WriteLine($"server: file received, file size: {bufferRealSize}");
             _fileData = buffer;
             WriteFile();
+
+            // handler.Close();
+            // listenSocket.Close();
             return buffer;
         }
 
