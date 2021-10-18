@@ -1,17 +1,17 @@
-using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Net;
 using System.Net.Sockets;
-using Ionic.Zip;
+using Backups.ClientServer;
 
 namespace Backups.Entities
 {
     public class ExternalSingleZipStorage : IExternalZipStorage
     {
-        public void Create(List<JobObject> jobObjects, TcpListener server)
+        public void Create(List<JobObject> jobObjects, Server server)
         {
             string temporaryArchivePath = MakeTemporaryArchive(jobObjects);
-            SendFile(temporaryArchivePath, server);
+            SendFile(jobObjects, server);
         }
 
         private string AvailableTemporaryDirectoryName()
@@ -34,20 +34,12 @@ namespace Backups.Entities
             return temporaryArchivePath;
         }
 
-        private void SendFile(string fileName, TcpListener server)
+        private void SendFile(List<JobObject> jobObjects, Server server)
         {
-            const int bufferSize = 512;
-            TcpClient client = server.AcceptTcpClient();
-            NetworkStream netStream = client.GetStream();
-            long fileSize = new FileInfo(fileName).Length;
-            long totalRead = 0;
-            using var fs = new FileStream(fileName, FileMode.Open);
-            while (totalRead < fileSize)
-            {
-                byte[] buffer = new byte[fileSize - totalRead < bufferSize ? fileSize - totalRead : bufferSize];
-                totalRead += fs.Read(buffer, 0, buffer.Length);
-                netStream.Read(buffer, 0, bufferSize);
-            }
+            var client = new Client(server);
+            string temporaryArchiveName = MakeTemporaryArchive(jobObjects);
+            client.SendFile(temporaryArchiveName);
+            File.Delete(temporaryArchiveName);
         }
     }
 }

@@ -1,17 +1,22 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Net.Sockets;
+using System.Net;
+using Backups.ClientServer;
 
 namespace Backups.Entities
 {
     public class BackupJob
     {
-        public BackupJob(string backupPath, bool makeZipStorageSplit, TcpListener server = null)
+        private Server _server;
+        public BackupJob(string backupPath, bool makeZipStorageSplit, IPAddress ipAddress = null, int port = 0)
         {
             BackupPath = backupPath;
-            if (server != null)
+            if (ipAddress != null)
             {
+                IpAddress = ipAddress;
+                Port = port;
+                _server = new Server(IpAddress, Port, backupPath);
                 if (makeZipStorageSplit)
                     throw new NotImplementedException();
                 else
@@ -19,6 +24,9 @@ namespace Backups.Entities
             }
             else
             {
+                RestorePoints = new List<RestorePoint>();
+                if (!Directory.Exists(BackupPath))
+                    Directory.CreateDirectory(backupPath);
                 if (makeZipStorageSplit)
                     LocalZipStorage = new SplitZipStorage();
                 else
@@ -26,10 +34,6 @@ namespace Backups.Entities
             }
 
             JobObjects = new List<JobObject>();
-            RestorePoints = new List<RestorePoint>();
-            if (!Directory.Exists(BackupPath))
-                Directory.CreateDirectory(backupPath);
-            Server = server;
         }
 
         public List<JobObject> JobObjects { get; }
@@ -38,7 +42,8 @@ namespace Backups.Entities
         public IZipStorage LocalZipStorage { get; }
         public IExternalZipStorage ExternalZipStorage { get; }
 
-        public TcpListener Server { get; }
+        public IPAddress IpAddress { get; }
+        public int Port { get; }
 
         public void AddJobObject(string filePath)
         {
@@ -61,7 +66,7 @@ namespace Backups.Entities
         public void MakeExternalBackup()
         {
             // RestorePoints.Add(new RestorePoint());
-            ExternalZipStorage.Create(JobObjects, Server);
+            ExternalZipStorage.Create(JobObjects, _server);
         }
 
         private string ArchiveName()
