@@ -1,17 +1,14 @@
 using System.Collections.Generic;
 using System.IO;
-using System.Net;
-using System.Net.Sockets;
 using Backups.ClientServer;
 
 namespace Backups.Entities
 {
     public class ExternalSingleZipStorage : IExternalZipStorage
     {
-        public void Create(List<JobObject> jobObjects, Server server, Client client)
+        public void Create(List<JobObject> jobObjects, Client client)
         {
-            string temporaryArchivePath = MakeTemporaryArchive(jobObjects);
-            SendFile(temporaryArchivePath, server, client);
+            SendFile(MakeTemporaryArchive(jobObjects), client);
         }
 
         private string AvailableTemporaryDirectoryName()
@@ -31,13 +28,15 @@ namespace Backups.Entities
             const string temporaryArchiveName = "temporaryArchive";
             string temporaryArchivePath = $"{temporaryDirectoryName}/{temporaryArchiveName}";
             singleZipStorage.Create(jobObjects, temporaryArchivePath);
-            return temporaryArchivePath;
+            return temporaryDirectoryName;
         }
 
-        private void SendFile(string temporaryArchiveName, Server server, Client client)
+        private void SendFile(string temporaryDirectoryName, Client client)
         {
-            client.SendFile(temporaryArchiveName);
-            File.Delete(temporaryArchiveName);
+            client.SendFile($"{temporaryDirectoryName}/temporaryArchive.zip");
+
+            File.Delete($"{temporaryDirectoryName}/temporaryArchive.zip");
+            Directory.Delete(temporaryDirectoryName);
         }
     }
 }

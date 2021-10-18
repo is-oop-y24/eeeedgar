@@ -4,6 +4,6 @@ namespace Backups.Entities
 {
     public interface IZipStorage
     {
-        void Create(List<JobObject> jobObjects, string archivePath);
+        List<string> Create(List<JobObject> jobObjects, string archivePath);
     }
 }

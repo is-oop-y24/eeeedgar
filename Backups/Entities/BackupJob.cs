@@ -1,24 +1,21 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Net;
 using Backups.ClientServer;
 
 namespace Backups.Entities
 {
     public class BackupJob
     {
-        private Server _server;
         private Client _client;
-        public BackupJob(string backupPath, bool makeZipStorageSplit, Server server = null, Client client = null)
+        public BackupJob(string backupPath, bool makeZipStorageSplit, Client client = null)
         {
             BackupPath = backupPath;
-            if (server != null)
+            if (client != null)
             {
-                _server = server;
                 _client = client;
                 if (makeZipStorageSplit)
-                    throw new NotImplementedException();
+                    ExternalZipStorage = new ExternalSplitZipStorage();
                 else
                     ExternalZipStorage = new ExternalSingleZipStorage();
             }
@@ -59,7 +56,7 @@ namespace Backups.Entities
 
         public void MakeExternalBackup()
         {
-            ExternalZipStorage.Create(JobObjects, _server, _client);
+            ExternalZipStorage.Create(JobObjects, _client);
         }
 
         private string ArchiveName()

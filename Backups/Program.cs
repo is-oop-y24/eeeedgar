@@ -1,5 +1,4 @@
 ﻿using System.Net;
-using System.Reflection.Emit;
 using Backups.ClientServer;
 using Backups.Entities;
 
@@ -14,7 +13,8 @@ namespace Backups
 
         private static void ServerClient()
         {
-            const string filePath = "D:/OOP/lab-3/cur-version/1.txt";
+            const string filePath1 = "D:/OOP/lab-3/cur-version/1.txt";
+            const string filePath2 = "D:/OOP/lab-3/cur-version/2.txt";
             const string serverPath = "D:/OOP/lab-3/server";
             const string localIpAddress = "127.0.0.1";
             var ipAddress = IPAddress.Parse(localIpAddress);
@@ -22,7 +22,8 @@ namespace Backups
             var server = new Server(ipAddress, port, serverPath);
             server.StartListening();
             var client = new Client(server);
-            client.SendFile(filePath);
+            client.SendFile(filePath1);
+            client.SendFile(filePath2);
             server.StopListening();
         }
 
@@ -36,8 +37,9 @@ namespace Backups
             var server = new Server(ipAddress, port, serverPath);
             server.StartListening();
             var client = new Client(server);
-            var backupJob = new BackupJob(backupsPath, false, server, client);
+            var backupJob = new BackupJob(backupsPath, true, client);
             backupJob.AddJobObject("D:/OOP/lab-3/cur-version/1.txt");
+            backupJob.AddJobObject("D:/OOP/lab-3/cur-version/2.txt");
             backupJob.MakeExternalBackup();
             server.StopListening();
         }

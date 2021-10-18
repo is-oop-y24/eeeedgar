@@ -5,8 +5,12 @@ namespace Backups.Entities
 {
     public class SingleZipStorage : IZipStorage
     {
-        public void Create(List<JobObject> jobObjects, string archivePath)
+        public List<string> Create(List<JobObject> jobObjects, string archivePath)
         {
+            // const string backupInfoFileName = "backupInfo.txt";
+            // Directory.CreateDirectory(archivePath);
+            // File.Create($"{archivePath}/{backupInfoFileName}");
+            // File.WriteAllText($"{archivePath}/{backupInfoFileName}", DateTime.Now.ToString(CultureInfo.InvariantCulture));
             using var zip = new ZipFile();
             foreach (JobObject jobObject in jobObjects)
             {
@@ -14,6 +18,8 @@ namespace Backups.Entities
             }
 
             zip.Save($"{archivePath}.zip");
+            var paths = new List<string> { $"{archivePath}.zip" };
+            return paths;
         }
     }
 }

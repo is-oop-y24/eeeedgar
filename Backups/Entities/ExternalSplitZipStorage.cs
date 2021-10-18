@@ -6,9 +6,9 @@ namespace Backups.Entities
 {
     public class ExternalSplitZipStorage : IExternalZipStorage
     {
-        public void Create(List<JobObject> jobObjects, Server server, Client client)
+        public void Create(List<JobObject> jobObjects, Client client)
         {
-            throw new System.NotImplementedException();
+            SendFiles(MakeTemporaryArchive(jobObjects), client);
         }
 
         private string AvailableTemporaryDirectoryName()
@@ -20,18 +20,20 @@ namespace Backups.Entities
             return directoryBaseName + additionalNumber;
         }
 
-        private string MakeTemporaryArchive(List<JobObject> jobObjects)
+        private List<string> MakeTemporaryArchive(List<JobObject> jobObjects)
         {
             string temporaryDirectoryName = AvailableTemporaryDirectoryName();
             Directory.CreateDirectory(temporaryDirectoryName);
             var splitZipStorage = new SplitZipStorage();
-            splitZipStorage.Create(jobObjects, temporaryDirectoryName);
-            return temporaryDirectoryName;
+            return splitZipStorage.Create(jobObjects, temporaryDirectoryName);
         }
 
-        private void SendFiles(string temporaryDirectoryName, Server server, Client client)
+        private void SendFiles(List<string> fileNames, Client client)
         {
-            // client.SendFile();
+            foreach (string fileName in fileNames)
+            {
+                client.SendFile(fileName);
+            }
         }
     }
 }
