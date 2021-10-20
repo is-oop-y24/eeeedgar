@@ -50,11 +50,19 @@ namespace Backups.Entities
 
         public void MakeBackup()
         {
+            if (_client == null)
+                MakeLocalBackup();
+            else
+                MakeExternalBackup();
+        }
+
+        private void MakeLocalBackup()
+        {
             string backupPath = $"{BackupPath}/{ArchiveName()}";
             LocalZipStorage.Create(JobObjects, backupPath);
         }
 
-        public void MakeExternalBackup()
+        private void MakeExternalBackup()
         {
             ExternalZipStorage.Create(JobObjects, _client);
         }

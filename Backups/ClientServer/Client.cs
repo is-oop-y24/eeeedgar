@@ -1,6 +1,4 @@
 using System;
-using System.Data;
-using System.IO;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
@@ -17,46 +15,56 @@ namespace Backups.ClientServer
             _ipEndPoint = new IPEndPoint(server.IpAddress, server.Port);
         }
 
-        public void SendFile(string filePath)
+        public void SendByteData(byte[] data)
         {
-            SendFilePath(filePath);
-            SendFileSize(filePath);
-            SendFileData(filePath);
+            int packagesNumber = PackagesNumber(data.Length);
+            SendValue(packagesNumber);
+            Console.WriteLine("data packages number:" + packagesNumber);
+
+            byte[] package = new byte[PackageManager.ByteSize];
+            int packageNumber = 1;
+            while (packageNumber < packagesNumber)
+            {
+                Array.Copy(data, PackageManager.ByteSize * (packageNumber - 1), package, 0, PackageManager.ByteSize);
+                SendPackage(package);
+                packageNumber++;
+            }
         }
 
-        public void SendFilePath(string filePath)
+        public void SendPackage(byte[] package)
         {
             var socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-            byte[] package = Encoding.Unicode.GetBytes(filePath);
             socket.Connect(_ipEndPoint);
             socket.Send(package);
             socket.Shutdown(SocketShutdown.Both);
             socket.Close();
-            Console.WriteLine("client: file path sent");
-            _server.GetFilePath();
+
+            Console.WriteLine("Client: package sent");
+            _server.ReceivePackage();
         }
 
-        public void SendFileSize(string filePath)
+        private void SendValue<T>(T data)
         {
-            var socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-            byte[] package = Encoding.Unicode.GetBytes(new FileInfo(filePath).Length.ToString());
-            socket.Connect(_ipEndPoint);
-            socket.Send(package);
-            Console.WriteLine("client: file size sent");
-            socket.Shutdown(SocketShutdown.Both);
-            socket.Close();
-            _server.GetFileSize();
+            string dataString = data.ToString();
+            if (dataString is null)
+                throw new Exception("Client error: can't send empty package");
+            byte[] package = Encoding.Unicode.GetBytes(dataString);
+            if (package.Length > PackageManager.ByteSize)
+                throw new Exception("Client error: too big data for one package");
+            SendPackage(package);
         }
 
-        public void SendFileData(string filePath)
+        private int PackagesNumber(int dataLenght)
         {
-            var socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-            socket.Connect(_ipEndPoint);
-            socket.SendFile(filePath);
-            Console.WriteLine("client: file sent");
-            socket.Shutdown(SocketShutdown.Both);
-            socket.Close();
-            _server.GetFileData();
+            int i = 0;
+            int packagesNumber = 0;
+            while (i++ < dataLenght)
+            {
+                if (i % PackageManager.ByteSize == 1)
+                    packagesNumber++;
+            }
+
+            return packagesNumber;
         }
     }
 }

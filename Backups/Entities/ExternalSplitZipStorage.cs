@@ -32,7 +32,7 @@ namespace Backups.Entities
         {
             foreach (string fileName in fileNames)
             {
-                client.SendFile(fileName);
+                // client.SendFile(fileName);
             }
         }
     }

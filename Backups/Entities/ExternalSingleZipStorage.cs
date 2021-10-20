@@ -8,7 +8,7 @@ namespace Backups.Entities
     {
         public void Create(List<JobObject> jobObjects, Client client)
         {
-            SendFile(MakeTemporaryArchive(jobObjects), client);
+            SendFiles(MakeTemporaryArchive(jobObjects), client);
         }
 
         private string AvailableTemporaryDirectoryName()
@@ -20,23 +20,28 @@ namespace Backups.Entities
             return directoryBaseName + additionalNumber;
         }
 
-        private string MakeTemporaryArchive(List<JobObject> jobObjects)
+        private List<string> MakeTemporaryArchive(List<JobObject> jobObjects)
         {
-            string temporaryDirectoryName = AvailableTemporaryDirectoryName();
-            Directory.CreateDirectory(temporaryDirectoryName);
             var singleZipStorage = new SingleZipStorage();
-            const string temporaryArchiveName = "temporaryArchive";
-            string temporaryArchivePath = $"{temporaryDirectoryName}/{temporaryArchiveName}";
-            singleZipStorage.Create(jobObjects, temporaryArchivePath);
-            return temporaryDirectoryName;
+            const string temporaryDirectoryPath = "D:/OOP/lab-3/temporaryBackups";
+            if (!Directory.Exists(temporaryDirectoryPath))
+                Directory.CreateDirectory(temporaryDirectoryPath);
+
+            string temporaryDirectoryName = AvailableTemporaryDirectoryName();
+            if (!Directory.Exists($"{temporaryDirectoryPath}/{temporaryDirectoryName}"))
+                Directory.CreateDirectory(AvailableTemporaryDirectoryName());
+
+            string temporaryArchivePath = $"{temporaryDirectoryPath}/{temporaryDirectoryName}";
+            List<string> paths = singleZipStorage.Create(jobObjects, temporaryArchivePath);
+            return paths;
         }
 
-        private void SendFile(string temporaryDirectoryName, Client client)
+        private void SendFiles(List<string> filePaths, Client client)
         {
-            client.SendFile($"{temporaryDirectoryName}/temporaryArchive.zip");
-
-            File.Delete($"{temporaryDirectoryName}/temporaryArchive.zip");
-            Directory.Delete(temporaryDirectoryName);
+            foreach (string filePath in filePaths)
+            {
+                // client.SendFile(filePath);
+            }
         }
     }
 }
