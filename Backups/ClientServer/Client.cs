@@ -25,10 +25,14 @@ namespace Backups.ClientServer
             int packageNumber = 1;
             while (packageNumber < packagesNumber)
             {
+                Console.WriteLine("gooooooooooo");
                 Array.Copy(data, PackageManager.ByteSize * (packageNumber - 1), package, 0, PackageManager.ByteSize);
                 SendPackage(package);
                 packageNumber++;
             }
+
+            Array.Copy(data, PackageManager.ByteSize * (packageNumber - 1), package, 0, data.Length - (PackageManager.ByteSize * (packageNumber - 1)));
+            SendPackage(package);
         }
 
         public void SendPackage(byte[] package)
@@ -43,7 +47,7 @@ namespace Backups.ClientServer
             _server.ReceivePackage();
         }
 
-        private void SendValue<T>(T data)
+        public void SendValue<T>(T data)
         {
             string dataString = data.ToString();
             if (dataString is null)

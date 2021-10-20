@@ -14,7 +14,7 @@ namespace Backups
     {
         private static void Main()
         {
-            ServerClientPackageSendAndEncode();
+            ClientServerSendData();
         }
 
         private static void ServerClientPackageSendAndEncode()
@@ -23,13 +23,9 @@ namespace Backups
             server.StartListening();
             var client = new Client(server);
 
-            byte[] package = new byte[PackageManager.ByteSize];
-            package[0] = (byte)'h';
-            package[1] = (byte)'e';
-            package[2] = (byte)'l';
-            package[3] = (byte)'l';
-            package[4] = (byte)'o';
-            client.SendPackage(package);
+            const string path = "D:/OOP/lab-3/files/m.txt";
+            byte[] data = File.ReadAllBytes(path);
+            client.SendPackage(data);
 
             server.StopListening();
 
@@ -46,12 +42,25 @@ namespace Backups
 
             string path = "D:/OOP/lab-3/files/1.txt";
             byte[] data = File.ReadAllBytes(path);
+            Console.WriteLine("data length: " + data.Length);
             client.SendByteData(data);
             server.StopListening();
+            Console.WriteLine("rdata[0] length: " + server.EncodePackage(server.ReceivedData[0]).Length);
+            Console.WriteLine("rdata[1] length: " + server.EncodePackage(server.ReceivedData[1]).Length);
             foreach (byte[] package in server.ReceivedData)
             {
-                Console.Write(Encoding.Default.GetString(package));
+                Console.WriteLine(Encoding.Default.GetString(package));
             }
+        }
+
+        private static void ClientServerSendValue()
+        {
+            Server server = CreateServer();
+            var client = new Client(server);
+            server.StartListening();
+            client.SendValue(5);
+            server.StopListening();
+            Console.Write(server.EncodePackage(server.ReceivedData[0]));
         }
 
         private static Server CreateServer()

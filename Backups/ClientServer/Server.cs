@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
+using System.Text;
 
 namespace Backups.ClientServer
 {
@@ -48,9 +49,14 @@ namespace Backups.ClientServer
             byte[] package = new byte[PackageManager.ByteSize];
             int bytesReceived = handler.Receive(package);
 
-            // Console.WriteLine($"server: bytes received: {bytesReceived}");
+            Console.WriteLine($"server: bytes received: {bytesReceived}");
             ReceivedData.Add(package);
             return package;
+        }
+
+        public string EncodePackage(byte[] package)
+        {
+            return Encoding.Default.GetString(package);
         }
     }
 }
