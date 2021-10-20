@@ -19,19 +19,17 @@ namespace Backups.ClientServer
         {
             int packagesNumber = PackagesNumber(data.Length);
             SendValue(packagesNumber);
-            Console.WriteLine("data packages number:" + packagesNumber);
 
-            byte[] package = new byte[PackageManager.ByteSize];
+            byte[] package = new byte[Package.ByteSize];
             int packageNumber = 1;
             while (packageNumber < packagesNumber)
             {
-                Console.WriteLine("gooooooooooo");
-                Array.Copy(data, PackageManager.ByteSize * (packageNumber - 1), package, 0, PackageManager.ByteSize);
+                Array.Copy(data, Package.ByteSize * (packageNumber - 1), package, 0, Package.ByteSize);
                 SendPackage(package);
                 packageNumber++;
             }
 
-            Array.Copy(data, PackageManager.ByteSize * (packageNumber - 1), package, 0, data.Length - (PackageManager.ByteSize * (packageNumber - 1)));
+            Array.Copy(data, Package.ByteSize * (packageNumber - 1), package, 0, data.Length - (Package.ByteSize * (packageNumber - 1)));
             SendPackage(package);
         }
 
@@ -53,7 +51,7 @@ namespace Backups.ClientServer
             if (dataString is null)
                 throw new Exception("Client error: can't send empty package");
             byte[] package = Encoding.Unicode.GetBytes(dataString);
-            if (package.Length > PackageManager.ByteSize)
+            if (package.Length > Package.ByteSize)
                 throw new Exception("Client error: too big data for one package");
             SendPackage(package);
         }
@@ -64,7 +62,7 @@ namespace Backups.ClientServer
             int packagesNumber = 0;
             while (i++ < dataLenght)
             {
-                if (i % PackageManager.ByteSize == 1)
+                if (i % Package.ByteSize == 1)
                     packagesNumber++;
             }
 

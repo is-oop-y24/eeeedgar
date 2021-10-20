@@ -14,7 +14,7 @@ namespace Backups
     {
         private static void Main()
         {
-            ClientServerSendData();
+            ClientServerBigTest();
         }
 
         private static void ServerClientPackageSendAndEncode()
@@ -45,8 +45,8 @@ namespace Backups
             Console.WriteLine("data length: " + data.Length);
             client.SendByteData(data);
             server.StopListening();
-            Console.WriteLine("rdata[0] length: " + server.EncodePackage(server.ReceivedData[0]).Length);
-            Console.WriteLine("rdata[1] length: " + server.EncodePackage(server.ReceivedData[1]).Length);
+            Console.WriteLine("rdata[0] length: " + Package.Encode(server.ReceivedData[0]).Length);
+            Console.WriteLine("rdata[1] length: " + Package.Encode(server.ReceivedData[1]).Length);
             foreach (byte[] package in server.ReceivedData)
             {
                 Console.WriteLine(Encoding.Default.GetString(package));
@@ -60,7 +60,25 @@ namespace Backups
             server.StartListening();
             client.SendValue(5);
             server.StopListening();
-            Console.Write(server.EncodePackage(server.ReceivedData[0]));
+            Console.Write(Package.Encode(server.ReceivedData[0]));
+        }
+
+        private static void ClientServerBigTest()
+        {
+            Server server = CreateServer();
+            var client = new Client(server);
+            server.StartListening();
+
+            const string path = "D:/OOP/lab-3/files/1mbfile.pdf";
+            byte[] data = File.ReadAllBytes(path);
+            client.SendByteData(data);
+
+            server.StopListening();
+            int i = 0;
+            foreach (byte[] package in server.ReceivedData)
+            {
+                Console.WriteLine(i++ + Package.Encode(package));
+            }
         }
 
         private static Server CreateServer()

@@ -46,17 +46,12 @@ namespace Backups.ClientServer
         public byte[] ReceivePackage()
         {
             Socket handler = ListenSocket.Accept();
-            byte[] package = new byte[PackageManager.ByteSize];
-            int bytesReceived = handler.Receive(package);
+            byte[] package = new byte[Package.ByteSize];
+            handler.Receive(package);
 
-            Console.WriteLine($"server: bytes received: {bytesReceived}");
+            Console.WriteLine("server: package received");
             ReceivedData.Add(package);
             return package;
-        }
-
-        public string EncodePackage(byte[] package)
-        {
-            return Encoding.Default.GetString(package);
         }
     }
 }
