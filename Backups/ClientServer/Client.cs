@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
@@ -15,11 +16,16 @@ namespace Backups.ClientServer
             _ipEndPoint = new IPEndPoint(server.IpAddress, server.Port);
         }
 
+        /// <summary>
+        /// Sends N+1 packages.
+        /// First package - how many packages does data fit.
+        /// Next N packages - data split to packages.
+        /// Package size can be found in Package.cs.
+        /// </summary>
+        /// <param name="data">The byte array you send to server.</param>
         public void SendByteData(byte[] data)
         {
             int packagesNumber = PackagesNumber(data.Length);
-            SendValue(packagesNumber);
-
             byte[] package = new byte[Package.ByteSize];
             int packageNumber = 1;
             while (packageNumber < packagesNumber)
@@ -54,6 +60,17 @@ namespace Backups.ClientServer
             if (package.Length > Package.ByteSize)
                 throw new Exception("Client error: too big data for one package");
             SendPackage(package);
+        }
+
+        public void SendFile(string path)
+        {
+            byte[] data = File.ReadAllBytes(path);
+            int packagesNumber = PackagesNumber(data.Length);
+
+            SendValue(packagesNumber);
+            SendValue(path);
+
+            // SendByteData(data);
         }
 
         private int PackagesNumber(int dataLenght)

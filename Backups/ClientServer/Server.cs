@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
-using System.Text;
+using Backups.Useful;
 
 namespace Backups.ClientServer
 {
@@ -43,15 +43,58 @@ namespace Backups.ClientServer
             ListenSocket.Close();
         }
 
+        /// <summary>
+        /// Receives package from the Client and writes it to the byte[] ReceivedData.
+        /// </summary>
+        /// <returns>Received package.</returns>
         public byte[] ReceivePackage()
         {
             Socket handler = ListenSocket.Accept();
             byte[] package = new byte[Package.ByteSize];
             handler.Receive(package);
 
-            Console.WriteLine("server: package received");
+            // Console.WriteLine("server: package received");
             ReceivedData.Add(package);
             return package;
+        }
+
+        public List<ServerFile> SplitReceivedDataToFiles()
+        {
+            Console.WriteLine("ReceivedData.Count: " + ReceivedData.Count);
+            var files = new List<ServerFile>();
+            byte[] package;
+            int packageCount = 0; // sets to the data start point
+
+            while (packageCount < ReceivedData.Count)
+            {
+                // packages number in this file
+                package = ReceivedData[packageCount];
+                int filePackageNumber = int.Parse(PathCreator.RemoveWhitespace(System.Text.Encoding.Default.GetString(package)));
+                Console.WriteLine($"{packageCount}  filePackageNumber: {filePackageNumber}");
+                packageCount++;
+
+                // file path
+                package = ReceivedData[packageCount];
+                string filePath = PathCreator.RemoveWhitespace(System.Text.Encoding.Default.GetString(package));
+                Console.WriteLine($"{packageCount}  filePath: {filePath}");
+                packageCount++;
+
+                // file data
+                var fileData = new List<byte>();
+
+                // for (int p = packageCount; p < packageCount + filePackageNumber; p++)
+                // {
+                //    package = ReceivedData[p];
+                //    Console.WriteLine(System.Text.Encoding.Default.GetString(package));
+                //    fileData.AddRange(package);
+                // }
+                // files.Add(new ServerFile(filePath, fileData));
+                // Console.WriteLine($"{filePath}  {fileData}");
+                // packageCount += filePackageNumber;
+                packageCount += 1000;
+            }
+
+            return files;
         }
     }
 }

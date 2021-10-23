@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Linq;
 
 namespace Backups.Useful
 {
@@ -50,6 +51,59 @@ namespace Backups.Useful
 
             CreatePath(directoryPath);
             return File.Create(path);
+        }
+
+        public static string CreateUniqueFile(string path, string fileBaseName)
+        {
+            string fileNameWithoutExtension = fileBaseName.Split('.')[0];
+            string extension = fileBaseName.Split('.')[1];
+            CreatePath(path);
+            string filePath = Path.Combine(path, $"{fileNameWithoutExtension}.{extension}");
+            if (!File.Exists(filePath))
+            {
+                CreateEmptyFile(filePath);
+                return filePath;
+            }
+
+            int counter = 2;
+            filePath = Path.Combine(path, $"{fileNameWithoutExtension} ({counter}).{extension}");
+            while (File.Exists(filePath))
+            {
+                counter++;
+                filePath = Path.Combine(path, $"{fileNameWithoutExtension} ({counter}).{extension}");
+            }
+
+            CreateEmptyFile(filePath);
+            return filePath;
+        }
+
+        public static string CreateUniqueDirectory(string path, string directoryBaseName)
+        {
+            CreatePath(path);
+            string directoryPath = Path.Combine(path, $"{directoryBaseName}");
+            if (!Directory.Exists(directoryPath))
+            {
+                Directory.CreateDirectory(directoryPath);
+                return directoryPath;
+            }
+
+            int counter = 2;
+            directoryPath = Path.Combine(path, $"{directoryBaseName} ({counter})");
+            while (Directory.Exists(directoryPath))
+            {
+                counter++;
+                directoryPath = Path.Combine(path, $"{directoryBaseName} ({counter})");
+            }
+
+            Directory.CreateDirectory(directoryPath);
+            return directoryPath;
+        }
+
+        public static string RemoveWhitespace(string input)
+        {
+            return new string(input.ToCharArray()
+                .Where(c => !char.IsWhiteSpace(c))
+                .ToArray());
         }
     }
 }

@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Net;
-using System.Text;
+﻿using System.Net;
 using Backups.ClientServer;
-using Backups.Entities;
-using Backups.Repo;
-using Backups.Useful;
+using Backups.Job;
 
 namespace Backups
 {
@@ -14,71 +8,9 @@ namespace Backups
     {
         private static void Main()
         {
-            ClientServerBigTest();
-        }
-
-        private static void ServerClientPackageSendAndEncode()
-        {
-            Server server = CreateServer();
-            server.StartListening();
-            var client = new Client(server);
-
-            const string path = "D:/OOP/lab-3/files/m.txt";
-            byte[] data = File.ReadAllBytes(path);
-            client.SendPackage(data);
-
-            server.StopListening();
-
-            byte[] receivedPackage = server.ReceivedData[0];
-            string encodedPackage = Encoding.Default.GetString(receivedPackage);
-            Console.WriteLine(encodedPackage);
-        }
-
-        private static void ClientServerSendData()
-        {
-            Server server = CreateServer();
-            var client = new Client(server);
-            server.StartListening();
-
-            string path = "D:/OOP/lab-3/files/1.txt";
-            byte[] data = File.ReadAllBytes(path);
-            Console.WriteLine("data length: " + data.Length);
-            client.SendByteData(data);
-            server.StopListening();
-            Console.WriteLine("rdata[0] length: " + Package.Encode(server.ReceivedData[0]).Length);
-            Console.WriteLine("rdata[1] length: " + Package.Encode(server.ReceivedData[1]).Length);
-            foreach (byte[] package in server.ReceivedData)
-            {
-                Console.WriteLine(Encoding.Default.GetString(package));
-            }
-        }
-
-        private static void ClientServerSendValue()
-        {
-            Server server = CreateServer();
-            var client = new Client(server);
-            server.StartListening();
-            client.SendValue(5);
-            server.StopListening();
-            Console.Write(Package.Encode(server.ReceivedData[0]));
-        }
-
-        private static void ClientServerBigTest()
-        {
-            Server server = CreateServer();
-            var client = new Client(server);
-            server.StartListening();
-
-            const string path = "D:/OOP/lab-3/files/1mbfile.pdf";
-            byte[] data = File.ReadAllBytes(path);
-            client.SendByteData(data);
-
-            server.StopListening();
-            int i = 0;
-            foreach (byte[] package in server.ReceivedData)
-            {
-                Console.WriteLine(i++ + Package.Encode(package));
-            }
+            var backupJob = new BackupJob("D:/OOP/lab-3/BackupJob", "D:/OOP/lab-3/Repository");
+            backupJob.CurrentVersion.JobObjects.Add(new JobObject("1.txt"));
+            backupJob.Backups.CreateRestorePoint(backupJob.Properties, backupJob.CurrentVersion);
         }
 
         private static Server CreateServer()
