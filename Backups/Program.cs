@@ -8,9 +8,11 @@ namespace Backups
     {
         private static void Main()
         {
-            var backupJob = new BackupJob("D:/OOP/lab-3/BackupJob", "D:/OOP/lab-3/Repository");
-            backupJob.CurrentVersion.JobObjects.Add(new JobObject("1.txt"));
-            backupJob.Backups.CreateRestorePoint(backupJob.Properties, backupJob.CurrentVersion);
+            var backupJob = new BackupJob("D:/OOP/lab-3/BackupJob/backups", "D:/OOP/lab-3/Repository");
+            backupJob.CurrentVersion.JobObjects.Add(new JobObject(@"D:\OOP\lab-3\BackupJob\CurrentVersion\1.txt"));
+            backupJob.CurrentVersion.JobObjects.Add(new JobObject(@"D:\OOP\lab-3\BackupJob\CurrentVersion\2.txt"));
+            backupJob.CurrentVersion.JobObjects.Add(new JobObject(@"D:\OOP\lab-3\BackupJob\CurrentVersion\folder\3.txt"));
+            backupJob.Backups.CreateRestorePoint(backupJob.CurrentVersion);
         }
 
         private static Server CreateServer()

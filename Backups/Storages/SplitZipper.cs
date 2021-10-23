@@ -1,23 +1,31 @@
+using System;
 using System.Collections.Generic;
+using System.IO;
+using Backups.Backup;
 using Backups.Job;
+using Ionic.Zip;
 
 namespace Backups.Storages
 {
     public class SplitZipper : IZipper
     {
-        public void AddFile(string absolutePath)
+        public List<Storage> Compress(string restorePointPath, BackupJobVersion backupJobVersion)
         {
-            throw new System.NotImplementedException();
-        }
+            var storages = new List<Storage>();
+            int id = 0;
+            Directory.CreateDirectory(restorePointPath);
+            foreach (JobObject jobObject in backupJobVersion.JobObjects)
+            {
+                var zip = new ZipFile();
+                Console.WriteLine(jobObject.Path);
 
-        public List<string> Compress()
-        {
-            throw new System.NotImplementedException();
-        }
+                zip.AddItem(jobObject.Path);
+                string archiveName = Path.Combine(restorePointPath, $"{id++}.zip");
+                zip.Save(archiveName);
+                storages.Add(new Storage(archiveName));
+            }
 
-        public List<string> Compress(string archivePath, BackupJobProperties backupJobProperties, BackupJobVersion backupJobVersion)
-        {
-            throw new System.NotImplementedException();
+            return storages;
         }
     }
 }

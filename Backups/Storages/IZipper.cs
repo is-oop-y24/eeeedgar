@@ -1,10 +1,11 @@
 using System.Collections.Generic;
+using Backups.Backup;
 using Backups.Job;
 
 namespace Backups.Storages
 {
     public interface IZipper
     {
-        List<string> Compress(string archivePath, BackupJobProperties backupJobProperties, BackupJobVersion backupJobVersion);
+        List<Storage> Compress(string restorePointPath, BackupJobVersion backupJobVersion);
     }
 }

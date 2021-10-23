@@ -2,11 +2,11 @@ namespace Backups.Backup
 {
     public class StorageProperties
     {
-        public StorageProperties(string relativePath)
+        public StorageProperties(string path)
         {
-            RelativePath = relativePath;
+            Path = path;
         }
 
-        public string RelativePath { get; }
+        public string Path { get; }
     }
 }

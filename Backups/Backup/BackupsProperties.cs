@@ -2,11 +2,13 @@ namespace Backups.Backup
 {
     public class BackupsProperties
     {
-        public BackupsProperties(string relativePath)
+        public BackupsProperties(string path, bool isSplitComprtession)
         {
-            RelativePath = relativePath;
+            Path = path;
+            IsSplitCompression = isSplitComprtession;
         }
 
-        public string RelativePath { get; }
+        public string Path { get; }
+        public bool IsSplitCompression { get; set; }
     }
 }
