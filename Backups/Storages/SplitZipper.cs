@@ -9,6 +9,7 @@ namespace Backups.Storages
     {
         public List<Storage> Compress(string restorePointPath, BackupJobVersion backupJobVersion)
         {
+            // todo implement SplitZipper
             throw new NotImplementedException();
 /*
             var storages = new List<Storage>();

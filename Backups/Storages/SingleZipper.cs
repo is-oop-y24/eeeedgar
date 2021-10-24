@@ -18,11 +18,7 @@ namespace Backups.Storages
             var zip = new ZipFile();
             Directory.CreateDirectory(restorePointPath);
             foreach (JobObject jobObject in backupJobVersion.JobObjects)
-            {
-                Console.WriteLine(jobObject.Path);
                 zip.AddItem(jobObject.Path);
-            }
-
             string archivePath = Path.Combine(restorePointPath, "archive.zip");
             zip.Save(archivePath);
             var storages = new List<Storage> { new (archivePath) };

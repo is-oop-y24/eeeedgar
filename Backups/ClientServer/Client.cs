@@ -3,6 +3,7 @@ using System.IO;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
+using Backups.Tools;
 
 namespace Backups.ClientServer
 {
@@ -75,13 +76,13 @@ namespace Backups.ClientServer
         {
             string dataString = data.ToString();
             if (dataString is null)
-                throw new Exception("Client error: can't send empty package");
+                throw new BackupsException("Client error: can't send empty package");
             byte[] packageWithWhitespaces = Encoding.Unicode.GetBytes(dataString);
             byte[] package = new byte[Package.ByteSize];
             for (int i = 0; i < packageWithWhitespaces.Length; i += 2)
                 package[i / 2] = packageWithWhitespaces[i];
             if (package.Length > Package.ByteSize)
-                throw new Exception("Client error: too big data for one package");
+                throw new BackupsException("Client error: too big data for one package, set bigger package size");
             SendPackage(package);
         }
     }
