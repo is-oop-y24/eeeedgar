@@ -22,12 +22,10 @@ namespace Backups.Backup
             IZipper zip;
             if (Properties.IsSplitCompression)
             {
-                Console.WriteLine("split");
                 zip = new SplitZipper();
             }
             else
             {
-                Console.WriteLine("single");
                 zip = new SingleZipper();
             }
 

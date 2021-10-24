@@ -18,5 +18,15 @@ namespace Backups.Job
         public BackupJobVersion CurrentVersion { get; }
         public Backup.Backups Backups { get; }
         public IRepository Repository { get; }
+
+        public void AddJobObject(string path)
+        {
+            CurrentVersion.JobObjects.Add(new JobObject(path));
+        }
+
+        public void CreateBackup()
+        {
+            Repository.UploadVersion(Backups.CreateRestorePoint(CurrentVersion));
+        }
     }
 }

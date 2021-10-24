@@ -6,8 +6,11 @@ namespace Backups.Repo
     {
         public RemoteRepositoryProperties(Server server)
         {
+            Server = server;
             Client = new Client(server);
         }
+
+        public Server Server { get; }
 
         public Client Client { get; }
     }

@@ -16,7 +16,23 @@ namespace Backups.ClientServer
             _ipEndPoint = new IPEndPoint(server.IpAddress, server.Port);
         }
 
-        public static int PackagesNumber(int dataLenght)
+        /// <summary>
+        /// Sends local file by path, puts it on server in directory.
+        /// </summary>
+        /// <param name="path">Local file path.</param>
+        /// <param name="directory">Server directory.</param>
+        public void SendFile(string path, string directory)
+        {
+            byte[] data = File.ReadAllBytes(path);
+            int packagesNumber = PackagesNumber(data.Length);
+
+            SendValue(packagesNumber);
+            SendValue(path);
+            SendValue(directory);
+            SendByteData(data);
+        }
+
+        private static int PackagesNumber(int dataLenght)
         {
             int i = 0;
             int packagesNumber = 0;
@@ -29,14 +45,7 @@ namespace Backups.ClientServer
             return packagesNumber;
         }
 
-        /// <summary>
-        /// Sends N+1 packages.
-        /// First package - how many packages does data fit.
-        /// Next N packages - data split to packages.
-        /// Package size can be found in Package.cs.
-        /// </summary>
-        /// <param name="data">The byte array you send to server.</param>
-        public void SendByteData(byte[] data)
+        private void SendByteData(byte[] data)
         {
             int packagesNumber = PackagesNumber(data.Length);
             byte[] package = new byte[Package.ByteSize];
@@ -52,19 +61,17 @@ namespace Backups.ClientServer
             SendPackage(package);
         }
 
-        public void SendPackage(byte[] package)
+        private void SendPackage(byte[] package)
         {
             var socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
             socket.Connect(_ipEndPoint);
             socket.Send(package);
             socket.Shutdown(SocketShutdown.Both);
             socket.Close();
-
-            Console.WriteLine("Client: package sent");
             _server.ReceivePackage();
         }
 
-        public void SendValue<T>(T data)
+        private void SendValue<T>(T data)
         {
             string dataString = data.ToString();
             if (dataString is null)
@@ -72,26 +79,10 @@ namespace Backups.ClientServer
             byte[] packageWithWhitespaces = Encoding.Unicode.GetBytes(dataString);
             byte[] package = new byte[Package.ByteSize];
             for (int i = 0; i < packageWithWhitespaces.Length; i += 2)
-            {
                 package[i / 2] = packageWithWhitespaces[i];
-            }
-
-            Package.WriteByChar(package);
             if (package.Length > Package.ByteSize)
                 throw new Exception("Client error: too big data for one package");
             SendPackage(package);
-        }
-
-        public void SendFile(string path, string directory)
-        {
-            byte[] data = File.ReadAllBytes(path);
-            int packagesNumber = PackagesNumber(data.Length);
-
-            SendValue(packagesNumber);
-            SendValue(path);
-            SendValue(directory);
-
-            SendByteData(data);
         }
     }
 }
