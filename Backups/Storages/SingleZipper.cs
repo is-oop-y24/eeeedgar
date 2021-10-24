@@ -9,10 +9,6 @@ namespace Backups.Storages
 {
     public class SingleZipper : IZipper
     {
-        public SingleZipper()
-        {
-        }
-
         public List<Storage> Compress(string restorePointPath, BackupJobVersion backupJobVersion)
         {
             var zip = new ZipFile();

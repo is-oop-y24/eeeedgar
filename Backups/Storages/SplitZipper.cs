@@ -1,7 +1,11 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using Backups.Backup;
 using Backups.Job;
+using Backups.Tools;
+using Ionic.Zip;
 
 namespace Backups.Storages
 {
@@ -9,27 +13,20 @@ namespace Backups.Storages
     {
         public List<Storage> Compress(string restorePointPath, BackupJobVersion backupJobVersion)
         {
-            // todo implement SplitZipper
-            throw new NotImplementedException();
-/*
             var storages = new List<Storage>();
             Directory.CreateDirectory(restorePointPath);
             foreach (JobObject jobObject in backupJobVersion.JobObjects)
             {
                 var zip = new ZipFile();
                 zip.AddItem(jobObject.Path);
-
-                // string archiveName =
-                //    PathCreator.GetFreeFileName(restorePointPath, $"{jobObject.Path.Split("/")[^1].Split('.')[0]}.zip");
-                string archiveName = Path.Combine(restorePointPath, $"{jobObject.Path.Split("/")[^1].Split('.')[0]}.zip");
-                Console.WriteLine($"restore point path: {restorePointPath}");
-                Console.WriteLine($"arcname: {archiveName}");
-                zip.Save(archiveName);
-                storages.Add(new Storage(archiveName));
+                string archiveName = $"{Path.GetFileNameWithoutExtension(jobObject.Path)}.zip";
+                archiveName = PathCreator.GetFreeFileName(restorePointPath, archiveName);
+                string archivePath = Path.Combine(restorePointPath, archiveName);
+                zip.Save(archivePath);
+                storages.Add(new Storage(archivePath));
             }
 
             return storages;
-*/
         }
     }
 }

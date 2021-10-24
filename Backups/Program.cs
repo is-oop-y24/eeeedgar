@@ -8,24 +8,25 @@ namespace Backups
     {
         private static void Main()
         {
-            SingleServerBackup();
-            SingleLocalBackup();
+            ServerBackup();
+            LocalBackup();
         }
 
-        private static void SingleServerBackup()
+        private static void ServerBackup()
         {
             Server server = CreateServer();
             server.StartListening();
-            var job = new BackupJob("D:/OOP/lab-3/BackupJob/backups", "D:/OOP/lab-3/Repository", false, server);
+            var job = new BackupJob("D:/OOP/lab-3/BackupJob/backups", "D:/OOP/lab-3/Repository", true, server);
+            job.AddJobObject(@"D:\OOP\lab-3\BackupJob\CurrentVersion\1.txt");
             job.AddJobObject(@"D:\OOP\lab-3\BackupJob\CurrentVersion\1.txt");
             job.AddJobObject(@"D:\OOP\lab-3\BackupJob\CurrentVersion\utorrent.exe");
             job.CreateBackup();
             server.StopListening();
         }
 
-        private static void SingleLocalBackup()
+        private static void LocalBackup()
         {
-            var job = new BackupJob("D:/OOP/lab-3/BackupJob/backups", "D:/OOP/lab-3/Repository", false);
+            var job = new BackupJob("D:/OOP/lab-3/BackupJob/backups", "D:/OOP/lab-3/Repository", true);
             job.AddJobObject(@"D:\OOP\lab-3\BackupJob\CurrentVersion\utorrent.exe");
             job.AddJobObject(@"D:\OOP\lab-3\BackupJob\CurrentVersion\1.txt");
             job.CreateBackup();
