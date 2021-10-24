@@ -1,8 +1,6 @@
 using System;
 using System.IO;
 using Backups.Backup;
-using Backups.Job;
-using Backups.Useful;
 
 namespace Backups.Repo
 {
@@ -14,8 +12,18 @@ namespace Backups.Repo
         }
 
         public LocalRepositoryProperties Properties { get; }
-        public void UploadVersion(BackupJobProperties backupJobProperties, BackupsProperties backupsProperties, RestorePoint restorePoint)
+        public void UploadVersion(RestorePoint restorePoint)
         {
+            string resDirectoryPath = Path.Combine(Properties.Path, restorePoint.Properties.Name);
+            Directory.CreateDirectory(resDirectoryPath);
+            foreach (Storage storage in restorePoint.Storages)
+            {
+                File.Copy(
+                    storage.Properties.Path ?? throw new InvalidOperationException(),
+                    Path.Combine(
+                        resDirectoryPath,
+                        Path.GetFileName(storage.Properties.Path) ?? throw new InvalidOperationException()));
+            }
         }
     }
 }

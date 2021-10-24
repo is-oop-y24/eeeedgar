@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using Backups.Job;
 using Backups.Storages;
-using Backups.Useful;
 
 namespace Backups.Backup
 {
@@ -18,7 +17,7 @@ namespace Backups.Backup
         public BackupsProperties Properties { get; }
         public List<RestorePoint> RestorePoints { get; }
 
-        public void CreateRestorePoint(BackupJobVersion version)
+        public RestorePoint CreateRestorePoint(BackupJobVersion version)
         {
             IZipper zip;
             if (Properties.IsSplitCompression)
@@ -32,8 +31,11 @@ namespace Backups.Backup
                 zip = new SingleZipper();
             }
 
-            string archivePath = Path.Combine(Properties.Path, $"{TimeToString()}");
-            RestorePoints.Add(new RestorePoint(zip.Compress(archivePath, version)));
+            string restorePointName = $"{TimeToString()}";
+            string restorePointPath = Path.Combine(Properties.Path, restorePointName);
+            var restorePoint = new RestorePoint(restorePointName, zip.Compress(restorePointPath, version));
+            RestorePoints.Add(restorePoint);
+            return restorePoint;
         }
 
         private string TimeToString()

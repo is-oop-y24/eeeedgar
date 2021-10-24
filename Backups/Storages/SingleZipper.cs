@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using Backups.Backup;
 using Backups.Job;
-using Backups.Useful;
 using Ionic.Zip;
 
 namespace Backups.Storages
@@ -17,11 +16,10 @@ namespace Backups.Storages
         public List<Storage> Compress(string restorePointPath, BackupJobVersion backupJobVersion)
         {
             var zip = new ZipFile();
+            Directory.CreateDirectory(restorePointPath);
             foreach (JobObject jobObject in backupJobVersion.JobObjects)
             {
                 Console.WriteLine(jobObject.Path);
-                if (!Directory.Exists(restorePointPath))
-                    Directory.CreateDirectory(restorePointPath);
                 zip.AddItem(jobObject.Path);
             }
 

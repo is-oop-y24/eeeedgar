@@ -15,12 +15,6 @@ namespace Backups.Repo
 
         public void UploadVersion(RestorePoint restorePoint)
         {
-            throw new System.NotImplementedException();
-        }
-
-        public void UploadVersion(BackupJobProperties backupJobProperties, BackupsProperties backupsProperties, RestorePoint restorePoint)
-        {
-            throw new System.NotImplementedException();
         }
     }
 }

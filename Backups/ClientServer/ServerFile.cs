@@ -4,13 +4,13 @@ namespace Backups.ClientServer
 {
     public class ServerFile
     {
-        public ServerFile(string relativeName, List<byte> data)
+        public ServerFile(string relativeName, byte[] data)
         {
             RelativeName = relativeName;
             Data = data;
         }
 
         public string RelativeName { get; }
-        public List<byte> Data { get; }
+        public byte[] Data { get; }
     }
 }

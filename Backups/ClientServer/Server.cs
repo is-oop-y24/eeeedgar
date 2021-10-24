@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using Backups.Useful;
@@ -52,8 +53,6 @@ namespace Backups.ClientServer
             Socket handler = ListenSocket.Accept();
             byte[] package = new byte[Package.ByteSize];
             handler.Receive(package);
-
-            // Console.WriteLine("server: package received");
             ReceivedData.Add(package);
             return package;
         }
@@ -69,29 +68,42 @@ namespace Backups.ClientServer
             {
                 // packages number in this file
                 package = ReceivedData[packageCount];
-                int filePackageNumber = int.Parse(PathCreator.RemoveWhitespace(System.Text.Encoding.Default.GetString(package)));
+                int filePackageNumber = int.Parse(System.Text.Encoding.Default.GetString(package));
                 Console.WriteLine($"{packageCount}  filePackageNumber: {filePackageNumber}");
                 packageCount++;
 
                 // file path
                 package = ReceivedData[packageCount];
-                string filePath = PathCreator.RemoveWhitespace(System.Text.Encoding.Default.GetString(package));
+                string filePath = System.Text.Encoding.Default.GetString(package);
                 Console.WriteLine($"{packageCount}  filePath: {filePath}");
+                packageCount++;
+
+                // directory
+                package = ReceivedData[packageCount];
+                string directory = System.Text.Encoding.Default.GetString(package);
+                Console.WriteLine($"{packageCount}  directory: {directory}");
                 packageCount++;
 
                 // file data
                 var fileData = new List<byte>();
+                for (int p = packageCount; p < packageCount + filePackageNumber; p++)
+                {
+                    package = ReceivedData[p];
+                    fileData.AddRange(package);
+                }
 
-                // for (int p = packageCount; p < packageCount + filePackageNumber; p++)
-                // {
-                //    package = ReceivedData[p];
-                //    Console.WriteLine(System.Text.Encoding.Default.GetString(package));
-                //    fileData.AddRange(package);
-                // }
-                // files.Add(new ServerFile(filePath, fileData));
-                // Console.WriteLine($"{filePath}  {fileData}");
-                // packageCount += filePackageNumber;
-                packageCount += 1000;
+                directory = directory.Replace("\0", string.Empty);
+                string fileName = Path.GetFileName(filePath).Replace("\0", string.Empty);
+                string fileServerPath = Path.Combine(directory, fileName);
+
+                Console.WriteLine($"server: file path: '{filePath}'\n");
+                Console.WriteLine($"server: file name: '{fileName}'\n");
+                Console.WriteLine($"server: directory name: '{directory}'\n");
+                Console.WriteLine($"server: file relative path: '{fileServerPath}'\n");
+                files.Add(new ServerFile(fileServerPath, fileData.ToArray()));
+                if (!Directory.Exists(Path.Combine(Location, directory)))
+                    Directory.CreateDirectory(Path.Combine(Location, directory));
+                packageCount += filePackageNumber;
             }
 
             return files;

@@ -16,6 +16,19 @@ namespace Backups.ClientServer
             _ipEndPoint = new IPEndPoint(server.IpAddress, server.Port);
         }
 
+        public static int PackagesNumber(int dataLenght)
+        {
+            int i = 0;
+            int packagesNumber = 0;
+            while (i++ < dataLenght)
+            {
+                if (i % Package.ByteSize == 1)
+                    packagesNumber++;
+            }
+
+            return packagesNumber;
+        }
+
         /// <summary>
         /// Sends N+1 packages.
         /// First package - how many packages does data fit.
@@ -56,34 +69,29 @@ namespace Backups.ClientServer
             string dataString = data.ToString();
             if (dataString is null)
                 throw new Exception("Client error: can't send empty package");
-            byte[] package = Encoding.Unicode.GetBytes(dataString);
+            byte[] packageWithWhitespaces = Encoding.Unicode.GetBytes(dataString);
+            byte[] package = new byte[Package.ByteSize];
+            for (int i = 0; i < packageWithWhitespaces.Length; i += 2)
+            {
+                package[i / 2] = packageWithWhitespaces[i];
+            }
+
+            Package.WriteByChar(package);
             if (package.Length > Package.ByteSize)
                 throw new Exception("Client error: too big data for one package");
             SendPackage(package);
         }
 
-        public void SendFile(string path)
+        public void SendFile(string path, string directory)
         {
             byte[] data = File.ReadAllBytes(path);
             int packagesNumber = PackagesNumber(data.Length);
 
             SendValue(packagesNumber);
             SendValue(path);
+            SendValue(directory);
 
-            // SendByteData(data);
-        }
-
-        private int PackagesNumber(int dataLenght)
-        {
-            int i = 0;
-            int packagesNumber = 0;
-            while (i++ < dataLenght)
-            {
-                if (i % Package.ByteSize == 1)
-                    packagesNumber++;
-            }
-
-            return packagesNumber;
+            SendByteData(data);
         }
     }
 }

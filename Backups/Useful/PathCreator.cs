@@ -77,6 +77,27 @@ namespace Backups.Useful
             return filePath;
         }
 
+        public static string GetFreeFileName(string path, string fileBaseName)
+        {
+            string fileNameWithoutExtension = fileBaseName.Split('.')[0];
+            string extension = fileBaseName.Split('.')[1];
+            string filePath = Path.Combine(path, $"{fileNameWithoutExtension}.{extension}");
+            if (!File.Exists(filePath))
+            {
+                return filePath;
+            }
+
+            int counter = 2;
+            filePath = Path.Combine(path, $"{fileNameWithoutExtension}({counter}).{extension}");
+            while (File.Exists(filePath))
+            {
+                counter++;
+                filePath = Path.Combine(path, $"{fileNameWithoutExtension}({counter}).{extension}");
+            }
+
+            return filePath;
+        }
+
         public static string CreateUniqueDirectory(string path, string directoryBaseName)
         {
             CreatePath(path);

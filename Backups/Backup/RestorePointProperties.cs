@@ -1,14 +1,12 @@
-using System;
-
 namespace Backups.Backup
 {
     public class RestorePointProperties
     {
         public RestorePointProperties(string name)
         {
-            RelativePath = name;
+            Name = name;
         }
 
-        public string RelativePath { get; }
+        public string Name { get; }
     }
 }
