@@ -18,7 +18,6 @@ namespace Backups
             server.StartListening();
             var job = new BackupJob("D:/OOP/lab-3/BackupJob/backups", "D:/OOP/lab-3/Repository", true, server);
             job.AddJobObject(@"D:\OOP\lab-3\BackupJob\CurrentVersion\1.txt");
-            job.AddJobObject(@"D:\OOP\lab-3\BackupJob\CurrentVersion\1.txt");
             job.AddJobObject(@"D:\OOP\lab-3\BackupJob\CurrentVersion\utorrent.exe");
             job.CreateBackup();
             server.StopListening();
