@@ -1,6 +1,5 @@
 @startuml
 'https://plantuml.com/class-diagram
-allowmixing
 package Job
 {
     class BackupJob
@@ -14,12 +13,10 @@ package Job
         + void CreateBackup()
         + void ChangeStorageMode
     }
-    class BackupJobProperties
     class BackupJobVersion
     {
         + List<JobObjects> JobObjects
     }
-    class BackupJobVersionProperties
     class JobObject
     {
         + JobObjectProperties Properties
@@ -140,12 +137,10 @@ package Tools
     }
     class BackupsException
 }
-BackupJob *-- BackupJobProperties
 BackupJob *-- BackupJobVersion
 BackupJob *-- Backups
 BackupJob *-- IRepository
 BackupJobVersion *-- JobObject
-BackupJobVersion *-- BackupJobVersionProperties
 JobObject *-- JobObjectProperties
 
 Backups *-- RestorePoint
