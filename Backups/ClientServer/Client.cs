@@ -33,11 +33,11 @@ namespace Backups.ClientServer
             SendByteData(data);
         }
 
-        private static int PackagesNumber(int dataLenght)
+        private static int PackagesNumber(int dataLength)
         {
             int i = 0;
             int packagesNumber = 0;
-            while (i++ < dataLenght)
+            while (i++ < dataLength)
             {
                 if (i % Package.ByteSize == 1)
                     packagesNumber++;
@@ -72,9 +72,9 @@ namespace Backups.ClientServer
             _server.ReceivePackage();
         }
 
-        private void SendValue<T>(T data)
+        private void SendValue<T>(T value)
         {
-            string dataString = data.ToString();
+            string dataString = value.ToString();
             if (dataString is null)
                 throw new BackupsException("Client error: can't send empty package");
             byte[] packageWithWhitespaces = Encoding.Unicode.GetBytes(dataString);

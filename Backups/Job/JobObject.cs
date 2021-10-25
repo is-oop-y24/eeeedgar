@@ -4,9 +4,9 @@ namespace Backups.Job
     {
         public JobObject(string path)
         {
-            Path = path;
+            Properties = new JobObjectProperties(path);
         }
 
-        public string Path { get; }
+        public JobObjectProperties Properties { get; }
     }
 }

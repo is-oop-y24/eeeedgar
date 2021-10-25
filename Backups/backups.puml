@@ -1,0 +1,176 @@
+@startuml
+'https://plantuml.com/class-diagram
+allowmixing
+package Job
+{
+    class BackupJob
+    {
+        + BackupJobProperties Properties
+        + BackupJobVersion CurrentVersion
+        + Backups Backups
+        + IRepository Repository
+        + void AddJobObject(JobObject jobObject)
+        + void RemoveJobObject(JobObject jobObject)
+        + void CreateBackup()
+        + void ChangeStorageMode
+    }
+    class BackupJobProperties
+    class BackupJobVersion
+    {
+        + List<JobObjects> JobObjects
+    }
+    class BackupJobVersionProperties
+    class JobObject
+    {
+        + JobObjectProperties Properties
+    }
+    class JobObjectProperties
+    {
+        + string Path
+    }
+}
+package Backup
+{
+    class Backups
+    {
+        + BackupsProperties Properties
+        + List<RestorePoint> RestorePoints
+        + RestorePoint CreateRestorePoint(BackupJobVersion currentVersion)
+        - string TimeToString()
+    }
+    class BackupsProperties
+    {
+        + string Path
+        + bool IsSplitCompression
+        + IsItTest
+    }
+    class RestorePoint
+    {
+        + RestorePointProperties Properties
+        + List<Storage> Storages
+    }
+    class RestorePointProperties
+    {
+        + string Name
+    }
+    class Storage
+    {
+        + StorageProperties Properties
+    }
+    class StorageProperties
+    {
+        + string Path
+    }
+}
+package Repo
+{
+    interface IRepository
+    {
+        void UploadVersion(RestorePoint restorePoint)
+    }
+    class LocalRepository
+    {
+        + LocalRepositoryProperties Properties
+    }
+    class LocalRepositoryProperties
+    {
+        + string Path
+    }
+    class RemoteRepository
+    {
+        + RestorePointProperties Properties
+    }
+    class RemoteRepositoryProperties
+    {
+        + Server Server
+        + Client Client
+    }
+}
+package ClientServer
+{
+    class Server
+    {
+        + IPAddress IPAddress
+        + int Port
+        + string Location
+        + Socket ListenSocket
+        + IPEndPoint IPEndPoint
+        + List<byte> ReceivedData
+        + void StartListening()
+        + void StopListening()
+        + byte[] ReceivePackage()
+        + List<ServerFile> SplitReceivedDataToFiles()
+        + void CreateFiles(List<ServerFile> files)
+    }
+    class Client
+    {
+        - Server _server
+        - IPEndPoint _ipEndPoint
+        + void SendFile(string path, string directory)
+        - {static} int PackageNumber(int dataLength)
+        - void SendByteData(byte[] data)
+        - void SendPackage(byte[] package)
+        - void SendValue<T>(<T> value)
+    }
+    class Package
+    {
+        + {static} int ByteSize
+    }
+    class ServerFile
+    {
+        + string RelativePath
+        + byte[] Data
+    }
+}
+package Zippers
+{
+    interface IZipper
+    {
+        List<Storage> Compress(string restorePointPath, BackupJobVersion backupJobVersion)
+    }
+    class SingleZipper
+    class SplitZipper
+    class TestZipper
+}
+package Tools
+{
+    class PathCreator
+    {
+        + {static} string GetFreeFileName(string path, string fileBaseName)
+    }
+    class BackupsException
+}
+BackupJob *-- BackupJobProperties
+BackupJob *-- BackupJobVersion
+BackupJob *-- Backups
+BackupJob *-- IRepository
+BackupJobVersion *-- JobObject
+BackupJobVersion *-- BackupJobVersionProperties
+JobObject *-- JobObjectProperties
+
+Backups *-- RestorePoint
+Backups *-- BackupsProperties
+Backups ..> IZipper
+RestorePoint *-- Storage
+RestorePoint *-- RestorePointProperties
+Storage *-- StorageProperties
+
+IRepository <|.. LocalRepository
+IRepository <|.. RemoteRepository
+RemoteRepository *-- Server
+RemoteRepository *-- Client
+RemoteRepository *-- RemoteRepositoryProperties
+LocalRepository *-- LocalRepositoryProperties
+
+IZipper <|.. SingleZipper
+IZipper <|.. SplitZipper
+IZipper <|.. TestZipper
+SplitZipper ..> PathCreator
+
+Server ..> ServerFile
+Server ..> Package
+Client ..> Package
+
+BackupsException <.. Client
+
+@enduml

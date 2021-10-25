@@ -99,7 +99,7 @@ namespace Backups.ClientServer
         {
             foreach (ServerFile file in files)
             {
-                File.WriteAllBytes(Path.Combine(Location, file.RelativeName), file.Data);
+                File.WriteAllBytes(Path.Combine(Location, file.RelativePath), file.Data);
             }
         }
     }

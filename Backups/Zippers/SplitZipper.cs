@@ -16,8 +16,8 @@ namespace Backups.Zippers
             foreach (JobObject jobObject in backupJobVersion.JobObjects)
             {
                 var zip = new ZipFile();
-                zip.AddItem(jobObject.Path);
-                string archiveName = $"{Path.GetFileNameWithoutExtension(jobObject.Path)}.zip";
+                zip.AddItem(jobObject.Properties.Path);
+                string archiveName = $"{Path.GetFileNameWithoutExtension(jobObject.Properties.Path)}.zip";
                 archiveName = PathCreator.GetFreeFileName(restorePointPath, archiveName);
                 string archivePath = Path.Combine(restorePointPath, archiveName);
                 zip.Save(archivePath);

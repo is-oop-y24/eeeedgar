@@ -13,7 +13,7 @@ namespace Backups.Zippers
             var zip = new ZipFile();
             Directory.CreateDirectory(restorePointPath);
             foreach (JobObject jobObject in backupJobVersion.JobObjects)
-                zip.AddItem(jobObject.Path);
+                zip.AddItem(jobObject.Properties.Path);
             string archivePath = Path.Combine(restorePointPath, "archive.zip");
             zip.Save(archivePath);
             var storages = new List<Storage> { new (archivePath) };

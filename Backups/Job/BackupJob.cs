@@ -21,16 +21,14 @@ namespace Backups.Job
         public Backup.Backups Backups { get; }
         public IRepository Repository { get; }
 
-        public void AddJobObject(string path)
+        public void AddJobObject(JobObject jobObject)
         {
-            if (CurrentVersion.JobObjects.Find(o => o.Path.Equals(path)) != null)
-                throw new BackupsException("file is already added");
-            CurrentVersion.JobObjects.Add(new JobObject(path));
+            CurrentVersion.JobObjects.Add(jobObject);
         }
 
-        public void RemoveJobObject(string path)
+        public void RemoveJobObject(JobObject jobObject)
         {
-            CurrentVersion.JobObjects.Remove(CurrentVersion.JobObjects.Find(o => o.Path.Equals(path)));
+            CurrentVersion.JobObjects.Remove(jobObject);
         }
 
         public void CreateBackup()
