@@ -1,6 +1,5 @@
 using Backups.ClientServer;
 using Backups.Repo;
-using Backups.Tools;
 
 namespace Backups.Job
 {
@@ -29,6 +28,11 @@ namespace Backups.Job
         public void RemoveJobObject(JobObject jobObject)
         {
             CurrentVersion.JobObjects.Remove(jobObject);
+        }
+
+        public JobObject FindJobObject(string path)
+        {
+            return CurrentVersion.JobObjects.Find(o => o.Properties.Path.Equals(path));
         }
 
         public void CreateBackup()
