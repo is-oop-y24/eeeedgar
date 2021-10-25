@@ -1,4 +1,3 @@
-using System.Linq;
 using Backups.ClientServer;
 using Backups.Repo;
 using Backups.Tools;
@@ -7,10 +6,10 @@ namespace Backups.Job
 {
     public class BackupJob
     {
-        public BackupJob(string backupsPath, string localRepoPath, bool isSplitCompression, Server server = null)
+        public BackupJob(string backupsPath, string localRepoPath, bool isSplitCompression, Server server = null, bool isItTest = false)
         {
             CurrentVersion = new BackupJobVersion();
-            Backups = new Backup.Backups(backupsPath, isSplitCompression);
+            Backups = new Backup.Backups(backupsPath, isSplitCompression, isItTest);
 
             if (server is null)
                 Repository = new LocalRepository(localRepoPath);

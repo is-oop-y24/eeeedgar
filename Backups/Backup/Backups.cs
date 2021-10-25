@@ -2,15 +2,15 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using Backups.Job;
-using Backups.Storages;
+using Backups.Zippers;
 
 namespace Backups.Backup
 {
     public class Backups
     {
-        public Backups(string path, bool isSplitCompression = false)
+        public Backups(string path, bool isSplitCompression = false, bool isItTest = false)
         {
-            Properties = new BackupsProperties(path, isSplitCompression);
+            Properties = new BackupsProperties(path, isSplitCompression, isItTest);
             RestorePoints = new List<RestorePoint>();
         }
 
@@ -28,6 +28,9 @@ namespace Backups.Backup
             {
                 zip = new SingleZipper();
             }
+
+            if (Properties.IsItTest)
+                zip = new TestZipper();
 
             string restorePointName = $"{TimeToString()}";
             string restorePointPath = Path.Combine(Properties.Path, restorePointName);

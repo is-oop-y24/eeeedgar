@@ -1,13 +1,11 @@
-using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using Backups.Backup;
 using Backups.Job;
 using Backups.Tools;
 using Ionic.Zip;
 
-namespace Backups.Storages
+namespace Backups.Zippers
 {
     public class SplitZipper : IZipper
     {

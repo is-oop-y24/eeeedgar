@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using Backups.Backup;
 using Backups.Job;
 
-namespace Backups.Storages
+namespace Backups.Zippers
 {
     public interface IZipper
     {

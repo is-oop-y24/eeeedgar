@@ -1,11 +1,10 @@
-using System;
 using System.Collections.Generic;
 using System.IO;
 using Backups.Backup;
 using Backups.Job;
 using Ionic.Zip;
 
-namespace Backups.Storages
+namespace Backups.Zippers
 {
     public class SingleZipper : IZipper
     {
