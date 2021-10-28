@@ -1,9 +1,8 @@
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Backups.TemporaryLocalData;
 using Backups.Tools;
-using Backups.Zippers;
 
 namespace Backups.Repo
 {
@@ -17,17 +16,18 @@ namespace Backups.Repo
 
         public string LocationPath { get; }
         public List<RestorePoint> RestorePoints { get; }
-        public void UploadVersion(LocalRestorePoint localRestorePoint)
+        public void UploadVersion(TemporaryLocalRestorePoint temporaryLocalRestorePoint)
         {
-            DirectoryInfo repositoryRestorePointDirectory = Directory.CreateDirectory(Path.Combine(LocationPath, CommitName()));
-            foreach (LocalStorage localStorage in localRestorePoint.BufferStorages)
+            string restorePointName = RestorePointName();
+            DirectoryInfo repositoryRestorePointDirectory = Directory.CreateDirectory(Path.Combine(LocationPath, restorePointName));
+            foreach (TemporaryLocalStorage localStorage in temporaryLocalRestorePoint.BufferStorages)
                 File.Copy(localStorage.TemporaryPath, Path.Combine(repositoryRestorePointDirectory.FullName, Path.GetFileName(localStorage.TemporaryPath) ?? throw new BackupsException("wrong archive path")));
-            var storages = localRestorePoint.BufferStorages.Select(bufferStorage => bufferStorage.Storage).ToList();
-            var restorePoint = new RestorePoint(storages, localRestorePoint.DateTime, localRestorePoint.Id);
+            var storages = temporaryLocalRestorePoint.BufferStorages.Select(bufferStorage => bufferStorage.Storage).ToList();
+            var restorePoint = new RestorePoint(storages, temporaryLocalRestorePoint.DateTime, temporaryLocalRestorePoint.Id, restorePointName);
             RestorePoints.Add(restorePoint);
         }
 
-        private string CommitName()
+        private string RestorePointName()
         {
             return Path.GetFileNameWithoutExtension(Path.GetRandomFileName());
         }

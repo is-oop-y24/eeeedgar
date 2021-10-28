@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.IO;
 using Backups.Job;
 using Backups.Repo;
+using Backups.TemporaryLocalData;
 using Ionic.Zip;
 
 namespace Backups.Zippers
@@ -14,9 +15,9 @@ namespace Backups.Zippers
         }
 
         public string TemporaryFilesDirectoryPath { get; }
-        public List<LocalStorage> Compress(List<JobObject> jobObjects)
+        public List<TemporaryLocalStorage> Compress(List<JobObject> jobObjects)
         {
-            var bufferStorages = new List<LocalStorage>();
+            var bufferStorages = new List<TemporaryLocalStorage>();
             foreach (JobObject jobObject in jobObjects)
             {
                 string archivePath = Path.Combine(TemporaryFilesDirectoryPath, StorageName());
@@ -25,7 +26,7 @@ namespace Backups.Zippers
                 zip.AddItem(jobObject.Path);
                 zip.Save(archivePath);
                 storage.JobObjects.Add(jobObject);
-                bufferStorages.Add(new LocalStorage(storage, archivePath));
+                bufferStorages.Add(new TemporaryLocalStorage(storage, archivePath));
             }
 
             return bufferStorages;

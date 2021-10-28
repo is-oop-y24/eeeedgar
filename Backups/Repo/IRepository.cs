@@ -1,7 +1,9 @@
+using Backups.TemporaryLocalData;
+
 namespace Backups.Repo
 {
     public interface IRepository
     {
-        void UploadVersion(LocalRestorePoint localRestorePoint);
+        void UploadVersion(TemporaryLocalRestorePoint temporaryLocalRestorePoint);
     }
 }

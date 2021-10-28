@@ -1,11 +1,12 @@
 using System.Collections.Generic;
 using Backups.Job;
 using Backups.Repo;
+using Backups.TemporaryLocalData;
 
 namespace Backups.Zippers
 {
     public interface IStorageCreator
     {
-        List<LocalStorage> Compress(List<JobObject> jobObjects);
+        List<TemporaryLocalStorage> Compress(List<JobObject> jobObjects);
     }
 }
