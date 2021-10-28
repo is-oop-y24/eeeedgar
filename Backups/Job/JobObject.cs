@@ -4,9 +4,23 @@ namespace Backups.Job
     {
         public JobObject(string path)
         {
-            Properties = new JobObjectProperties(path);
+            Path = path;
         }
 
-        public JobObjectProperties Properties { get; }
+        public string Path { get; }
+
+        public override bool Equals(object obj) => this.Equals(obj as JobObject);
+
+        public bool Equals(JobObject jobObject)
+        {
+            if (jobObject is null)
+            {
+                return false;
+            }
+
+            return Path.Equals(jobObject.Path);
+        }
+
+        public override int GetHashCode() => Path.GetHashCode();
     }
 }

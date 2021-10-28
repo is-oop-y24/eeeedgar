@@ -1,48 +1,52 @@
-using Backups.ClientServer;
+using System;
+using System.Collections.Generic;
+using System.IO;
 using Backups.Repo;
+using Backups.Tools;
+using Backups.Zippers;
 
 namespace Backups.Job
 {
     public class BackupJob
     {
-        public BackupJob(string backupsPath, string localRepoPath, bool isSplitCompression, Server server = null, bool isItTest = false)
+        private int _restorePointId;
+        public BackupJob(IRepository repository, IStorageCreator storageCreator)
         {
-            CurrentVersion = new BackupJobVersion();
-            Backups = new Backup.Backups(backupsPath, isSplitCompression, isItTest);
-
-            if (server is null)
-                Repository = new LocalRepository(localRepoPath);
-            else
-                Repository = new RemoteRepository(server);
+            JobObjects = new List<JobObject>();
+            Repository = repository;
+            StorageCreator = storageCreator;
         }
 
-        public BackupJobVersion CurrentVersion { get; }
-        public Backup.Backups Backups { get; }
+        public List<JobObject> JobObjects { get; }
+        public IStorageCreator StorageCreator { get; }
         public IRepository Repository { get; }
 
         public void AddJobObject(JobObject jobObject)
         {
-            CurrentVersion.JobObjects.Add(jobObject);
+            if (JobObjects.Find(o => o.Equals(jobObject)) != null)
+                throw new BackupsException("job object is already added");
+            JobObjects.Add(jobObject);
         }
 
         public void RemoveJobObject(JobObject jobObject)
         {
-            CurrentVersion.JobObjects.Remove(jobObject);
+            JobObjects.Remove(jobObject);
         }
 
-        public JobObject FindJobObject(string path)
+        public void FindJobObject(string path)
         {
-            return CurrentVersion.JobObjects.Find(o => o.Properties.Path.Equals(path));
+            JobObjects.Find(o => o.Path.Equals(path));
         }
 
         public void CreateBackup()
         {
-            Repository.UploadVersion(Backups.CreateRestorePoint(CurrentVersion));
-        }
-
-        public void ChangeStorageMode(bool isSplitCompression)
-        {
-            Backups.Properties.IsSplitCompression = isSplitCompression;
+            List<LocalStorage> localStorages = StorageCreator.Compress(JobObjects);
+            var localRestorePoint = new LocalRestorePoint(localStorages, DateTime.Now, _restorePointId++);
+            Repository.UploadVersion(localRestorePoint);
+            foreach (LocalStorage localStorage in localStorages)
+            {
+                File.Delete(localStorage.TemporaryPath);
+            }
         }
     }
 }

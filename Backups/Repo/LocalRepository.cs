@@ -1,29 +1,35 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
-using Backups.Backup;
+using System.Linq;
+using Backups.Tools;
+using Backups.Zippers;
 
 namespace Backups.Repo
 {
     public class LocalRepository : IRepository
     {
-        public LocalRepository(string path)
+        public LocalRepository(string locationPath)
         {
-            Properties = new LocalRepositoryProperties(path);
+            LocationPath = locationPath;
+            RestorePoints = new List<RestorePoint>();
         }
 
-        public LocalRepositoryProperties Properties { get; }
-        public void UploadVersion(RestorePoint restorePoint)
+        public string LocationPath { get; }
+        public List<RestorePoint> RestorePoints { get; }
+        public void UploadVersion(LocalRestorePoint localRestorePoint)
         {
-            string resDirectoryPath = Path.Combine(Properties.Path, restorePoint.Properties.Name);
-            Directory.CreateDirectory(resDirectoryPath);
-            foreach (Storage storage in restorePoint.Storages)
-            {
-                File.Copy(
-                    storage.Properties.Path ?? throw new InvalidOperationException(),
-                    Path.Combine(
-                        resDirectoryPath,
-                        Path.GetFileName(storage.Properties.Path) ?? throw new InvalidOperationException()));
-            }
+            DirectoryInfo repositoryRestorePointDirectory = Directory.CreateDirectory(Path.Combine(LocationPath, CommitName()));
+            foreach (LocalStorage localStorage in localRestorePoint.BufferStorages)
+                File.Copy(localStorage.TemporaryPath, Path.Combine(repositoryRestorePointDirectory.FullName, Path.GetFileName(localStorage.TemporaryPath) ?? throw new BackupsException("wrong archive path")));
+            var storages = localRestorePoint.BufferStorages.Select(bufferStorage => bufferStorage.Storage).ToList();
+            var restorePoint = new RestorePoint(storages, localRestorePoint.DateTime, localRestorePoint.Id);
+            RestorePoints.Add(restorePoint);
+        }
+
+        private string CommitName()
+        {
+            return Path.GetFileNameWithoutExtension(Path.GetRandomFileName());
         }
     }
 }

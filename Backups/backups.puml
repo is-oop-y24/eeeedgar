@@ -1,171 +1,59 @@
 @startuml
 'https://plantuml.com/class-diagram
+
 package Job
 {
     class BackupJob
     {
-        + BackupJobProperties Properties
-        + BackupJobVersion CurrentVersion
-        + Backups Backups
+        + List<JobObject> JobObjects
         + IRepository Repository
         + void AddJobObject(JobObject jobObject)
-        + void RemoveJobObject(JobObject jobObject)
-        + void CreateBackup()
-        + void ChangeStorageMode
+        + void RemoveJobObject(JobObject jobObject))
+        + JobObject FindJobObject(string path)
     }
-    class BackupJobVersion
-    {
-        + List<JobObjects> JobObjects
-    }
+    
     class JobObject
     {
-        + JobObjectProperties Properties
-    }
-    class JobObjectProperties
-    {
-        + string Path
+        + string path
     }
 }
-package Backup
-{
-    class Backups
-    {
-        + BackupsProperties Properties
-        + List<RestorePoint> RestorePoints
-        + RestorePoint CreateRestorePoint(BackupJobVersion currentVersion)
-        - string TimeToString()
-    }
-    class BackupsProperties
-    {
-        + string Path
-        + bool IsSplitCompression
-        + IsItTest
-    }
-    class RestorePoint
-    {
-        + RestorePointProperties Properties
-        + List<Storage> Storages
-    }
-    class RestorePointProperties
-    {
-        + string Name
-    }
-    class Storage
-    {
-        + StorageProperties Properties
-    }
-    class StorageProperties
-    {
-        + string Path
-    }
-}
-package Repo
+
+package Repository
 {
     interface IRepository
     {
-        void UploadVersion(RestorePoint restorePoint)
+        + UploadVersion(List<Storages> storages)
     }
+    
     class LocalRepository
     {
-        + LocalRepositoryProperties Properties
+        + List<RestorePoint> RestorePoints
     }
-    class LocalRepositoryProperties
+    class RestorePoint
     {
-        + string Path
+        + List<Storage> Storages
     }
-    class RemoteRepository
+    class Storage
     {
-        + RestorePointProperties Properties
-    }
-    class RemoteRepositoryProperties
-    {
-        + Server Server
-        + Client Client
+        + string temporary
     }
 }
-package ClientServer
+
+package StorageCreators
 {
-    class Server
+    interface IStorageCreator
     {
-        + IPAddress IPAddress
-        + int Port
-        + string Location
-        + Socket ListenSocket
-        + IPEndPoint IPEndPoint
-        + List<byte> ReceivedData
-        + void StartListening()
-        + void StopListening()
-        + byte[] ReceivePackage()
-        + List<ServerFile> SplitReceivedDataToFiles()
-        + void CreateFiles(List<ServerFile> files)
+        + List<LocalStorage> Compress(List<JobObjects> jobObjects)
     }
-    class Client
-    {
-        - Server _server
-        - IPEndPoint _ipEndPoint
-        + void SendFile(string path, string directory)
-        - {static} int PackageNumber(int dataLength)
-        - void SendByteData(byte[] data)
-        - void SendPackage(byte[] package)
-        - void SendValue<T>(<T> value)
-    }
-    class Package
-    {
-        + {static} int ByteSize
-    }
-    class ServerFile
-    {
-        + string RelativePath
-        + byte[] Data
-    }
+    
+    class SingleStorageCreator
+    class SplitStorageCreator
 }
-package Zippers
-{
-    interface IZipper
-    {
-        List<Storage> Compress(string restorePointPath, BackupJobVersion backupJobVersion)
-    }
-    class SingleZipper
-    class SplitZipper
-    class TestZipper
-}
-package Tools
-{
-    class PathCreator
-    {
-        + {static} string GetFreeFileName(string path, string fileBaseName)
-    }
-    class BackupsException
-}
-BackupJob *-- BackupJobVersion
-BackupJob *-- Backups
+
+BackupJob *-- JobObject
 BackupJob *-- IRepository
-BackupJobVersion *-- JobObject
-JobObject *-- JobObjectProperties
-
-Backups *-- RestorePoint
-Backups *-- BackupsProperties
-Backups ..> IZipper
-RestorePoint *-- Storage
-RestorePoint *-- RestorePointProperties
-Storage *-- StorageProperties
-
-IRepository <|.. LocalRepository
-IRepository <|.. RemoteRepository
-RemoteRepository *-- Server
-RemoteRepository *-- Client
-RemoteRepository *-- RemoteRepositoryProperties
-LocalRepository *-- LocalRepositoryProperties
-
-IZipper <|.. SingleZipper
-IZipper <|.. SplitZipper
-IZipper <|.. TestZipper
-SplitZipper ..> PathCreator
-
-Server ..> ServerFile
-Server ..> Package
-Client ..> Package
-
-BackupsException <.. Client
-
+BackupJob *-- IStorageCreator
+LocalRepository --|> IRepository
+SingleStorageCreator --|> IStorageCreator
+SplitStorageCreator --|> IStorageCreator
 @enduml

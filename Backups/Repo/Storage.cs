@@ -1,10 +1,11 @@
 using System.Collections.Generic;
+using Backups.Job;
 
-namespace Backups.Job
+namespace Backups.Repo
 {
-    public class BackupJobVersion
+    public class Storage
     {
-        public BackupJobVersion()
+        public Storage()
         {
             JobObjects = new List<JobObject>();
         }
