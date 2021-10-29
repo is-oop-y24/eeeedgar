@@ -8,9 +8,8 @@ namespace Backups
     {
         private static void Main()
         {
-            const string localRepoPath = @"D:\oop\lab-3\repository";
             const string restorerPath = @"D:\oop\lab-3\temporaryFiles";
-            var repository = new LocalRepository(localRepoPath);
+            var repository = new RemoteRepository("127.0.0.1", 1234);
             var restorer = new SplitStorageCreator(restorerPath);
             var job = new BackupJob(repository, restorer);
             var jobObject1 = new JobObject(@"D:\OOP\lab-3\BackupJob\CurrentVersion\1.txt");

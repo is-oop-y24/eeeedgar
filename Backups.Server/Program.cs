@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
@@ -8,16 +7,12 @@ namespace Backups.Server
 {
     internal class Program
     {
-        private static List<byte[]> _receivedData;
-        private static List<ServerFile> _receivedFiles;
-
         public static void Main(string[] args)
         {
             var server = new TcpListener(IPAddress.Parse("127.0.0.1"), 1234);
             string location = @"D:\oop\lab-3\server";
             {
                 server.Start();
-                _receivedFiles = new List<ServerFile>();
 
                 while (true)
                 {
@@ -32,6 +27,14 @@ namespace Backups.Server
                     while ((fileNameLength = ReadInt(stream)) != 0)
                     {
                         ServerFile serverFile = ReceiveFile(fileNameLength, stream);
+                        string directoryPath = Path.GetDirectoryName(serverFile.Name);
+                        if (!Directory.Exists(directoryPath))
+                        {
+                            if (directoryPath is null)
+                                throw new Exception("WRONG PATH");
+                            Directory.CreateDirectory(Path.Combine(location, directoryPath));
+                        }
+
                         File.WriteAllBytes(Path.Combine(location, serverFile.Name), serverFile.Data);
                     }
                 }
@@ -54,7 +57,6 @@ namespace Backups.Server
             byte[] data = new byte[fileDataSize];
             stream.Read(data, 0, data.Length);
             var serverFile = new ServerFile(System.Text.Encoding.ASCII.GetString(namePackage), data);
-            _receivedFiles.Add(serverFile);
             return serverFile;
         }
     }

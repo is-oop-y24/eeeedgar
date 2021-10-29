@@ -1,8 +1,10 @@
-namespace Backups.Repo
+using Backups.Repo;
+
+namespace Backups.TemporaryLocalData
 {
-    public class LocalStorage
+    public class TemporaryLocalStorage
     {
-        public LocalStorage(Storage storage, string temporaryPath)
+        public TemporaryLocalStorage(Storage storage, string temporaryPath)
         {
             TemporaryPath = temporaryPath;
             Storage = storage;
