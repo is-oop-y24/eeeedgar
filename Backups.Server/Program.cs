@@ -45,7 +45,6 @@ namespace Backups.Server
         {
             byte[] bytes = new byte[sizeof(int)];
             stream.Read(bytes, 0, sizeof(int));
-            Console.WriteLine(BitConverter.ToInt32(bytes));
             return BitConverter.ToInt32(bytes);
         }
 

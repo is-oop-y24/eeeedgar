@@ -14,7 +14,7 @@ namespace Backups.Client
 
         public TcpClient Client { get; }
 
-        public static void SendFile(string path, string directoryName, NetworkStream stream)
+        public void SendFile(string path, string directoryName, NetworkStream stream)
         {
             string name = Path.GetFileName(path);
             byte[] data = File.ReadAllBytes(path);
@@ -22,19 +22,19 @@ namespace Backups.Client
             SendString(Path.Combine(directoryName, name), stream);
             SendByteData(data, stream);
         }
-        private static void SendInt(int nextPackageSize, NetworkStream stream)
+        private void SendInt(int nextPackageSize, NetworkStream stream)
         {
             stream.Write(BitConverter.GetBytes(nextPackageSize), 0, sizeof(int));
         }
 
-        private static void SendString(string value, NetworkStream stream)
+        private void SendString(string value, NetworkStream stream)
         {
             byte[] package = Encoding.Default.GetBytes(value);
             SendInt(package.Length, stream);
             stream.Write(package, 0, package.Length);
         }
 
-        private static void SendByteData(byte[] data, NetworkStream stream)
+        private void SendByteData(byte[] data, NetworkStream stream)
         {
             SendInt(data.Length, stream);
             stream.Write(data, 0, data.Length);

@@ -32,6 +32,11 @@ namespace Backups.Repo
             RestorePoints.Add(restorePoint);
         }
 
+        public List<RestorePoint> GetRestorePoints()
+        {
+            return RestorePoints;
+        }
+
         private string RestorePointName()
         {
             return Path.GetFileNameWithoutExtension(Path.GetRandomFileName());
