@@ -1,0 +1,113 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+package Job
+{
+    class BackupJob
+    {
+        + List<JobObject> JobObjects
+        + IRepository Repository
+        + void AddJobObject(JobObject jobObject)
+        + void RemoveJobObject(JobObject jobObject))
+        + JobObject FindJobObject(string path)
+    }
+    
+    class JobObject
+    {
+        + string path
+    }
+}
+
+package Repository
+{
+    interface IRepository
+    {
+        + UploadVersion(TemporaryLocalRestorePoint temporaryLocalRestorePoint)
+    }
+    
+    class LocalRepository
+    {
+        + List<RestorePoint> RestorePoints
+    }
+    
+    class RemoteRepository
+    {
+        + List<RestorePoint> RestorePoints
+        + Sender Sender
+    }
+    
+    class RestorePoint
+    {
+        + List<Storage> Storages
+    }
+    class Storage
+    {
+        + string temporary
+    }
+}
+
+package StorageCreators
+{
+    interface IStorageCreator
+    {
+        + List<LocalStorage> Compress(List<JobObjects> jobObjects)
+    }
+    
+    class SingleStorageCreator
+    class SplitStorageCreator
+}
+
+package TemporaryLocalData
+{
+    class TemporaryLocalRestorePoint
+    {
+        + List<TemporaryLocalStorage> TemporaryStorages
+        + DateTime DateTime
+        + int Id
+    }
+    
+    class TemporaryLocalStorage
+    {
+        + string TemporaryPath
+        + Storage Storage
+    }
+}
+
+package Client
+{
+    class Sender
+    {
+        + TcpClient Client
+        + void SendFile()
+    }
+}
+
+package Server
+{
+    class Program
+    {
+        + {static} void Main()
+    }
+    class ServerFile
+    {
+        + string Path
+        + string Data
+    }
+}
+
+BackupJob *-- JobObject
+BackupJob *- IRepository
+BackupJob *-- IStorageCreator
+LocalRepository --|> IRepository
+RemoteRepository --|> IRepository
+RemoteRepository *-- RestorePoint
+LocalRepository *-- RestorePoint
+RestorePoint *-- Storage
+IStorageCreator .."creates" TemporaryLocalStorage
+TemporaryLocalStorage --* TemporaryLocalRestorePoint
+IRepository .."uses" TemporaryLocalRestorePoint
+SingleStorageCreator --|> IStorageCreator
+SplitStorageCreator --|> IStorageCreator
+RemoteRepository *-- Sender
+Client .."sends" ServerFile
+@enduml
