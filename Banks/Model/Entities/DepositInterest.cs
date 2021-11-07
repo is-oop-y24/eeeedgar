@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Banks.Accounts
+namespace Banks.Model.Entities
 {
     public class DepositInterest
     {
@@ -20,7 +20,6 @@ namespace Banks.Accounts
             int controlBalanceNumber = 0;
             while (controlBalanceNumber < ControlBalances.Count && ControlBalances[controlBalanceNumber] < balance)
             {
-                Console.WriteLine($"dep int: {ControlBalances[controlBalanceNumber]})");
                 controlBalanceNumber++;
             }
 

@@ -1,7 +1,7 @@
 using System;
 using System.Runtime.Serialization;
 
-namespace Banks.Tools
+namespace Banks.Model.Tools
 {
     public class BanksException : Exception
     {

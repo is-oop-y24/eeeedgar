@@ -1,6 +1,6 @@
 using System.Collections.Generic;
-using Banks.Accounts;
-using Banks.Transactions;
+using Banks.Model.Accounts;
+using Banks.Model.Entities;
 using NUnit.Framework;
 
 namespace Banks.Tests

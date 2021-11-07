@@ -1,4 +1,4 @@
-namespace Banks.Transactions
+namespace Banks.Model.Transactions
 {
     public interface ITransaction
     {

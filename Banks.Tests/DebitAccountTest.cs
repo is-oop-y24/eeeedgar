@@ -1,5 +1,5 @@
-using Banks.Accounts;
-using Banks.Entities;
+using Banks.Model.Accounts;
+using Banks.Model.Entities;
 using NUnit.Framework;
 
 namespace Banks.Tests

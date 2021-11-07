@@ -1,14 +1,17 @@
 using System;
+using Banks.Model.Entities;
 
-namespace Banks.Accounts
+namespace Banks.Model.Accounts
 {
     public class CreditAccount : IBankAccount
     {
+        private BankClient _bankClient;
         private decimal _balance;
         private decimal _creditLimit;
         private decimal _commission;
-        public CreditAccount(int creditLimit, int commission)
+        public CreditAccount(BankClient bankClient, decimal creditLimit, decimal commission)
         {
+            _bankClient = bankClient;
             _balance = 0;
             _creditLimit = creditLimit;
             _commission = commission;
@@ -48,6 +51,11 @@ namespace Banks.Accounts
         public void ReceiveMoney(decimal money)
         {
             _balance += money;
+        }
+
+        public string StringType()
+        {
+            return GetType().ToString().Split('.')[^1];
         }
     }
 }

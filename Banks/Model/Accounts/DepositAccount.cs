@@ -1,15 +1,18 @@
 using System;
+using Banks.Model.Entities;
 
-namespace Banks.Accounts
+namespace Banks.Model.Accounts
 {
     public class DepositAccount : IBankAccount
     {
+        private BankClient _bankClient;
         private decimal _balance;
         private DateTime _releaseTime;
         private DepositInterest _depositInterest;
 
-        public DepositAccount(DateTime releaseTime, DepositInterest depositInterest)
+        public DepositAccount(BankClient bankClient, DateTime releaseTime, DepositInterest depositInterest)
         {
+            _bankClient = bankClient;
             _balance = 0;
             _releaseTime = releaseTime;
             _depositInterest = depositInterest;
@@ -34,6 +37,11 @@ namespace Banks.Accounts
         public void ReceiveMoney(decimal money)
         {
             _balance += money;
+        }
+
+        public string StringType()
+        {
+            return GetType().ToString().Split('.')[^1];
         }
     }
 }

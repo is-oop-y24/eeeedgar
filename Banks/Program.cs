@@ -1,7 +1,8 @@
 ﻿using System;
-using Banks.Accounts;
-using Banks.Entities;
-using Banks.Transactions;
+using Banks.Model.Accounts;
+using Banks.Model.Entities;
+using Banks.Model.Transactions;
+using Banks.UI.EntitiesUI;
 
 namespace Banks
 {
@@ -9,28 +10,82 @@ namespace Banks
     {
         private static void Main()
         {
+            DisplayAccounts();
+        }
+
+        private static void DisplayBanks()
+        {
             var centralBank = new CentralBank();
-            var bank = new Bank();
-            var client1 = new BankClient()
+            var bank1 = new Bank
+            {
+                Name = "sbebrank",
+            };
+            var bank2 = new Bank
+            {
+                Name = "tonkoff",
+            };
+            var bank3 = new Bank
+            {
+                Name = "rifizen",
+            };
+            var bank4 = new Bank
+            {
+                Name = "bspb",
+            };
+            centralBank.RegisterBank(bank1);
+            centralBank.RegisterBank(bank2);
+            centralBank.RegisterBank(bank3);
+            centralBank.RegisterBank(bank4);
+            CentralBankUi.DisplayBanks(centralBank.Banks);
+        }
+
+        private static void DisplayClients()
+        {
+            var centralBank = new CentralBank();
+            var bankClient1 = new BankClient()
             {
                 Name = "taylor",
                 Surname = "swift",
             };
-            var client2 = new BankClient()
+            var bankClient2 = new BankClient()
             {
-                Name = "justin",
-                Surname = "biber",
+                Name = "hello",
+                Surname = "world",
+                Address = "pepega",
+                PassportData = "4020 228877",
             };
-            var debitAccount1 = new DebitAccount(client1, 5);
-            var debitAccount2 = new DebitAccount(client2, 5);
+            centralBank.RegisterClient(bankClient1);
+            centralBank.RegisterClient(bankClient2);
+            CentralBankUi.DisplayClients(centralBank.Clients);
+        }
 
-            debitAccount1.ReceiveMoney(1000);
-
-            var moneyTransfer = new MoneyTransfer(debitAccount1, debitAccount2, 100);
-            moneyTransfer.Make();
-
-            Console.WriteLine(debitAccount1.Balance());
-            Console.WriteLine(debitAccount2.Balance());
+        private static void DisplayAccounts()
+        {
+            var centralBank = new CentralBank();
+            var bankClient1 = new BankClient()
+            {
+                Name = "taylor",
+                Surname = "swift",
+            };
+            var bankClient2 = new BankClient()
+            {
+                Name = "hello",
+                Surname = "world",
+                Address = "pepega",
+                PassportData = "4020 228877",
+            };
+            centralBank.RegisterClient(bankClient1);
+            centralBank.RegisterClient(bankClient2);
+            var bank = new Bank
+            {
+                Name = "sbebrank",
+            };
+            CreditAccount creditAccount = bank.CreateCreditAccount(bankClient1);
+            creditAccount.ReceiveMoney(100);
+            bank.CreateCreditAccount(bankClient2);
+            bank.CreateDepositAccount(bankClient1);
+            bank.CreateDebitAccount(bankClient1);
+            BankUi.DisplayAccounts(bank.BankAccounts);
         }
     }
 }

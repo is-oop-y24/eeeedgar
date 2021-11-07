@@ -1,4 +1,4 @@
-namespace Banks.Accounts
+namespace Banks.Model.Accounts
 {
     public interface IBankAccount
     {
@@ -9,5 +9,6 @@ namespace Banks.Accounts
         void ScheduleRenew(decimal t);
 
         void ReceiveMoney(decimal money);
+        string StringType();
     }
 }

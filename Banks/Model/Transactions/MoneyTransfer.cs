@@ -1,6 +1,6 @@
-using Banks.Accounts;
+using Banks.Model.Accounts;
 
-namespace Banks.Transactions
+namespace Banks.Model.Transactions
 {
     public class MoneyTransfer : ITransaction
     {

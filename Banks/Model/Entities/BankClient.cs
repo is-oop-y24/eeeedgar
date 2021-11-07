@@ -1,6 +1,6 @@
-using Banks.Tools;
+using Banks.Model.Tools;
 
-namespace Banks.Entities
+namespace Banks.Model.Entities
 {
     public class BankClient
     {

@@ -1,7 +1,7 @@
 using System;
-using Banks.Entities;
+using Banks.Model.Entities;
 
-namespace Banks.Accounts
+namespace Banks.Model.Accounts
 {
     public class DebitAccount : IBankAccount
     {
@@ -32,6 +32,11 @@ namespace Banks.Accounts
         public void ReceiveMoney(decimal money)
         {
             _balance += money;
+        }
+
+        public string StringType()
+        {
+            return GetType().ToString().Split('.')[^1];
         }
 
         public void ScheduleRenew(decimal t)
