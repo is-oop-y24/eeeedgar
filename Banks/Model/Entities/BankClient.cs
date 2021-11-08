@@ -29,5 +29,12 @@ namespace Banks.Model.Entities
                 _passportData = value;
             }
         }
+
+        public bool IsCompleted => _address != null && _passportData != null;
+        public bool IsSubscribed { get; set; }
+
+        public void ReceiveNotification()
+        {
+        }
     }
 }

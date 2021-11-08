@@ -13,8 +13,12 @@ namespace Banks.UI.EntitiesUI
                 "Register Bank",
                 "Register Client",
 
-                "Bank List",
-                "Make Transaction",
+                "Display Bank List",
+                "Display Client List",
+
+                "Make Money Transfer",
+                "Make Account Replenishment",
+                "Make Funds Withdrawal",
 
                 "Select Bank",
 

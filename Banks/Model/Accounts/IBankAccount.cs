@@ -1,14 +1,21 @@
+using System;
+using Banks.Model.Entities;
+
 namespace Banks.Model.Accounts
 {
     public interface IBankAccount
     {
         decimal Balance();
 
-        void SendMoney(decimal money);
+        void DeductFunds(decimal money);
 
-        void ScheduleRenew(decimal t);
+        void DailyRenew(DateTime currentDate);
 
-        void ReceiveMoney(decimal money);
+        void CreditFunds(decimal money);
         string StringType();
+        bool IsConfirmed();
+        BankClient BankClient();
+        BankingConditions BankingConditions();
+        void NotifyClient();
     }
 }

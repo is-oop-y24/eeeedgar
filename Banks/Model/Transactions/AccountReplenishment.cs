@@ -1,4 +1,5 @@
 using Banks.Model.Accounts;
+using Banks.Model.Tools;
 
 namespace Banks.Model.Transactions
 {
@@ -6,20 +7,30 @@ namespace Banks.Model.Transactions
     {
         private IBankAccount _bankAccount;
         private decimal _money;
+        private bool _isCompleted;
+        private bool _isCanceled;
         public AccountReplenishment(IBankAccount bankAccount, decimal money)
         {
             _bankAccount = bankAccount;
             _money = money;
+            _isCompleted = false;
+            _isCanceled = false;
         }
 
-        public void Make()
+        public void Commit()
         {
-            _bankAccount.SendMoney(_money);
+            if (_isCompleted)
+                throw new BanksException("retry to commit a transaction");
+            _bankAccount.CreditFunds(_money);
+            _isCompleted = true;
         }
 
         public void Cancel()
         {
-            throw new System.NotImplementedException();
+            if (_isCanceled)
+                throw new BanksException("retry to cancel a transaction");
+            _bankAccount.DeductFunds(_money);
+            _isCanceled = true;
         }
     }
 }

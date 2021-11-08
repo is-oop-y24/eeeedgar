@@ -1,4 +1,4 @@
-﻿using Shops.Tools;
+﻿using Banks.UI.Tools;
 
 namespace Banks.UI.Commands
 {

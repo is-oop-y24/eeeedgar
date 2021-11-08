@@ -1,6 +1,6 @@
 ﻿using Banks.Model.Entities;
 
-namespace Shops.Tools
+namespace Banks.UI.Tools
 {
     public class Context
     {

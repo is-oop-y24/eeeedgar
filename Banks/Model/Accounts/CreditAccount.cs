@@ -7,14 +7,14 @@ namespace Banks.Model.Accounts
     {
         private BankClient _bankClient;
         private decimal _balance;
-        private decimal _creditLimit;
-        private decimal _commission;
-        public CreditAccount(BankClient bankClient, decimal creditLimit, decimal commission)
+        private DateTime _creationDate;
+        private BankingConditions _conditions;
+        public CreditAccount(BankClient bankClient, DateTime creationDate, BankingConditions conditions)
         {
             _bankClient = bankClient;
+            _creationDate = creationDate;
+            _conditions = conditions;
             _balance = 0;
-            _creditLimit = creditLimit;
-            _commission = commission;
         }
 
         public decimal Balance()
@@ -22,33 +22,22 @@ namespace Banks.Model.Accounts
             return _balance;
         }
 
-        public void SendMoney(decimal money)
+        public void DeductFunds(decimal money)
         {
-            if (_balance - money < -_creditLimit)
+            if (_balance - money < -_conditions.CreditLimit)
                 throw new Exception("going under the credit limit");
-            if (_balance < 0)
-            {
-                if (_balance - money - _commission < -_creditLimit)
-                    throw new Exception("going under the credit limit");
-                _balance -= money + _commission;
-            }
-            else
-            {
-                if (_balance - money < -_creditLimit)
-                    throw new Exception("going under the credit limit");
-                _balance -= money;
-            }
-
             _balance -= money;
         }
 
-        public void ScheduleRenew(decimal t)
+        public void DailyRenew(DateTime currentDate)
         {
-            if (_balance < 0)
-                _balance -= _commission * Math.Floor(t / 365);
+            if (currentDate.Day == _creationDate.Day && _balance < 0)
+            {
+                _balance -= _conditions.CreditCommission;
+            }
         }
 
-        public void ReceiveMoney(decimal money)
+        public void CreditFunds(decimal money)
         {
             _balance += money;
         }
@@ -56,6 +45,22 @@ namespace Banks.Model.Accounts
         public string StringType()
         {
             return GetType().ToString().Split('.')[^1];
+        }
+
+        public bool IsConfirmed()
+        {
+            return _bankClient.IsCompleted;
+        }
+
+        public BankClient BankClient() => _bankClient;
+        public BankingConditions BankingConditions()
+        {
+            return _conditions;
+        }
+
+        public void NotifyClient()
+        {
+            _bankClient.ReceiveNotification();
         }
     }
 }

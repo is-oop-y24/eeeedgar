@@ -23,7 +23,6 @@ namespace Banks.Model.Entities
                 controlBalanceNumber++;
             }
 
-            Console.WriteLine($"ans: {(ControlBalances.Last() >= balance ? Interests[controlBalanceNumber] : Interests.Last())}");
             return ControlBalances.Last() >= balance ? Interests[controlBalanceNumber] : Interests.Last();
         }
     }

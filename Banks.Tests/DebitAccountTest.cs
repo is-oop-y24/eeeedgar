@@ -1,3 +1,4 @@
+using System;
 using Banks.Model.Accounts;
 using Banks.Model.Entities;
 using NUnit.Framework;
@@ -15,18 +16,30 @@ namespace Banks.Tests
                 Name = "danya",
                 Surname = "titov",
             };
-            _debitAccount = new DebitAccount(bankClient, 1);
+            var conditions = new BankingConditions()
+            {
+                DebitInterest = 1,
+            };
+            _debitAccount = new DebitAccount(bankClient, conditions, DateTime.Now);
             const int sum = 1000;
-            _debitAccount.ReceiveMoney(sum);
+            _debitAccount.CreditFunds(sum);
         }
 
         [Test]
         public void DebitAccounts()
         {
-            decimal oldBalance = _debitAccount.Balance();
-            const int yearLength = 365;
-            _debitAccount.ScheduleRenew(yearLength);
-            Assert.AreEqual(oldBalance * (1 + _debitAccount.Interest / 100), _debitAccount.Balance());
+            decimal computedBalance = _debitAccount.Balance();
+            int yearLength = DateTime.IsLeapYear(_debitAccount.CreationDate.Year) ? 366 : 365;
+            for (int d = 1; d <= yearLength; d++)
+            {
+                _debitAccount.DailyRenew(_debitAccount.CreationDate + TimeSpan.FromDays(d));
+            }
+
+            for (int m = 1; m <= 12; m++)
+            {
+                computedBalance *= 1 + ((decimal) 0.01 / 12);
+            }
+            Assert.AreEqual(decimal.Round(computedBalance, 4), decimal.Round(_debitAccount.Balance(), 4));
         }
     }
 }

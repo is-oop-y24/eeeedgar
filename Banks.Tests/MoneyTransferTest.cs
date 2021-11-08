@@ -1,3 +1,4 @@
+using System;
 using Banks.Model.Accounts;
 using Banks.Model.Entities;
 using Banks.Model.Transactions;
@@ -19,20 +20,23 @@ namespace Banks.Tests
             {
                 Name = "danya",
                 Surname = "titov",
+                Address = "kyiv",
+                PassportData = "228 1337",
             };
-            var debitAccount1 = new DebitAccount(bankClient, 1);
+            var conditions = new BankingConditions();
+            var debitAccount1 = new DebitAccount(bankClient, conditions, DateTime.Now);
             const int sum = 1000;
-            var debitAccount2 = new DebitAccount(bankClient, 1);
-            debitAccount1.ReceiveMoney(sum);
+            var debitAccount2 = new DebitAccount(bankClient, conditions, DateTime.Now);
+            debitAccount1.CreditFunds(sum);
             Assert.AreEqual(debitAccount1.Balance(), sum);
             Assert.AreEqual(debitAccount2.Balance(), 0);
             
             
             var moneyTransfer = new MoneyTransfer(debitAccount1, debitAccount2, sum);
-            moneyTransfer.Make();
+            moneyTransfer.Commit();
             
-            Assert.AreEqual(debitAccount1.Balance(), 0);
-            Assert.AreEqual(debitAccount2.Balance(), sum);
+            Assert.AreEqual(0, debitAccount1.Balance());
+            Assert.AreEqual(sum, debitAccount2.Balance());
         }
     }
 }

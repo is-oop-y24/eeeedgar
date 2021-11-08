@@ -9,9 +9,9 @@ namespace Banks.UI.EntitiesUI
             return AnsiConsole.Ask<string>($"Enter {whatString}:");
         }
 
-        public static int AskNumber(string whatNumber)
+        public static decimal AskDecimal(string whatNumber)
         {
-            return AnsiConsole.Ask<int>($"Enter {whatNumber}:");
+            return AnsiConsole.Ask<decimal>($"Enter {whatNumber}:");
         }
     }
 }

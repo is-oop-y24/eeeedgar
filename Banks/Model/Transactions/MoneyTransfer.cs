@@ -1,4 +1,5 @@
 using Banks.Model.Accounts;
+using Banks.Model.Tools;
 
 namespace Banks.Model.Transactions
 {
@@ -6,23 +7,36 @@ namespace Banks.Model.Transactions
     {
         private IBankAccount _sender;
         private IBankAccount _receiver;
-        private int _money;
-        public MoneyTransfer(IBankAccount sender, IBankAccount receiver, int money)
+        private decimal _money;
+        private bool _isCompleted;
+        private bool _isCanceled;
+        public MoneyTransfer(IBankAccount sender, IBankAccount receiver, decimal money)
         {
             _sender = sender;
             _receiver = receiver;
             _money = money;
+            _isCompleted = false;
+            _isCanceled = false;
         }
 
-        public void Make()
+        public void Commit()
         {
-            _sender.SendMoney(_money);
-            _receiver.ReceiveMoney(_money);
+            if (_isCompleted)
+                throw new BanksException("retry to commit a transaction");
+            if (!_sender.IsConfirmed() && _money > _sender.BankingConditions().DoubtfulAccountLimit)
+                throw new BanksException("exceeding the limit for doubtful accounts");
+            _sender.DeductFunds(_money);
+            _receiver.CreditFunds(_money);
+            _isCompleted = true;
         }
 
         public void Cancel()
         {
-            throw new System.NotImplementedException();
+            if (_isCanceled)
+                throw new BanksException("retry to cancel a transaction");
+            _receiver.DeductFunds(_money);
+            _sender.CreditFunds(_money);
+            _isCanceled = true;
         }
     }
 }

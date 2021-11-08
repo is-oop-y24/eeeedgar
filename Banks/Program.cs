@@ -1,8 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using Banks.Model.Accounts;
 using Banks.Model.Entities;
-using Banks.Model.Transactions;
-using Banks.UI.EntitiesUI;
+using Banks.UI.Controllers;
 
 namespace Banks
 {
@@ -10,82 +10,49 @@ namespace Banks
     {
         private static void Main()
         {
-            DisplayAccounts();
+            DepositWait();
         }
 
-        private static void DisplayBanks()
+        private static void Run()
         {
             var centralBank = new CentralBank();
-            var bank1 = new Bank
-            {
-                Name = "sbebrank",
-            };
-            var bank2 = new Bank
-            {
-                Name = "tonkoff",
-            };
-            var bank3 = new Bank
-            {
-                Name = "rifizen",
-            };
-            var bank4 = new Bank
-            {
-                Name = "bspb",
-            };
-            centralBank.RegisterBank(bank1);
-            centralBank.RegisterBank(bank2);
-            centralBank.RegisterBank(bank3);
-            centralBank.RegisterBank(bank4);
-            CentralBankUi.DisplayBanks(centralBank.Banks);
+            MainController.Run(centralBank);
         }
 
-        private static void DisplayClients()
+        private static void DepositWait()
         {
-            var centralBank = new CentralBank();
-            var bankClient1 = new BankClient()
+            var bankClient = new BankClient()
             {
-                Name = "taylor",
-                Surname = "swift",
+                Name = "danya",
+                Surname = "titov",
             };
-            var bankClient2 = new BankClient()
+            var controlBalances = new List<decimal>()
             {
-                Name = "hello",
-                Surname = "world",
-                Address = "pepega",
-                PassportData = "4020 228877",
+                100,
+                200,
             };
-            centralBank.RegisterClient(bankClient1);
-            centralBank.RegisterClient(bankClient2);
-            CentralBankUi.DisplayClients(centralBank.Clients);
-        }
+            var interests = new List<decimal>()
+            {
+                3,
+                5,
+                7,
+            };
+            var depositInterest = new DepositInterest(controlBalances, interests);
+            var conditions = new BankingConditions()
+            {
+                DepositInterest = depositInterest,
+            };
+            var depositAccount = new DepositAccount(bankClient, DateTime.Now, DateTime.Now, conditions);
+            const int sum = 1000;
+            depositAccount.CreditFunds(sum);
 
-        private static void DisplayAccounts()
-        {
-            var centralBank = new CentralBank();
-            var bankClient1 = new BankClient()
+            decimal computedBalance = depositAccount.Balance();
+            int yearLength = DateTime.IsLeapYear(depositAccount.CreationDate.Year) ? 366 : 365;
+            for (int d = 1; d <= yearLength; d++)
             {
-                Name = "taylor",
-                Surname = "swift",
-            };
-            var bankClient2 = new BankClient()
-            {
-                Name = "hello",
-                Surname = "world",
-                Address = "pepega",
-                PassportData = "4020 228877",
-            };
-            centralBank.RegisterClient(bankClient1);
-            centralBank.RegisterClient(bankClient2);
-            var bank = new Bank
-            {
-                Name = "sbebrank",
-            };
-            CreditAccount creditAccount = bank.CreateCreditAccount(bankClient1);
-            creditAccount.ReceiveMoney(100);
-            bank.CreateCreditAccount(bankClient2);
-            bank.CreateDepositAccount(bankClient1);
-            bank.CreateDebitAccount(bankClient1);
-            BankUi.DisplayAccounts(bank.BankAccounts);
+                depositAccount.DailyRenew(depositAccount.CreationDate + TimeSpan.FromDays(d));
+                Console.WriteLine($"{d} : {depositAccount.Balance()} : {depositAccount.Interest} : {depositAccount.ExpectedCharge}");
+            }
         }
     }
 }
