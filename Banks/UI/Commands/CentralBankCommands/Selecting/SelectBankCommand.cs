@@ -1,3 +1,4 @@
+using System;
 using Banks.Model.Entities;
 using Banks.UI.EntitiesUI;
 using Banks.UI.Tools;
@@ -10,9 +11,9 @@ namespace Banks.UI.Commands.CentralBankCommands.Selecting
         public Context Execute(Context context)
         {
             CentralBankUi.DisplayBanks(context.CentralBank.Banks);
-            int bankId = (int)Clarifier.AskDecimal("Bank Id");
+            Guid bankId = CentralBankUi.SelectBank(context.CentralBank.Banks);
             AnsiConsole.Clear();
-            Bank bank = context.CentralBank.Banks[bankId];
+            Bank bank = context.CentralBank.Banks.Find(b => b.Id.Equals(bankId));
             return new Context(context.CentralBank, bank);
         }
     }

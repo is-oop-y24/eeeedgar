@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Banks.Model.Accounts;
 using Banks.Model.Entities;
+using Banks.Model.Entities.DepositStuff;
 using NUnit.Framework;
 
 namespace Banks.Tests
@@ -18,54 +19,70 @@ namespace Banks.Tests
                 Name = "danya",
                 Surname = "titov",
             };
-            var controlBalances = new List<decimal>()
+            var controlBalances = new List<DepositControlBalance>
             {
-                100,
-                200,
+                new() { Value = 100 },
+                new() { Value = 200 }
             };
-            var interests = new List<decimal>()
+            var interests = new List<DepositControlInterest>
             {
-                3,
-                5,
-                7,
+                new() { Value = 3 },
+                new() { Value = 5 },
+                new() { Value = 7 }
             };
-            var depositInterest = new DepositInterest(controlBalances, interests);
+            var depositInterest = new DepositInterest()
+            {
+                ControlBalances = controlBalances,
+                Interests = interests
+            };
             _conditions = new BankingConditions()
             {
                 DepositInterest = depositInterest,
             };
-            _depositAccount = new DepositAccount(bankClient, DateTime.Now, DateTime.Now, _conditions);
             const int sum = 1000;
+            _depositAccount = new DepositAccount()
+            {
+                BankClient = bankClient,
+                CreationDate = DateTime.Now,
+                ReleaseDate = DateTime.Now,
+                BankingConditions = _conditions,
+                InitialBalance = sum,
+                Interest = _conditions.DepositInterest.Count(sum),
+            };
             _depositAccount.CreditFunds(sum);
         }
 
         [Test]
         public void CheckCorrectBalanceRecognising()
         {
-            var controlBalances = new List<decimal>
+            var controlBalances = new List<DepositControlBalance>
             {
-                10,
-                100,
-                1000
+                new() { Value = 10 },
+                new() { Value = 100 },
+                new() { Value = 1000 }
             };
-            var interests = new List<decimal>
+            var interests = new List<DepositControlInterest>
             {
-                1,
-                2,
-                3,
-                4
+                new() { Value = 1 },
+                new() { Value = 2 },
+                new() { Value = 3 },
+                new() { Value = 4 }
             };
-            var depositInterest = new DepositInterest(controlBalances, interests);
-            Assert.AreEqual(depositInterest.Interest(0), interests[0]);
-            Assert.AreEqual(depositInterest.Interest(11), interests[1]);
-            Assert.AreEqual(depositInterest.Interest(101), interests[2]);
-            Assert.AreEqual(depositInterest.Interest(1001), interests[3]);
+            var depositInterest = new DepositInterest()
+            {
+                ControlBalances = controlBalances,
+                Interests = interests,
+            };
+            Assert.AreEqual(depositInterest.Count(0), interests[0].Value);
+            Assert.AreEqual(depositInterest.Count(11), interests[1].Value);
+            Assert.AreEqual(depositInterest.Count(101), interests[2].Value);
+            Assert.AreEqual(depositInterest.Count(1001), interests[3].Value);
         }
 
         [Test]
         public void CheckInterestAfterSomeTime()
         {
-            decimal computedBalance = _depositAccount.Balance();
+            decimal computedBalance = _depositAccount.Balance;
             int yearLength = DateTime.IsLeapYear(_depositAccount.CreationDate.Year) ? 366 : 365;
             for (int d = 1; d <= yearLength; d++)
             {
@@ -74,9 +91,9 @@ namespace Banks.Tests
 
             for (int m = 1; m <= 12; m++)
             {
-                computedBalance *= 1 + _conditions.DepositInterest.Interest(computedBalance) / 100 / 12;
+                computedBalance *= 1 + _conditions.DepositInterest.Count(computedBalance) / 100 / 12;
             }
-            Assert.AreEqual(decimal.Round(computedBalance, 2), decimal.Round(_depositAccount.Balance(), 2));
+            Assert.AreEqual(decimal.Round(computedBalance, 2), decimal.Round(_depositAccount.Balance, 2));
         }
     }
 }

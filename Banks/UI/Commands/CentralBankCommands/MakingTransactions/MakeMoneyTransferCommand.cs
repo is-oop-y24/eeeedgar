@@ -1,9 +1,11 @@
+using System;
 using Banks.Model.Accounts;
 using Banks.Model.Entities;
 using Banks.Model.Transactions;
 using Banks.UI.Commands.CentralBankCommands.Selecting;
 using Banks.UI.EntitiesUI;
 using Banks.UI.Tools;
+using Spectre.Console;
 
 namespace Banks.UI.Commands.CentralBankCommands.MakingTransactions
 {
@@ -13,16 +15,24 @@ namespace Banks.UI.Commands.CentralBankCommands.MakingTransactions
         {
             Bank senderBank = new SelectBankCommand().Execute(context).Bank;
             BankUi.DisplayAccounts(senderBank.BankAccounts);
-            int senderAccountId = (int)Clarifier.AskDecimal("sender account id");
-            IBankAccount senderAccount = senderBank.BankAccounts[senderAccountId];
+            AnsiConsole.WriteLine("sender");
+            Guid senderAccountId = BankUi.SelectBankAccount(senderBank.BankAccounts);
+            BankAccount senderAccount = senderBank.BankAccounts.Find(a => a.Id.Equals(senderAccountId));
 
             Bank receiverBank = new SelectBankCommand().Execute(context).Bank;
             BankUi.DisplayAccounts(receiverBank.BankAccounts);
-            int receiverAccountId = (int)Clarifier.AskDecimal("receiver account id");
-            IBankAccount receiverAccount = receiverBank.BankAccounts[receiverAccountId];
+            AnsiConsole.WriteLine("receiver");
+            Guid receiverAccountId = BankUi.SelectBankAccount(receiverBank.BankAccounts);
+            BankAccount receiverAccount = receiverBank.BankAccounts.Find(a => a.Id.Equals(receiverAccountId));
 
             decimal money = Clarifier.AskDecimal("money transfer value");
-            var moneyTransfer = new MoneyTransfer(senderAccount, receiverAccount, money);
+            var moneyTransfer = new MoneyTransfer
+            {
+                Id = Guid.NewGuid(),
+                Sender = senderAccount,
+                Receiver = receiverAccount,
+                Money = money,
+            };
             context.CentralBank.MakeTransaction(moneyTransfer);
 
             return context;

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -35,7 +36,7 @@ namespace Banks.UI.EntitiesUI
             return choice;
         }
 
-        public static void DisplayAccounts(IReadOnlyDictionary<int, IBankAccount> bankAccounts)
+        public static void DisplayAccounts(List<BankAccount> bankAccounts)
         {
             var table = new Table
             {
@@ -44,9 +45,9 @@ namespace Banks.UI.EntitiesUI
 
             table.AddColumns("Id", "Type", "Balance", "Client Name", "Client Surname", "Client Address", "Client Passport Data");
 
-            foreach ((int id, IBankAccount bankAccount) in bankAccounts)
+            foreach (BankAccount bankAccount in bankAccounts)
             {
-                table.AddRow(id.ToString(), bankAccount.StringType(), bankAccount.Balance().ToString(CultureInfo.InvariantCulture), bankAccount.BankClient().Name, bankAccount.BankClient().Surname, bankAccount.BankClient().Address, bankAccount.BankClient().PassportData);
+                table.AddRow(bankAccount.Id.ToString(), bankAccount.StringType(), bankAccount.Balance.ToString(CultureInfo.InvariantCulture), bankAccount.BankClient.Name, bankAccount.BankClient.Surname, bankAccount.BankClient.Address, bankAccount.BankClient.PassportData);
             }
 
             AnsiConsole.Write(table);
@@ -60,10 +61,27 @@ namespace Banks.UI.EntitiesUI
             AnsiConsole.WriteLine("deposit interest");
             for (int i = 0; i < bankingConditions.DepositInterest.ControlBalances.Count; i++)
             {
-                AnsiConsole.WriteLine($"under {bankingConditions.DepositInterest.ControlBalances[i]} : {bankingConditions.DepositInterest.Interests[i]}");
+                AnsiConsole.WriteLine($"under {bankingConditions.DepositInterest.ControlBalances[i].Value} : {bankingConditions.DepositInterest.Interests[i].Value}");
             }
 
-            AnsiConsole.WriteLine($"upper : {bankingConditions.DepositInterest.Interests.Last()}");
+            AnsiConsole.WriteLine($"upper : {bankingConditions.DepositInterest.Interests.Last().Value}");
+        }
+
+        public static Guid SelectBankAccount(List<BankAccount> accounts)
+        {
+            var guids = new List<string>();
+            foreach (BankAccount bankAccount in accounts)
+            {
+                guids.Add(bankAccount.Id.ToString());
+            }
+
+            string choice = AnsiConsole.Prompt(
+                new SelectionPrompt<string>()
+                    .Title("Select Client")
+                    .PageSize(10)
+                    .AddChoices(guids));
+            AnsiConsole.Clear();
+            return Guid.Parse((ReadOnlySpan<char>)choice);
         }
     }
 }

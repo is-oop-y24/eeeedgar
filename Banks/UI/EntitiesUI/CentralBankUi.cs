@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Banks.Model.Entities;
 using Spectre.Console;
 
@@ -34,7 +35,7 @@ namespace Banks.UI.EntitiesUI
             return choice;
         }
 
-        public static void DisplayBanks(IReadOnlyDictionary<int, Bank> banks)
+        public static void DisplayBanks(List<Bank> banks)
         {
             var table = new Table
             {
@@ -43,15 +44,15 @@ namespace Banks.UI.EntitiesUI
 
             table.AddColumns("id", "Bank Name");
 
-            foreach ((int id, Bank bank) in banks)
+            foreach (Bank bank in banks)
             {
-                table.AddRow(id.ToString(), bank.Name);
+                table.AddRow(bank.Id.ToString(), bank.Name);
             }
 
             AnsiConsole.Write(table);
         }
 
-        public static void DisplayClients(IReadOnlyDictionary<int, BankClient> clients)
+        public static void DisplayClients(List<BankClient> clients)
         {
             var table = new Table
             {
@@ -60,12 +61,46 @@ namespace Banks.UI.EntitiesUI
 
             table.AddColumns("id", "Name", "Surname", "Address", "Passport Data");
 
-            foreach ((int id, BankClient client) in clients)
+            foreach (BankClient client in clients)
             {
-                table.AddRow(id.ToString(), client.Name, client.Surname, client.Address ?? "---", client.PassportData ?? "---");
+                table.AddRow(client.Id.ToString(), client.Name, client.Surname, client.Address ?? "---", client.PassportData ?? "---");
             }
 
             AnsiConsole.Write(table);
+        }
+
+        public static Guid SelectBank(List<Bank> banks)
+        {
+            var guids = new List<string>();
+            foreach (Bank bank in banks)
+            {
+                guids.Add(bank.Id.ToString());
+            }
+
+            string choice = AnsiConsole.Prompt(
+                new SelectionPrompt<string>()
+                    .Title("Select Bank")
+                    .PageSize(10)
+                    .AddChoices(guids));
+            AnsiConsole.Clear();
+            return Guid.Parse((ReadOnlySpan<char>)choice);
+        }
+
+        public static Guid SelectClient(List<BankClient> clients)
+        {
+            var guids = new List<string>();
+            foreach (BankClient client in clients)
+            {
+                guids.Add(client.Id.ToString());
+            }
+
+            string choice = AnsiConsole.Prompt(
+                new SelectionPrompt<string>()
+                    .Title("Select Client")
+                    .PageSize(10)
+                    .AddChoices(guids));
+            AnsiConsole.Clear();
+            return Guid.Parse((ReadOnlySpan<char>)choice);
         }
     }
 }

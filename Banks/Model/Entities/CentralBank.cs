@@ -6,47 +6,41 @@ namespace Banks.Model.Entities
 {
     public class CentralBank
     {
-        private int _nextBankId;
-        private int _nextClientId;
-        private int _nextTransactionId;
         public CentralBank()
         {
-            Clients = new Dictionary<int, BankClient>();
-            Banks = new Dictionary<int, Bank>();
-            Transactions = new Dictionary<int, ITransaction>();
+            Clients = new List<BankClient>();
+            Banks = new List<Bank>();
+            Transactions = new List<Transaction>();
         }
 
-        public Dictionary<int, BankClient> Clients { get; }
-        public Dictionary<int, Bank> Banks { get; }
-        public Dictionary<int, ITransaction> Transactions { get; }
+        public List<BankClient> Clients { get; }
+        public List<Bank> Banks { get; }
+        public List<Transaction> Transactions { get; }
 
-        public int MakeTransaction(ITransaction transaction)
+        public void MakeTransaction(Transaction transaction)
         {
-            Transactions.Add(_nextTransactionId++, transaction);
+            Transactions.Add(transaction);
             transaction.Commit();
-            return _nextTransactionId - 1;
         }
 
-        public int RegisterBank(Bank bank)
+        public void RegisterBank(Bank bank)
         {
-            Banks.Add(_nextBankId++, bank);
-            return _nextBankId - 1;
+            Banks.Add(bank);
         }
 
-        public int RegisterClient(BankClient bankClient)
+        public void RegisterClient(BankClient bankClient)
         {
-            Clients.Add(_nextClientId++, bankClient);
-            return _nextClientId - 1;
+            Clients.Add(bankClient);
         }
 
-        public void CancelTransaction(ITransaction transaction)
+        public void CancelTransaction(Transaction transaction)
         {
             transaction.Cancel();
         }
 
         public void DailyRenew(DateTime currentDate)
         {
-            foreach ((int id, Bank bank) in Banks)
+            foreach (Bank bank in Banks)
             {
                 bank.DailyRenew(currentDate);
             }

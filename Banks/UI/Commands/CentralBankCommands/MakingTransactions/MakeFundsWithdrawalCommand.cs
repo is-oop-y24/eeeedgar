@@ -1,3 +1,4 @@
+using System;
 using Banks.Model.Accounts;
 using Banks.Model.Entities;
 using Banks.Model.Transactions;
@@ -13,11 +14,16 @@ namespace Banks.UI.Commands.CentralBankCommands.MakingTransactions
         {
             Bank accountBank = new SelectBankCommand().Execute(context).Bank;
             BankUi.DisplayAccounts(accountBank.BankAccounts);
-            int accountId = (int)Clarifier.AskDecimal("account id");
-            IBankAccount account = accountBank.BankAccounts[accountId];
+            Guid bankAccountId = BankUi.SelectBankAccount(accountBank.BankAccounts);
+            BankAccount account = accountBank.BankAccounts.Find(a => a.Id.Equals(bankAccountId));
 
             decimal money = Clarifier.AskDecimal("money transfer value");
-            var fundsWithdrawal = new FundsWithdrawal(account, money);
+            var fundsWithdrawal = new FundsWithdrawal
+            {
+                Id = Guid.NewGuid(),
+                Sender = account,
+                Money = money,
+            };
             context.CentralBank.MakeTransaction(fundsWithdrawal);
 
             return context;

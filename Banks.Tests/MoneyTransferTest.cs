@@ -24,19 +24,34 @@ namespace Banks.Tests
                 PassportData = "228 1337",
             };
             var conditions = new BankingConditions();
-            var debitAccount1 = new DebitAccount(bankClient, conditions, DateTime.Now);
+            var debitAccount1 = new DebitAccount()
+            {
+                BankClient = bankClient,
+                BankingConditions = conditions,
+                CreationDate = DateTime.Now
+            };
             const int sum = 1000;
-            var debitAccount2 = new DebitAccount(bankClient, conditions, DateTime.Now);
+            var debitAccount2 = new DebitAccount()
+            {
+                BankClient = bankClient,
+                BankingConditions = conditions,
+                CreationDate = DateTime.Now
+            };
             debitAccount1.CreditFunds(sum);
-            Assert.AreEqual(debitAccount1.Balance(), sum);
-            Assert.AreEqual(debitAccount2.Balance(), 0);
+            Assert.AreEqual(sum, debitAccount1.Balance);
+            Assert.AreEqual(0, debitAccount2.Balance);
             
             
-            var moneyTransfer = new MoneyTransfer(debitAccount1, debitAccount2, sum);
+            var moneyTransfer = new MoneyTransfer()
+            {
+                Sender = debitAccount1,
+                Receiver = debitAccount2,
+                Money = sum
+            };
             moneyTransfer.Commit();
             
-            Assert.AreEqual(0, debitAccount1.Balance());
-            Assert.AreEqual(sum, debitAccount2.Balance());
+            Assert.AreEqual(0, debitAccount1.Balance);
+            Assert.AreEqual(sum, debitAccount2.Balance);
         }
     }
 }

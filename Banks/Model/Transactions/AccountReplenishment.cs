@@ -1,36 +1,26 @@
-using Banks.Model.Accounts;
+using System;
 using Banks.Model.Tools;
 
 namespace Banks.Model.Transactions
 {
-    public class AccountReplenishment : ITransaction
+    public class AccountReplenishment : Transaction
     {
-        private IBankAccount _bankAccount;
-        private decimal _money;
-        private bool _isCompleted;
-        private bool _isCanceled;
-        public AccountReplenishment(IBankAccount bankAccount, decimal money)
-        {
-            _bankAccount = bankAccount;
-            _money = money;
-            _isCompleted = false;
-            _isCanceled = false;
-        }
+        public override Type Type => GetType();
 
-        public void Commit()
+        public override void Commit()
         {
-            if (_isCompleted)
+            if (IsCommitted)
                 throw new BanksException("retry to commit a transaction");
-            _bankAccount.CreditFunds(_money);
-            _isCompleted = true;
+            Receiver.CreditFunds(Money);
+            IsCommitted = true;
         }
 
-        public void Cancel()
+        public override void Cancel()
         {
-            if (_isCanceled)
+            if (IsCanceled || !IsCommitted)
                 throw new BanksException("retry to cancel a transaction");
-            _bankAccount.DeductFunds(_money);
-            _isCanceled = true;
+            Receiver.DeductFunds(Money);
+            IsCanceled = true;
         }
     }
 }

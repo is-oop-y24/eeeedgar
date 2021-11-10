@@ -1,3 +1,4 @@
+using System;
 using Banks.Model.Tools;
 
 namespace Banks.Model.Entities
@@ -6,6 +7,7 @@ namespace Banks.Model.Entities
     {
         private string _address;
         private string _passportData;
+        public Guid Id { get; set; }
         public string Name { get; init; }
         public string Surname { get; init; }
         public string Address
@@ -30,11 +32,6 @@ namespace Banks.Model.Entities
             }
         }
 
-        public bool IsCompleted => _address != null && _passportData != null;
         public bool IsSubscribed { get; set; }
-
-        public void ReceiveNotification()
-        {
-        }
     }
 }

@@ -1,7 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using Banks.Model.Accounts;
+using System.Linq;
 using Banks.Model.Entities;
+using Banks.Model.Transactions;
+using Banks.Repository.EF;
 using Banks.UI.Controllers;
 
 namespace Banks
@@ -10,48 +11,41 @@ namespace Banks
     {
         private static void Main()
         {
-            DepositWait();
+            Run();
         }
 
         private static void Run()
         {
             var centralBank = new CentralBank();
             MainController.Run(centralBank);
+            Console.WriteLine(centralBank.Banks);
+            SaveAndDisplayDataBase(centralBank);
         }
 
-        private static void DepositWait()
+        private static void SaveAndDisplayDataBase(CentralBank centralBank)
         {
-            var bankClient = new BankClient()
-            {
-                Name = "danya",
-                Surname = "titov",
-            };
-            var controlBalances = new List<decimal>()
-            {
-                100,
-                200,
-            };
-            var interests = new List<decimal>()
-            {
-                3,
-                5,
-                7,
-            };
-            var depositInterest = new DepositInterest(controlBalances, interests);
-            var conditions = new BankingConditions()
-            {
-                DepositInterest = depositInterest,
-            };
-            var depositAccount = new DepositAccount(bankClient, DateTime.Now, DateTime.Now, conditions);
-            const int sum = 1000;
-            depositAccount.CreditFunds(sum);
+            using var db = new ApplicationContext();
+            db.CentralBanks.Add(centralBank);
 
-            decimal computedBalance = depositAccount.Balance();
-            int yearLength = DateTime.IsLeapYear(depositAccount.CreationDate.Year) ? 366 : 365;
-            for (int d = 1; d <= yearLength; d++)
+            db.SaveChanges();
+
+            CentralBank c = db.CentralBanks.First();
+            Console.WriteLine("------- db: banks -------");
+            foreach (Bank bank in c.Banks)
             {
-                depositAccount.DailyRenew(depositAccount.CreationDate + TimeSpan.FromDays(d));
-                Console.WriteLine($"{d} : {depositAccount.Balance()} : {depositAccount.Interest} : {depositAccount.ExpectedCharge}");
+                Console.WriteLine($"{bank.Id} | {bank.Name}");
+            }
+
+            Console.WriteLine("------- db: clients -------");
+            foreach (BankClient client in c.Clients)
+            {
+                Console.WriteLine($"{client.Id} | {client.Name}");
+            }
+
+            Console.WriteLine("------- db: transactions -------");
+            foreach (Transaction transaction in c.Transactions)
+            {
+                Console.WriteLine($"{transaction.Id} | {transaction.Type}");
             }
         }
     }

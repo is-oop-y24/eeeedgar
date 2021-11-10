@@ -1,3 +1,4 @@
+using System;
 using Banks.Model.Entities;
 using Banks.UI.EntitiesUI;
 using Banks.UI.Tools;
@@ -12,8 +13,9 @@ namespace Banks.UI.Commands.CentralBankCommands.Registering
             string surname = Clarifier.AskString("client surname");
             string address = Clarifier.AskString("client address");
             string passportData = Clarifier.AskString("client passport data");
-            var bankClient = new BankClient()
+            var bankClient = new BankClient
             {
+                Id = Guid.NewGuid(),
                 Name = name,
                 Surname = surname,
                 Address = address,

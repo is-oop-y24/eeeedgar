@@ -20,7 +20,12 @@ namespace Banks.Tests
             {
                 DebitInterest = 1,
             };
-            _debitAccount = new DebitAccount(bankClient, conditions, DateTime.Now);
+            _debitAccount = new DebitAccount()
+            {
+                BankClient = bankClient,
+                BankingConditions = conditions,
+                CreationDate = DateTime.Now,
+            };
             const int sum = 1000;
             _debitAccount.CreditFunds(sum);
         }
@@ -28,7 +33,7 @@ namespace Banks.Tests
         [Test]
         public void DebitAccounts()
         {
-            decimal computedBalance = _debitAccount.Balance();
+            decimal computedBalance = _debitAccount.Balance;
             int yearLength = DateTime.IsLeapYear(_debitAccount.CreationDate.Year) ? 366 : 365;
             for (int d = 1; d <= yearLength; d++)
             {
@@ -39,7 +44,7 @@ namespace Banks.Tests
             {
                 computedBalance *= 1 + ((decimal) 0.01 / 12);
             }
-            Assert.AreEqual(decimal.Round(computedBalance, 4), decimal.Round(_debitAccount.Balance(), 4));
+            Assert.AreEqual(decimal.Round(computedBalance, 4), decimal.Round(_debitAccount.Balance, 4));
         }
     }
 }
