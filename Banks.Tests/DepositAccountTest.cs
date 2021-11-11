@@ -14,11 +14,7 @@ namespace Banks.Tests
         [SetUp]
         public void Setup()
         {
-            var bankClient = new BankClient()
-            {
-                Name = "danya",
-                Surname = "titov",
-            };
+            var bankClient = BankClient.CreateInstance("veka", "belaya");
             var controlBalances = new List<DepositControlBalance>
             {
                 new() { Value = 100 },
@@ -47,7 +43,6 @@ namespace Banks.Tests
                 ReleaseDate = DateTime.Now,
                 BankingConditions = _conditions,
                 InitialBalance = sum,
-                Interest = _conditions.DepositInterest.Count(sum),
             };
             _depositAccount.CreditFunds(sum);
         }

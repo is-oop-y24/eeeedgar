@@ -13,6 +13,7 @@ namespace Banks.Model.Entities
             Transactions = new List<Transaction>();
         }
 
+        public Guid Id { get; set; }
         public List<BankClient> Clients { get; }
         public List<Bank> Banks { get; }
         public List<Transaction> Transactions { get; }

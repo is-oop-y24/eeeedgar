@@ -5,33 +5,51 @@ namespace Banks.Model.Entities
 {
     public class BankClient
     {
-        private string _address;
-        private string _passportData;
         public Guid Id { get; set; }
-        public string Name { get; init; }
-        public string Surname { get; init; }
-        public string Address
+        public string Name { get; private set; }
+        public string Surname { get; private set; }
+        public string Address { get; private set; }
+
+        public string PassportData { get; private set; }
+
+        public bool IsSubscribed { get; private set; }
+
+        public static BankClient CreateInstance(string name, string surname)
         {
-            get => _address;
-            set
+            return new BankClient
             {
-                if (_address != null)
-                    throw new BanksException("illegal attempt to change client's address");
-                _address = value;
-            }
+                Id = Guid.NewGuid(),
+                Name = name,
+                Surname = surname,
+            };
         }
 
-        public string PassportData
+        public BankClient SetAddress(string address)
         {
-            get => _passportData;
-            set
-            {
-                if (_passportData != null)
-                    throw new BanksException("illegal attempt to change client's passport data");
-                _passportData = value;
-            }
+            if (Address != null)
+                throw new BanksException("illegal attempt to set client's address");
+            Address = address;
+            return this;
         }
 
-        public bool IsSubscribed { get; set; }
+        public BankClient SetPassportData(string passportData)
+        {
+            if (PassportData != null)
+                throw new BanksException("illegal attempt to set client's passport data");
+            PassportData = passportData;
+            return this;
+        }
+
+        public BankClient Subscribe()
+        {
+            IsSubscribed = true;
+            return this;
+        }
+
+        public BankClient Unsubscribe()
+        {
+            IsSubscribed = false;
+            return this;
+        }
     }
 }

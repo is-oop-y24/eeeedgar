@@ -1,9 +1,8 @@
-using System;
 using System.Collections.Generic;
 using Banks.Model.Entities;
 using Banks.Model.Entities.DepositStuff;
+using Banks.UI.Controllers;
 using Banks.UI.EntitiesUI;
-using Banks.UI.Tools;
 
 namespace Banks.UI.Commands.CentralBankCommands.Registering
 {
@@ -43,26 +42,20 @@ namespace Banks.UI.Commands.CentralBankCommands.Registering
                 depositControlInterests.Add(new DepositControlInterest { Value = interestDecimal });
             }
 
+            decimal doubtfulAccountLimit = Clarifier.AskDecimal("doubtful account limit");
+
             var depositInterest = new DepositInterest
             {
                 ControlBalances = depositControlBalances,
                 Interests = depositControlInterests,
             };
 
-            var conditions = new BankingConditions
-            {
-                CreditLimit = creditLimit,
-                CreditCommission = creditCommission,
-                DepositInterest = depositInterest,
-                DebitInterest = debitInterest,
-            };
-
-            var bank = new Bank
-            {
-                Id = Guid.NewGuid(),
-                Name = bankName,
-                Conditions = conditions,
-            };
+            Bank bank = Bank.CreateInstance(bankName)
+                .SetDebitInterest(debitInterest)
+                .SetCreditLimit(creditLimit)
+                .SetCreditCommission(creditCommission)
+                .SetDepositInterest(depositInterest)
+                .SetDoubtfulAccountLimit(doubtfulAccountLimit);
 
             context.CentralBank.RegisterBank(bank);
             return context;

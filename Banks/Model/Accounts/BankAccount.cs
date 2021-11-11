@@ -8,9 +8,9 @@ namespace Banks.Model.Accounts
         public Guid Id { get; set; }
         public decimal Balance { get; protected set; }
         public abstract decimal InitialBalance { get; init; }
-        public BankClient BankClient { get; set; }
-        public BankingConditions BankingConditions { get; set; }
-        public DateTime CreationDate { get; set; }
+        public BankClient BankClient { get; init; }
+        public BankingConditions BankingConditions { get; init; }
+        public DateTime CreationDate { get; init; }
 
         public abstract void DeductFunds(decimal money);
 

@@ -4,7 +4,6 @@ using Banks.UI.Commands.CentralBankCommands.MakingTransactions;
 using Banks.UI.Commands.CentralBankCommands.Registering;
 using Banks.UI.Commands.CentralBankCommands.Selecting;
 using Banks.UI.EntitiesUI;
-using Banks.UI.Tools;
 
 namespace Banks.UI.Controllers
 {
@@ -26,6 +25,8 @@ namespace Banks.UI.Controllers
                 "Make Funds Withdrawal" => new MakeFundsWithdrawalCommand().Execute(context),
 
                 "Select Bank" => new SelectBankCommand().Execute(context),
+                "Select Client" => new SelectClientCommand().Execute(context),
+
                 "Exit" => new Context(null, null),
                 _ => throw new BanksException("input error")
             };

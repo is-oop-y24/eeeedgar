@@ -7,15 +7,97 @@ namespace Banks.Model.Entities
 {
     public class Bank
     {
-        public Bank()
+        private Bank()
         {
             BankAccounts = new List<BankAccount>();
         }
 
-        public Guid Id { get; init; }
-        public string Name { get; init; }
-        public BankingConditions Conditions { get; init; }
+        public Guid Id { get; set; }
+        public string Name { get; private set; }
+        public BankingConditions Conditions { get; private set; }
         public List<BankAccount> BankAccounts { get; }
+
+        public static Bank CreateInstance(string name)
+        {
+            return new Bank
+            {
+                Id = Guid.NewGuid(),
+                Name = name,
+                Conditions = new BankingConditions(),
+            };
+        }
+
+        public Bank SetDepositInterest(DepositInterest depositInterest)
+        {
+            Conditions.DepositInterest = depositInterest;
+            foreach (BankAccount bankAccount in BankAccounts)
+            {
+                if (bankAccount.GetType() == typeof(DepositAccount))
+                {
+                    if (bankAccount.BankClient.IsSubscribed)
+                        bankAccount.NotifyClient();
+                }
+            }
+
+            return this;
+        }
+
+        public Bank SetDebitInterest(decimal debitInterest)
+        {
+            Conditions.DebitInterest = debitInterest;
+            foreach (BankAccount bankAccount in BankAccounts)
+            {
+                if (bankAccount.GetType() == typeof(DebitAccount))
+                {
+                    if (bankAccount.BankClient.IsSubscribed)
+                        bankAccount.NotifyClient();
+                }
+            }
+
+            return this;
+        }
+
+        public Bank SetCreditLimit(decimal creditLimit)
+        {
+            Conditions.CreditLimit = creditLimit;
+            foreach (BankAccount bankAccount in BankAccounts)
+            {
+                if (bankAccount.GetType() == typeof(CreditAccount))
+                {
+                    if (bankAccount.BankClient.IsSubscribed)
+                        bankAccount.NotifyClient();
+                }
+            }
+
+            return this;
+        }
+
+        public Bank SetCreditCommission(decimal creditCommission)
+        {
+            Conditions.CreditCommission = creditCommission;
+            foreach (BankAccount bankAccount in BankAccounts)
+            {
+                if (bankAccount.GetType() == typeof(CreditAccount))
+                {
+                    if (bankAccount.BankClient.IsSubscribed)
+                        bankAccount.NotifyClient();
+                }
+            }
+
+            return this;
+        }
+
+        public Bank SetDoubtfulAccountLimit(decimal doubtfulAccountLimit)
+        {
+            Conditions.DoubtfulAccountLimit = doubtfulAccountLimit;
+            foreach (BankAccount bankAccount in BankAccounts)
+            {
+                if (!bankAccount.IsConfirmed())
+                    bankAccount.NotifyClient();
+            }
+
+            return this;
+        }
 
         public DepositAccount CreateDepositAccount(BankClient bankClient, decimal startBalance)
         {
@@ -68,68 +150,6 @@ namespace Banks.Model.Entities
             foreach (BankAccount bankAccount in BankAccounts)
             {
                 bankAccount.DailyRenew(currentDate);
-            }
-        }
-
-        public void SetNewDepositInterest(DepositInterest depositInterest)
-        {
-            Conditions.DepositInterest = depositInterest;
-            foreach (BankAccount bankAccount in BankAccounts)
-            {
-                if (bankAccount.GetType() == typeof(DepositAccount))
-                {
-                    if (bankAccount.BankClient.IsSubscribed)
-                        bankAccount.NotifyClient();
-                }
-            }
-        }
-
-        public void SetNewDebitInterest(decimal debitInterest)
-        {
-            Conditions.DebitInterest = debitInterest;
-            foreach (BankAccount bankAccount in BankAccounts)
-            {
-                if (bankAccount.GetType() == typeof(DebitAccount))
-                {
-                    if (bankAccount.BankClient.IsSubscribed)
-                        bankAccount.NotifyClient();
-                }
-            }
-        }
-
-        public void SetNewCreditLimit(decimal creditLimit)
-        {
-            Conditions.CreditLimit = creditLimit;
-            foreach (BankAccount bankAccount in BankAccounts)
-            {
-                if (bankAccount.GetType() == typeof(CreditAccount))
-                {
-                    if (bankAccount.BankClient.IsSubscribed)
-                        bankAccount.NotifyClient();
-                }
-            }
-        }
-
-        public void SetNewCreditCommission(decimal creditCommission)
-        {
-            Conditions.CreditCommission = creditCommission;
-            foreach (BankAccount bankAccount in BankAccounts)
-            {
-                if (bankAccount.GetType() == typeof(CreditAccount))
-                {
-                    if (bankAccount.BankClient.IsSubscribed)
-                        bankAccount.NotifyClient();
-                }
-            }
-        }
-
-        public void SetNewDoubtfulAccountLimit(decimal doubtfulAccountLimit)
-        {
-            Conditions.DoubtfulAccountLimit = doubtfulAccountLimit;
-            foreach (BankAccount bankAccount in BankAccounts)
-            {
-                if (!bankAccount.IsConfirmed())
-                    bankAccount.NotifyClient();
             }
         }
     }

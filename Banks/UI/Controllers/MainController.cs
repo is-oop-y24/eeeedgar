@@ -1,5 +1,4 @@
 using Banks.Model.Entities;
-using Banks.UI.Tools;
 
 namespace Banks.UI.Controllers
 {
@@ -16,6 +15,8 @@ namespace Banks.UI.Controllers
 
         private static Context RunControllers(Context context)
         {
+            if (context.BankClient != null)
+                return BankClientController.CheckBankClientUiChoice(context);
             if (context.Bank != null)
                 return BankController.CheckBankUiChoice(context);
             return CentralBankController.CheckCentralBankUiChoice(context);

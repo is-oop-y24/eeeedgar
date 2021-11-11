@@ -22,6 +22,7 @@ namespace Banks.UI.EntitiesUI
                 "Make Funds Withdrawal",
 
                 "Select Bank",
+                "Select Client",
 
                 "Exit",
             };

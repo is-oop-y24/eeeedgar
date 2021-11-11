@@ -7,10 +7,7 @@ namespace Banks.Model.Accounts
         private decimal _initialBalance;
         public override decimal InitialBalance
         {
-            get
-            {
-                return _initialBalance;
-            }
+            get => _initialBalance;
 
             init
             {
@@ -19,7 +16,7 @@ namespace Banks.Model.Accounts
             }
         }
 
-        public decimal Interest { get; init; }
+        public decimal Interest => BankingConditions.DepositInterest.Count(_initialBalance);
         public DateTime ReleaseDate { get; set; }
 
         public decimal ExpectedCharge { get; private set; }

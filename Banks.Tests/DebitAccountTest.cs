@@ -11,11 +11,8 @@ namespace Banks.Tests
         [SetUp]
         public void Setup()
         {
-            var bankClient = new BankClient()
-            {
-                Name = "danya",
-                Surname = "titov",
-            };
+            var bankClient = BankClient.CreateInstance("danya", "titov");
+            
             var conditions = new BankingConditions()
             {
                 DebitInterest = 1,

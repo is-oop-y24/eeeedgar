@@ -14,15 +14,12 @@ namespace Banks.Tests
         }
 
         [Test]
-        public void DebitAccounts()
+        public void DebitAccountsMoneyTransfer_CheckBalances()
         {
-            var bankClient = new BankClient()
-            {
-                Name = "danya",
-                Surname = "titov",
-                Address = "kyiv",
-                PassportData = "228 1337",
-            };
+            BankClient bankClient = BankClient
+                .CreateInstance("mikhan", "pacan")
+                .SetAddress("belarusskaya")
+                .SetPassportData("2281337");
             var conditions = new BankingConditions();
             var debitAccount1 = new DebitAccount()
             {
@@ -52,6 +49,49 @@ namespace Banks.Tests
             
             Assert.AreEqual(0, debitAccount1.Balance);
             Assert.AreEqual(sum, debitAccount2.Balance);
+            
+            Assert.True(moneyTransfer.IsCommitted);
+        }
+
+        [Test]
+        public void CancelTransaction_CheckBalances()
+        {
+            BankClient bankClient = BankClient
+                .CreateInstance("mikhan", "pacan")
+                .SetAddress("belarusskaya")
+                .SetPassportData("2281337");
+            var conditions = new BankingConditions();
+            var debitAccount1 = new DebitAccount()
+            {
+                BankClient = bankClient,
+                BankingConditions = conditions,
+                CreationDate = DateTime.Now
+            };
+            const int sum = 1000;
+            var debitAccount2 = new DebitAccount()
+            {
+                BankClient = bankClient,
+                BankingConditions = conditions,
+                CreationDate = DateTime.Now
+            };
+            debitAccount1.CreditFunds(sum);
+            Assert.AreEqual(sum, debitAccount1.Balance);
+            Assert.AreEqual(0, debitAccount2.Balance);
+            
+            
+            var moneyTransfer = new MoneyTransfer()
+            {
+                Sender = debitAccount1,
+                Receiver = debitAccount2,
+                Money = sum
+            };
+            moneyTransfer.Commit();
+            moneyTransfer.Cancel();
+            
+            Assert.AreEqual(sum, debitAccount1.Balance);
+            Assert.AreEqual(0, debitAccount2.Balance);
+
+            Assert.True(moneyTransfer.IsCanceled);
         }
     }
 }
