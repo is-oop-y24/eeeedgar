@@ -2,9 +2,8 @@ using Banks.Model.Accounts;
 using Banks.Model.Entities;
 using Banks.Model.Transactions;
 using Microsoft.EntityFrameworkCore;
-using SQLite.CodeFirst;
 
-namespace Banks.Repository.EF
+namespace Banks.Repository
 {
     public class ApplicationContext : DbContext
     {
@@ -23,7 +22,8 @@ namespace Banks.Repository.EF
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlServer("Server=localhost\\SQLEXPRESS;Database=master;Trusted_Connection=True;");
+            // optionsBuilder.UseSqlServer("Server=localhost\\SQLEXPRESS;Database=master;Trusted_Connection=True;");
+            optionsBuilder.UseInMemoryDatabase("banksdb");
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

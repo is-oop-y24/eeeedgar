@@ -17,7 +17,7 @@ namespace Banks.Model.Accounts
         }
 
         public decimal Interest => BankingConditions.DepositInterest.Count(_initialBalance);
-        public DateTime ReleaseDate { get; set; }
+        public DateTime ReleaseDate { get; init; }
 
         public decimal ExpectedCharge { get; private set; }
 

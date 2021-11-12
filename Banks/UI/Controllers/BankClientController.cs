@@ -1,9 +1,5 @@
-using System;
-using Banks.Model.Entities;
 using Banks.Model.Tools;
 using Banks.UI.Commands.BankClientCommands;
-using Banks.UI.Commands.BankCommands.Displaying;
-using Banks.UI.Commands.BankCommands.Registering;
 using Banks.UI.EntitiesUI;
 
 namespace Banks.UI.Controllers

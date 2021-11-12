@@ -7,10 +7,7 @@ namespace Banks.Model.Accounts
         private decimal _initialBalance;
         public override decimal InitialBalance
         {
-            get
-            {
-                return _initialBalance;
-            }
+            get => _initialBalance;
 
             init
             {
