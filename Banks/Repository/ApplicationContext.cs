@@ -13,18 +13,7 @@ namespace Banks.Repository
             Database.EnsureCreated();
         }
 
-        public ApplicationContext()
-        {
-            Database.EnsureCreated();
-        }
-
         public DbSet<CentralBank> CentralBanks { get; set; }
-
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            // optionsBuilder.UseSqlServer("Server=localhost\\SQLEXPRESS;Database=master;Trusted_Connection=True;");
-            optionsBuilder.UseInMemoryDatabase("banksdb");
-        }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

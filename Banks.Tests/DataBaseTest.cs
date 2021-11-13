@@ -6,7 +6,9 @@ using Banks.Model.Entities;
 using Banks.Model.Entities.DepositStuff;
 using Banks.Model.Transactions;
 using Banks.Repository;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.InMemory.Storage.Internal;
+using Microsoft.Extensions.Options;
 using NUnit.Framework;
 
 namespace Banks.Tests
@@ -20,7 +22,12 @@ namespace Banks.Tests
         [Test]
         public void LoadChangesToDataBase_CheckAmount()
         {
-            var db = new ApplicationContext();
+            var optionsBuilder = new DbContextOptionsBuilder<ApplicationContext>();
+
+            DbContextOptions<ApplicationContext> options = optionsBuilder
+                .UseInMemoryDatabase("banksDB")
+                .Options;
+            var db = new ApplicationContext(options);
             var centralBank = new CentralBank();
 
             centralBank.RegisterBank(
