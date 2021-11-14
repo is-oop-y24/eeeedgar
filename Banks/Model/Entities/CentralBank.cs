@@ -8,6 +8,7 @@ namespace Banks.Model.Entities
     {
         public CentralBank()
         {
+            CurrentDate = DateTime.Today;
             Clients = new List<BankClient>();
             Banks = new List<Bank>();
             Transactions = new List<Transaction>();
@@ -17,6 +18,7 @@ namespace Banks.Model.Entities
         public List<BankClient> Clients { get; }
         public List<Bank> Banks { get; }
         public List<Transaction> Transactions { get; }
+        public DateTime CurrentDate { get; private set; }
 
         public void MakeTransaction(Transaction transaction)
         {
@@ -39,12 +41,14 @@ namespace Banks.Model.Entities
             transaction.Cancel();
         }
 
-        public void DailyRenew(DateTime currentDate)
+        public void DailyRenew()
         {
             foreach (Bank bank in Banks)
             {
-                bank.DailyRenew(currentDate);
+                bank.DailyRenew(CurrentDate);
             }
+
+            CurrentDate += TimeSpan.FromDays(1);
         }
     }
 }

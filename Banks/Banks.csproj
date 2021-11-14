@@ -37,7 +37,15 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Model\Builders" />
+    <Compile Remove="Model\Builders\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Remove="Model\Builders\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="Model\Builders\**" />
   </ItemGroup>
 
 </Project>
