@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Banks.Model.Accounts;
 using Banks.Model.Entities.DepositStuff;
 
@@ -17,86 +18,71 @@ namespace Banks.Model.Entities
         public BankingConditions Conditions { get; private set; }
         public List<BankAccount> BankAccounts { get; }
 
-        public static Bank CreateInstance(string name)
+        public static Bank CreateInstance(string name, DepositInterest depositInterest, decimal debitInterest, decimal creditLimit, decimal creditCommission, decimal doubtfulAccountLimit)
         {
+            var conditions = new BankingConditions()
+            {
+                DepositInterest = depositInterest,
+                DebitInterest = debitInterest,
+                CreditCommission = creditCommission,
+                CreditLimit = creditLimit,
+                DoubtfulAccountLimit = doubtfulAccountLimit,
+            };
             return new Bank
             {
                 Id = Guid.NewGuid(),
                 Name = name,
-                Conditions = new BankingConditions(),
+                Conditions = conditions,
             };
         }
 
-        public Bank SetDepositInterest(DepositInterest depositInterest)
+        public void SetDepositInterest(DepositInterest depositInterest)
         {
             Conditions.DepositInterest = depositInterest;
-            foreach (BankAccount bankAccount in BankAccounts)
+            foreach (DepositAccount depositAccount in BankAccounts.OfType<DepositAccount>())
             {
-                if (bankAccount.GetType() == typeof(DepositAccount))
-                {
-                    if (bankAccount.BankClient.IsSubscribed)
-                        bankAccount.NotifyClient();
-                }
+                if (depositAccount.BankClient.IsSubscribed)
+                        depositAccount.NotifyClient();
             }
-
-            return this;
         }
 
-        public Bank SetDebitInterest(decimal debitInterest)
+        public void SetDebitInterest(decimal debitInterest)
         {
             Conditions.DebitInterest = debitInterest;
-            foreach (BankAccount bankAccount in BankAccounts)
+            foreach (DebitAccount debitAccount in BankAccounts.OfType<DebitAccount>())
             {
-                if (bankAccount.GetType() == typeof(DebitAccount))
-                {
-                    if (bankAccount.BankClient.IsSubscribed)
-                        bankAccount.NotifyClient();
-                }
+                if (debitAccount.BankClient.IsSubscribed)
+                    debitAccount.NotifyClient();
             }
-
-            return this;
         }
 
-        public Bank SetCreditLimit(decimal creditLimit)
+        public void SetCreditLimit(decimal creditLimit)
         {
             Conditions.CreditLimit = creditLimit;
-            foreach (BankAccount bankAccount in BankAccounts)
+            foreach (CreditAccount creditAccount in BankAccounts.OfType<CreditAccount>())
             {
-                if (bankAccount.GetType() == typeof(CreditAccount))
-                {
-                    if (bankAccount.BankClient.IsSubscribed)
-                        bankAccount.NotifyClient();
-                }
+                if (creditAccount.BankClient.IsSubscribed)
+                    creditAccount.NotifyClient();
             }
-
-            return this;
         }
 
-        public Bank SetCreditCommission(decimal creditCommission)
+        public void SetCreditCommission(decimal creditCommission)
         {
             Conditions.CreditCommission = creditCommission;
-            foreach (BankAccount bankAccount in BankAccounts)
+            foreach (CreditAccount creditAccount in BankAccounts.OfType<CreditAccount>())
             {
-                if (bankAccount.GetType() == typeof(CreditAccount))
-                {
-                    if (bankAccount.BankClient.IsSubscribed)
-                        bankAccount.NotifyClient();
-                }
+                if (creditAccount.BankClient.IsSubscribed)
+                    creditAccount.NotifyClient();
             }
-
-            return this;
         }
 
-        public Bank SetDoubtfulAccountLimit(decimal doubtfulAccountLimit)
+        public void SetDoubtfulAccountLimit(decimal doubtfulAccountLimit)
         {
             Conditions.DoubtfulAccountLimit = doubtfulAccountLimit;
-            foreach (BankAccount bankAccount in BankAccounts)
+            foreach (BankAccount bankAccount in BankAccounts.Where(bankAccount => !bankAccount.IsConfirmed()))
             {
-                if (!bankAccount.IsConfirmed())
-                    bankAccount.NotifyClient();
+                bankAccount.NotifyClient();
             }
-
-            return this;
         }
 
         public DepositAccount CreateDepositAccount(BankClient bankClient, decimal startBalance)

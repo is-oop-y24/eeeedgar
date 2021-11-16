@@ -50,12 +50,13 @@ namespace Banks.UI.Commands.CentralBankCommands.Registering
                 Interests = depositControlInterests,
             };
 
-            Bank bank = Bank.CreateInstance(bankName)
-                .SetDebitInterest(debitInterest)
-                .SetCreditLimit(creditLimit)
-                .SetCreditCommission(creditCommission)
-                .SetDepositInterest(depositInterest)
-                .SetDoubtfulAccountLimit(doubtfulAccountLimit);
+            var bank = Bank.CreateInstance(
+                bankName,
+                depositInterest,
+                debitInterest,
+                creditLimit,
+                creditCommission,
+                doubtfulAccountLimit);
 
             context.CentralBank.RegisterBank(bank);
             return context;

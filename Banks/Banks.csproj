@@ -36,16 +36,4 @@
     </Content>
   </ItemGroup>
 
-  <ItemGroup>
-    <Compile Remove="Model\Builders\**" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Remove="Model\Builders\**" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Remove="Model\Builders\**" />
-  </ItemGroup>
-
 </Project>

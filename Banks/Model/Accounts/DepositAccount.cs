@@ -30,9 +30,7 @@ namespace Banks.Model.Accounts
 
         public override void DailyRenew(DateTime currentDate)
         {
-            int daysInYear = DateTime.IsLeapYear(currentDate.Year) ? 366 : 365;
-
-            ExpectedCharge += Balance * (Interest / 100) / daysInYear;
+            ExpectedCharge += Balance * BankingConditions.DailyInterest(Interest, currentDate);
             if (currentDate.Day == CreationDate.Day && currentDate != CreationDate)
             {
                 Balance += ExpectedCharge;
@@ -43,11 +41,6 @@ namespace Banks.Model.Accounts
         public override void CreditFunds(decimal money)
         {
             Balance += money;
-        }
-
-        public override string StringType()
-        {
-            return GetType().ToString().Split('.')[^1];
         }
     }
 }

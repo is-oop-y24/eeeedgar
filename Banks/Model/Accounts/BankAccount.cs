@@ -17,7 +17,6 @@ namespace Banks.Model.Accounts
         public abstract void DailyRenew(DateTime currentDate);
 
         public abstract void CreditFunds(decimal money);
-        public abstract string StringType();
 
         public bool IsConfirmed()
         {

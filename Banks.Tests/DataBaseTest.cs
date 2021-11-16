@@ -31,12 +31,12 @@ namespace Banks.Tests
             var centralBank = new CentralBank();
 
             centralBank.RegisterBank(
-                Bank.CreateInstance("sber")
-                    .SetCreditCommission(200)
-                    .SetCreditLimit(15000)
-                    .SetDebitInterest(3)
-                    .SetDepositInterest(new DepositInterest())
-                    .SetDoubtfulAccountLimit(5000));
+                Bank.CreateInstance(
+                    "sber",
+                    new DepositInterest(),
+                    3, 15000,
+                    200,
+                    5000));
             centralBank.RegisterClient(
                 BankClient.CreateInstance("ve", "ka")
                     .SetAddress("address")

@@ -47,7 +47,7 @@ namespace Banks.UI.EntitiesUI
 
             foreach (BankAccount bankAccount in bankAccounts)
             {
-                table.AddRow(bankAccount.Id.ToString(), bankAccount.StringType(), bankAccount.Balance.ToString(CultureInfo.InvariantCulture), bankAccount.BankClient.Name, bankAccount.BankClient.Surname, bankAccount.BankClient.Address, bankAccount.BankClient.PassportData);
+                table.AddRow(bankAccount.Id.ToString(), bankAccount.GetType().ToString(), bankAccount.Balance.ToString(CultureInfo.InvariantCulture), bankAccount.BankClient.Name, bankAccount.BankClient.Surname, bankAccount.BankClient.Address, bankAccount.BankClient.PassportData);
             }
 
             AnsiConsole.Write(table);

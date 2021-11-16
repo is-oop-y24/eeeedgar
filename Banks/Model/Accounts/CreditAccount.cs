@@ -35,10 +35,5 @@ namespace Banks.Model.Accounts
         {
             Balance += money;
         }
-
-        public override string StringType()
-        {
-            return GetType().ToString().Split('.')[^1];
-        }
     }
 }
