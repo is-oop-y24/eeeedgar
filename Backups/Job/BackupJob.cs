@@ -10,14 +10,15 @@ namespace Backups.Job
 {
     public class BackupJob
     {
-        private int _restorePointId;
-        public BackupJob(IRepository repository, IStorageCreator storageCreator)
+        public BackupJob(IRepository repository, IStorageCreator storageCreator, Guid id = default)
         {
+            Id = id == default ? Guid.NewGuid() : id;
             JobObjects = new List<JobObject>();
             Repository = repository;
             StorageCreator = storageCreator;
         }
 
+        public Guid Id { get; }
         public List<JobObject> JobObjects { get; }
         public IStorageCreator StorageCreator { get; }
         public IRepository Repository { get; }
@@ -42,7 +43,7 @@ namespace Backups.Job
         public void CreateBackup()
         {
             List<TemporaryLocalStorage> temporaryLocalStorages = StorageCreator.Compress(JobObjects);
-            var temporaryLocalRestorePoint = new TemporaryLocalRestorePoint(temporaryLocalStorages, DateTime.Now, _restorePointId++);
+            var temporaryLocalRestorePoint = new TemporaryLocalRestorePoint(temporaryLocalStorages, DateTime.Now);
             Repository.UploadVersion(temporaryLocalRestorePoint);
             foreach (TemporaryLocalStorage localStorage in temporaryLocalStorages)
             {

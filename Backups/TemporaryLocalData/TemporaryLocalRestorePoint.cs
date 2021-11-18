@@ -5,15 +5,15 @@ namespace Backups.TemporaryLocalData
 {
     public class TemporaryLocalRestorePoint
     {
-        public TemporaryLocalRestorePoint(List<TemporaryLocalStorage> bufferStorages, DateTime dateTime, int id)
+        public TemporaryLocalRestorePoint(List<TemporaryLocalStorage> bufferStorages, DateTime dateTime, Guid id = default)
         {
+            Id = id == default ? Guid.NewGuid() : id;
             BufferStorages = bufferStorages;
             DateTime = dateTime;
-            Id = id;
         }
 
+        public Guid Id { get; }
         public List<TemporaryLocalStorage> BufferStorages { get; }
         public DateTime DateTime { get; }
-        public int Id { get; }
     }
 }

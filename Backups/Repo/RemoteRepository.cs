@@ -28,7 +28,7 @@ namespace Backups.Repo
             }
 
             var storages = temporaryLocalRestorePoint.BufferStorages.Select(bufferStorage => bufferStorage.Storage).ToList();
-            var restorePoint = new RestorePoint(storages, temporaryLocalRestorePoint.DateTime, temporaryLocalRestorePoint.Id, restorePointName);
+            var restorePoint = new RestorePoint(storages, temporaryLocalRestorePoint.DateTime, restorePointName);
             RestorePoints.Add(restorePoint);
         }
 
