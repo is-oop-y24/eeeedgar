@@ -7,8 +7,6 @@ using Banks.Model.Entities.DepositStuff;
 using Banks.Model.Transactions;
 using Banks.Repository;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.InMemory.Storage.Internal;
-using Microsoft.Extensions.Options;
 using NUnit.Framework;
 
 namespace Banks.Tests
