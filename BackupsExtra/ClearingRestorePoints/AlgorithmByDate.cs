@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using Backups.Repo;
 
-namespace BackupsExtra.DeletingRestorePoints
+namespace BackupsExtra.ClearingRestorePoints
 {
     public class AlgorithmByDate
     {
@@ -15,7 +15,7 @@ namespace BackupsExtra.DeletingRestorePoints
 
         public DateTime Deadline { get; }
 
-        public List<RestorePoint> OutdatedRestorePoints()
+        public List<RestorePoint> SelectOutdatedRestorePoints()
         {
             var outdatedRestorePoints = new List<RestorePoint>();
             foreach (RestorePoint restorePoint in _restorePoints)
