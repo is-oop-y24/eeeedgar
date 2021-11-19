@@ -33,8 +33,20 @@ namespace BackupsExtra.Tests
                     .SelectOutdatedRestorePoints();
             Assert.AreEqual(1, outdatedRestorePoints.Count);
             Assert.NotNull(outdatedRestorePoints.Find(p => p.Id.Equals(_restorePoints.Last().Id)));
-            
         }
+        [Test]
+        
+        public void SelectExceededRestorePoints_CheckOut()
+        {
+            List<RestorePoint> exceededRestorePoints =
+                new AlgorithmByAmount(_restorePoints, 2)
+                    .SelectExceededRestorePoints();
+            Assert.AreEqual(2, exceededRestorePoints.Count);
+            Assert.NotNull(exceededRestorePoints.Find(p => p.Id.Equals(_restorePoints.Last().Id)));
+            Assert.NotNull(exceededRestorePoints.Find(p => p.Id.Equals(_restorePoints.First().Id)));
+        }
+        
+        
         
     }
 }
