@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using Backups.Repo;
 
 namespace BackupsExtra.MergingRestorePoints
@@ -15,7 +17,8 @@ namespace BackupsExtra.MergingRestorePoints
 
         public RestorePoint Execute()
         {
-            return _restorePoint1.DateTime > _restorePoint2.DateTime ? _restorePoint1 : _restorePoint2;
+            List<Storage> storages = _restorePoint1.DateTime > _restorePoint2.DateTime ? _restorePoint1.Storages : _restorePoint2.Storages;
+            return new RestorePoint(storages, DateTime.Now, "unnamed", Guid.NewGuid());
         }
     }
 }
