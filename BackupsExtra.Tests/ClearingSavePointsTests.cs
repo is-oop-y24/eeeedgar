@@ -29,8 +29,8 @@ namespace BackupsExtra.Tests
         public void SelectOutdatedRestorePoints_CheckOut()
         {
             List<RestorePoint> outdatedRestorePoints =
-                new AlgorithmByDate(_restorePoints, DateTime.Parse(("12/31/2020")))
-                    .SelectOutdatedRestorePoints();
+                new OutdatedRestorePointsSelection(_restorePoints, DateTime.Parse(("12/31/2020")))
+                    .Execute();
             Assert.AreEqual(1, outdatedRestorePoints.Count);
             Assert.NotNull(outdatedRestorePoints.Find(p => p.Id.Equals(_restorePoints.Last().Id)));
         }
@@ -39,8 +39,8 @@ namespace BackupsExtra.Tests
         public void SelectExceededRestorePoints_CheckOut()
         {
             List<RestorePoint> exceededRestorePoints =
-                new AlgorithmByAmount(_restorePoints, 2)
-                    .SelectExceededRestorePoints();
+                new OverTheNumberLimitRestorePointsSelection(_restorePoints, 2)
+                    .Execute();
             Assert.AreEqual(2, exceededRestorePoints.Count);
             Assert.NotNull(exceededRestorePoints.Find(p => p.Id.Equals(_restorePoints.Last().Id)));
             Assert.NotNull(exceededRestorePoints.Find(p => p.Id.Equals(_restorePoints.First().Id)));

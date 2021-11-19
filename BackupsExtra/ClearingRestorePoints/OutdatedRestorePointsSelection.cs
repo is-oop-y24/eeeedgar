@@ -4,10 +4,10 @@ using Backups.Repo;
 
 namespace BackupsExtra.ClearingRestorePoints
 {
-    public class AlgorithmByDate
+    public class OutdatedRestorePointsSelection : IExceededRestorePointsSelection
     {
         private readonly List<RestorePoint> _restorePoints;
-        public AlgorithmByDate(List<RestorePoint> restorePoints, DateTime deadline)
+        public OutdatedRestorePointsSelection(List<RestorePoint> restorePoints, DateTime deadline)
         {
             _restorePoints = restorePoints;
             Deadline = deadline;
@@ -15,7 +15,7 @@ namespace BackupsExtra.ClearingRestorePoints
 
         public DateTime Deadline { get; }
 
-        public List<RestorePoint> SelectOutdatedRestorePoints()
+        public List<RestorePoint> Execute()
         {
             var outdatedRestorePoints = new List<RestorePoint>();
             foreach (RestorePoint restorePoint in _restorePoints)

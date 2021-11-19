@@ -4,11 +4,10 @@ using Backups.Repo;
 
 namespace BackupsExtra.ClearingRestorePoints
 {
-    public class AlgorithmByAmount
+    public class OverTheNumberLimitRestorePointsSelection : IExceededRestorePointsSelection
     {
-        // todo find a better name
         private readonly List<RestorePoint> _restorePoints;
-        public AlgorithmByAmount(List<RestorePoint> restorePoints, int amount)
+        public OverTheNumberLimitRestorePointsSelection(List<RestorePoint> restorePoints, int amount)
         {
             _restorePoints = restorePoints;
             Amount = amount;
@@ -16,7 +15,7 @@ namespace BackupsExtra.ClearingRestorePoints
 
         public int Amount { get; }
 
-        public List<RestorePoint> SelectExceededRestorePoints()
+        public List<RestorePoint> Execute()
         {
             var exceededRestorePoints = new List<RestorePoint>();
             var copiedPointArray = new RestorePoint[_restorePoints.Count];
