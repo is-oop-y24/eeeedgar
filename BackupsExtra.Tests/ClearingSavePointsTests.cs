@@ -9,7 +9,7 @@ namespace BackupsExtra.Tests
 {
     public class ClearingSavePointsTests
     {
-        private List<RestorePoint> _restorePoints = null;
+        private List<RestorePoint> _restorePoints;
         [SetUp]
         public void Setup()
         {
@@ -34,8 +34,8 @@ namespace BackupsExtra.Tests
             Assert.AreEqual(1, outdatedRestorePoints.Count);
             Assert.NotNull(outdatedRestorePoints.Find(p => p.Id.Equals(_restorePoints.Last().Id)));
         }
-        [Test]
         
+        [Test]
         public void SelectExceededRestorePoints_CheckOut()
         {
             List<RestorePoint> exceededRestorePoints =
