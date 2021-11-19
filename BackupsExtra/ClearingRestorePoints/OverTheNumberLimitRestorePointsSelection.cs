@@ -17,7 +17,6 @@ namespace BackupsExtra.ClearingRestorePoints
 
         public List<RestorePoint> Execute()
         {
-            var exceededRestorePoints = new List<RestorePoint>();
             var copiedPointArray = new RestorePoint[_restorePoints.Count];
             _restorePoints.CopyTo(copiedPointArray);
             var points = copiedPointArray.ToList();
