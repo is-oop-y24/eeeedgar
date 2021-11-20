@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Backups.Repo;
 
 namespace BackupsExtra.MergingRestorePoints
@@ -27,7 +28,7 @@ namespace BackupsExtra.MergingRestorePoints
             storages.AddRange(restorePointNewer.Storages);
             foreach (Storage storage in restorePointElder.Storages)
             {
-                if (storages.Find(s => s.Id.Equals(storage.Id)) == null)
+                if (storages.Find(s => s.JobObjects.First().Id.Equals(storage.JobObjects.First().Id)) == null)
                     storages.Add(storage);
             }
 
