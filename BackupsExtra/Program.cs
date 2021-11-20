@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Backups.Job;
 using Backups.Repo;
+using Backups.Zippers;
 using BackupsExtra.ClearingRestorePoints;
 using BackupsExtra.Commands;
+using BackupsExtra.JobExtra;
 using BackupsExtra.MergingRestorePoints;
 
 namespace BackupsExtra
@@ -12,7 +15,7 @@ namespace BackupsExtra
     {
         private static void Main()
         {
-            ShowLogs();
+            BackupExtra();
         }
 
         private static void ShowLogs()
@@ -141,6 +144,30 @@ namespace BackupsExtra
                     string log = command.Log();
                     Console.WriteLine(log);
                 }
+            }
+        }
+
+        private static void BackupExtra()
+        {
+            const string localRepositoryPath = @"D:\\OOP\\lab-5\\repo";
+            const string temporaryDataPath = @"D:\\OOP\\lab-5\\temp";
+            var repository = new LocalRepository(localRepositoryPath);
+            var zipper = new SingleStorageCreator(temporaryDataPath);
+            var job = new BackupJob(repository, zipper);
+
+            StorageConditions conditions =
+                new StorageConditions().SetDeadline(DateTime.Parse("1/1/2000")).SetNumberLimit(4);
+            var jobExtra = new BackupJobExtra(job, conditions);
+            jobExtra.CreateBackup(DateTime.Parse("7/30/2002"));
+            jobExtra.CreateBackup(DateTime.Parse("8/30/2002"));
+            jobExtra.CreateBackup(DateTime.Parse("9/30/2002"));
+            jobExtra.CreateBackup(DateTime.Parse("10/30/2002"));
+            jobExtra.CreateBackup(DateTime.Parse("11/30/2002"));
+
+            List<RestorePoint> restorePoints = jobExtra.Job.Repository.GetRestorePoints();
+            foreach (RestorePoint restorePoint in restorePoints)
+            {
+                Console.WriteLine($"{restorePoint.Id}\t{restorePoint.DateTime}");
             }
         }
     }
