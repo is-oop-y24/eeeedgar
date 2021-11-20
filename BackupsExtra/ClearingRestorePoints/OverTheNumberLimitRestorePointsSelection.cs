@@ -7,13 +7,13 @@ namespace BackupsExtra.ClearingRestorePoints
     public class OverTheNumberLimitRestorePointsSelection : IExceededRestorePointsSelection
     {
         private readonly List<RestorePoint> _restorePoints;
-        public OverTheNumberLimitRestorePointsSelection(List<RestorePoint> restorePoints, int amount)
+        public OverTheNumberLimitRestorePointsSelection(List<RestorePoint> restorePoints, int limit)
         {
             _restorePoints = restorePoints;
-            Amount = amount;
+            Limit = limit;
         }
 
-        public int Amount { get; }
+        public int Limit { get; }
 
         public List<RestorePoint> Execute()
         {
@@ -21,7 +21,10 @@ namespace BackupsExtra.ClearingRestorePoints
             _restorePoints.CopyTo(copiedPointArray);
             var points = copiedPointArray.ToList();
             points.Sort((p1, p2) => p1.DateTime.CompareTo(p2.DateTime));
-            return points.GetRange(0, _restorePoints.Count - Amount);
+            int exceededNumber = _restorePoints.Count - Limit;
+            if (exceededNumber < 0)
+                exceededNumber = 0;
+            return points.GetRange(0, exceededNumber);
         }
     }
 }
