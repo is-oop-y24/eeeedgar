@@ -4,7 +4,7 @@ using Backups.Repo;
 
 namespace BackupsExtra.MergingRestorePoints
 {
-    public class SplitStorageRestorePointsMerging
+    public class SplitStorageRestorePointsMerging : IMerging
     {
         private readonly RestorePoint _restorePoint1;
         private readonly RestorePoint _restorePoint2;
@@ -14,6 +14,9 @@ namespace BackupsExtra.MergingRestorePoints
             _restorePoint1 = restorePoint1;
             _restorePoint2 = restorePoint2;
         }
+
+        public RestorePoint RestorePoint1() => _restorePoint1;
+        public RestorePoint RestorePoint2() => _restorePoint2;
 
         public RestorePoint Execute()
         {
