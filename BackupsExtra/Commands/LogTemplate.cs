@@ -17,6 +17,11 @@ namespace BackupsExtra.Commands
 
         public string ExceededSelection(List<RestorePoint> exceededRestorePoints, DateTime date)
         {
+            if (exceededRestorePoints.Count == 0)
+            {
+                return "Restore Points are under the Limit\n";
+            }
+
             string answer = $"{date}\nExceeded Restore Points:\n";
             foreach (RestorePoint restorePoint in exceededRestorePoints)
             {
