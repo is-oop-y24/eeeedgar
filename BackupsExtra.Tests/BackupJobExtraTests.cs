@@ -1,6 +1,7 @@
 using System;
 using Backups.Job;
 using Backups.Repo;
+using Backups.Tests;
 using Backups.Zippers;
 using BackupsExtra.JobExtra;
 using NUnit.Framework;
@@ -15,9 +16,8 @@ namespace BackupsExtra.Tests
         public void Setup()
         {
             const string localRepositoryPath = @"D:\\OOP\\lab-5\\repo";
-            const string temporaryDataPath = @"D:\\OOP\\lab-5\\temp";
             var repository = new LocalRepository(localRepositoryPath);
-            var zipper = new SingleStorageCreator(temporaryDataPath);
+            var zipper = new TestStorageCreator();
             var job = new BackupJob(repository, zipper);
             
             _backupJobExtra = new BackupJobExtra(job, new StorageConditions());
