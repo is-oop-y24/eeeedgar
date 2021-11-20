@@ -40,10 +40,11 @@ namespace Backups.Job
             JobObjects.Find(o => o.Path.Equals(path));
         }
 
-        public void CreateBackup()
+        public void CreateBackup(DateTime backupDateTime = default)
         {
+            DateTime date = backupDateTime == default ? DateTime.Now : backupDateTime;
             List<TemporaryLocalStorage> temporaryLocalStorages = StorageCreator.Compress(JobObjects);
-            var temporaryLocalRestorePoint = new TemporaryLocalRestorePoint(temporaryLocalStorages, DateTime.Now);
+            var temporaryLocalRestorePoint = new TemporaryLocalRestorePoint(temporaryLocalStorages, date);
             Repository.UploadVersion(temporaryLocalRestorePoint);
             foreach (TemporaryLocalStorage localStorage in temporaryLocalStorages)
             {
