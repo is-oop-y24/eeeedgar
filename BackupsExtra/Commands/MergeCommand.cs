@@ -28,7 +28,7 @@ namespace BackupsExtra.Commands
             if (_resultRestorePoint is null)
                 throw new BackupsExtraException("attempt to get log before execution");
             return
-                LogTemplate.Log("Single", _merging.RestorePoint1(), _merging.RestorePoint2(), _resultRestorePoint, _time);
+                new LogTemplate().Merge("Single", _merging.RestorePoint1(), _merging.RestorePoint2(), _resultRestorePoint, _time);
         }
     }
 }
