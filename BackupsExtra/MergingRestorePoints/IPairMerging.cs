@@ -2,7 +2,7 @@ using Backups.Repo;
 
 namespace BackupsExtra.MergingRestorePoints
 {
-    public interface IMerging
+    public interface IPairMerging
     {
         RestorePoint Execute();
         RestorePoint RestorePoint1();

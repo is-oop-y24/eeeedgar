@@ -5,12 +5,12 @@ using Backups.Repo;
 
 namespace BackupsExtra.MergingRestorePoints
 {
-    public class SplitStorageRestorePointsMerging : IMerging
+    public class SplitStorageRestorePointsPairMerging : IPairMerging
     {
         private readonly RestorePoint _restorePoint1;
         private readonly RestorePoint _restorePoint2;
 
-        public SplitStorageRestorePointsMerging(RestorePoint restorePoint1, RestorePoint restorePoint2)
+        public SplitStorageRestorePointsPairMerging(RestorePoint restorePoint1, RestorePoint restorePoint2)
         {
             _restorePoint1 = restorePoint1;
             _restorePoint2 = restorePoint2;
