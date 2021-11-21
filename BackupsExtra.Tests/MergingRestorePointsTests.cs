@@ -91,5 +91,75 @@ namespace BackupsExtra.Tests
                 Assert.NotNull(_jobObjects.Find(o => o.Id.Equals(storage.JobObjects.First().Id)));
             }
         }
+
+        [Test]
+        public void MergeSingleStorageRestorePointList_CheckResult()
+        {
+            var storage1 = new Storage();
+            var storage2 = new Storage();
+            var storage3 = new Storage();
+            
+            storage1.JobObjects.Add(_jobObjects[0]);
+            
+            storage2.JobObjects.Add(_jobObjects[1]);
+            
+            storage3.JobObjects.Add(_jobObjects[2]);
+            
+            var storages1 = new List<Storage> { storage1 };
+            var storages2 = new List<Storage> { storage2 };
+            var storages3 = new List<Storage> { storage3 };
+            
+            var dateTime1 = DateTime.Parse("7/30/1990");
+            var dateTime2 = DateTime.Parse("8/22/1998");
+            var dateTime3 = DateTime.Parse("8/22/2000");
+
+            var restorePoint1 = new RestorePoint(storages1, dateTime1, "okay", Guid.NewGuid());
+            var restorePoint2 = new RestorePoint(storages2, dateTime2, "okay", Guid.NewGuid());
+            var restorePoint3 = new RestorePoint(storages3, dateTime3, "okay", Guid.NewGuid());
+
+            var restorePoints = new List<RestorePoint> { restorePoint1, restorePoint2, restorePoint3 };
+
+            RestorePoint restorePoint = new ListMerging().SingleStorage(restorePoints);
+            Assert.AreEqual(1, restorePoint.Storages.Count);
+            Assert.AreEqual(1, restorePoint.Storages.First().JobObjects.Count);
+            Assert.AreEqual(@"path3", restorePoint.Storages.First().JobObjects.First().Path);
+        }
+        
+        [Test]
+        public void MergeSplitStorageRestorePointList_CheckResult()
+        {
+            var storage1 = new Storage();
+            var storage2 = new Storage();
+            var storage3 = new Storage();
+            
+            storage1.JobObjects.Add(_jobObjects[0]);
+            
+            storage2.JobObjects.Add(_jobObjects[1]);
+            
+            storage3.JobObjects.Add(_jobObjects[2]);
+            
+            var storages1 = new List<Storage> { storage1 };
+            var storages2 = new List<Storage> { storage2 };
+            var storages3 = new List<Storage> { storage3 };
+            
+            var dateTime1 = DateTime.Parse("7/30/1990");
+            var dateTime2 = DateTime.Parse("8/22/1998");
+            var dateTime3 = DateTime.Parse("8/22/2000");
+
+            var restorePoint1 = new RestorePoint(storages1, dateTime1, "okay", Guid.NewGuid());
+            var restorePoint2 = new RestorePoint(storages2, dateTime2, "okay", Guid.NewGuid());
+            var restorePoint3 = new RestorePoint(storages3, dateTime3, "okay", Guid.NewGuid());
+
+            var restorePoints = new List<RestorePoint> { restorePoint1, restorePoint2, restorePoint3 };
+
+            RestorePoint restorePoint = new ListMerging().SplitStorage(restorePoints);
+            Assert.AreEqual(3, restorePoint.Storages.Count);
+            for (int s = 0; s < restorePoint.Storages.Count; s++)
+            {
+                Storage storage = restorePoint.Storages[s];
+                Assert.AreEqual(1, storage.JobObjects.Count);
+                Assert.AreEqual($@"path{3 - s}", storage.JobObjects.First().Path);
+            }
+        }
     }
 }
