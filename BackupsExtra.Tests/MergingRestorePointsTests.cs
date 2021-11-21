@@ -47,7 +47,7 @@ namespace BackupsExtra.Tests
             var restorePoint1 = new RestorePoint(storages1, dateTime1, "okay", Guid.NewGuid());
             var restorePoint2 = new RestorePoint(storages2, dateTime2, "okay", Guid.NewGuid());
 
-            RestorePoint resultRestorePoint = new SingleStorageRestorePointsMerging(restorePoint1, restorePoint2).Execute();
+            RestorePoint resultRestorePoint = new SingleStorageRestorePointsPairMerging(restorePoint1, restorePoint2).Execute();
             
             Assert.AreEqual(1, resultRestorePoint.Storages.Count);
             Assert.AreEqual(2, resultRestorePoint.Storages.First().JobObjects.Count);
@@ -78,7 +78,7 @@ namespace BackupsExtra.Tests
             var restorePoint1 = new RestorePoint(storages1, dateTime1, "okay", Guid.NewGuid());
             var restorePoint2 = new RestorePoint(storages2, dateTime2, "okay", Guid.NewGuid());
 
-            RestorePoint resultRestorePoint = new SplitStorageRestorePointsMerging(restorePoint1, restorePoint2).Execute();
+            RestorePoint resultRestorePoint = new SplitStorageRestorePointsPairMerging(restorePoint1, restorePoint2).Execute();
             
             Assert.AreEqual(_jobObjects.Count, resultRestorePoint.Storages.Count);
             foreach (Storage storage in storages)
@@ -119,7 +119,7 @@ namespace BackupsExtra.Tests
 
             var restorePoints = new List<RestorePoint> { restorePoint1, restorePoint2, restorePoint3 };
 
-            RestorePoint restorePoint = new ListMerging().SingleStorage(restorePoints);
+            RestorePoint restorePoint = new SingleStorageListMerging().Execute(restorePoints);
             Assert.AreEqual(1, restorePoint.Storages.Count);
             Assert.AreEqual(1, restorePoint.Storages.First().JobObjects.Count);
             Assert.AreEqual(@"path3", restorePoint.Storages.First().JobObjects.First().Path);
@@ -152,7 +152,7 @@ namespace BackupsExtra.Tests
 
             var restorePoints = new List<RestorePoint> { restorePoint1, restorePoint2, restorePoint3 };
 
-            RestorePoint restorePoint = new ListMerging().SplitStorage(restorePoints);
+            RestorePoint restorePoint = new SplitStorageListMerging().Execute(restorePoints);
             Assert.AreEqual(3, restorePoint.Storages.Count);
             for (int s = 0; s < restorePoint.Storages.Count; s++)
             {

@@ -7,19 +7,19 @@ namespace BackupsExtra.Commands
 {
     public class MergeCommand
     {
-        private readonly IMerging _merging;
+        private readonly IPairMerging _pairMerging;
         private readonly DateTime _time;
         private RestorePoint _resultRestorePoint;
-        public MergeCommand(IMerging merging, DateTime time)
+        public MergeCommand(IPairMerging pairMerging, DateTime time)
         {
-            _merging = merging;
+            _pairMerging = pairMerging;
             _time = time;
             _resultRestorePoint = null;
         }
 
         public RestorePoint Execute()
         {
-            _resultRestorePoint = _merging.Execute();
+            _resultRestorePoint = _pairMerging.Execute();
             return _resultRestorePoint;
         }
 
@@ -28,7 +28,7 @@ namespace BackupsExtra.Commands
             if (_resultRestorePoint is null)
                 throw new BackupsExtraException("attempt to get log before execution");
             return
-                new LogTemplate().Merge("Single", _merging.RestorePoint1(), _merging.RestorePoint2(), _resultRestorePoint, _time);
+                new LogTemplate().Merge("Single", _pairMerging.RestorePoint1(), _pairMerging.RestorePoint2(), _resultRestorePoint, _time);
         }
     }
 }
