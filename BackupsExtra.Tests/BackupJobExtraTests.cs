@@ -2,8 +2,8 @@ using System;
 using Backups.Job;
 using Backups.Repo;
 using Backups.Tests;
-using Backups.Zippers;
 using BackupsExtra.JobExtra;
+using BackupsExtra.MergingRestorePoints;
 using NUnit.Framework;
 
 namespace BackupsExtra.Tests
@@ -20,7 +20,7 @@ namespace BackupsExtra.Tests
             var zipper = new TestStorageCreator();
             var job = new BackupJob(repository, zipper);
             
-            _backupJobExtra = new BackupJobExtra(job, new StorageConditions());
+            _backupJobExtra = new BackupJobExtra(job, new StorageConditions(), new SingleStorageListMerging());
         }
 
         [Test]
