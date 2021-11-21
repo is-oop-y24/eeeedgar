@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using Backups.Job;
 using Backups.Repo;
 using Backups.Zippers;
@@ -15,7 +14,7 @@ namespace BackupsExtra
     {
         private static void Main()
         {
-            BackupExtra();
+            BackupExtraTest();
         }
 
         private static void ShowLogs()
@@ -51,7 +50,7 @@ namespace BackupsExtra
                     var restorePoint1 = new RestorePoint(storages1, dateTime1, "okay", Guid.NewGuid());
                     var restorePoint2 = new RestorePoint(storages2, dateTime2, "okay", Guid.NewGuid());
 
-                    var merging = new SingleStorageRestorePointsMerging(restorePoint1, restorePoint2);
+                    var merging = new SingleStorageRestorePointsPairMerging(restorePoint1, restorePoint2);
 
                     var command = new MergeCommand(merging, DateTime.Now);
                     RestorePoint restorePoint = command.Execute();
@@ -80,7 +79,7 @@ namespace BackupsExtra
                     var restorePoint1 = new RestorePoint(storages1, dateTime1, "okay", Guid.NewGuid());
                     var restorePoint2 = new RestorePoint(storages2, dateTime2, "okay", Guid.NewGuid());
 
-                    var merging = new SplitStorageRestorePointsMerging(restorePoint1, restorePoint2);
+                    var merging = new SplitStorageRestorePointsPairMerging(restorePoint1, restorePoint2);
                     var command = new MergeCommand(merging, DateTime.Now);
                     RestorePoint restorePoint = command.Execute();
                     string log = command.Log();
@@ -157,7 +156,7 @@ namespace BackupsExtra
 
             StorageConditions conditions =
                 new StorageConditions().SetDeadline(DateTime.Parse("1/1/2000")).SetNumberLimit(4);
-            var jobExtra = new BackupJobExtra(job, conditions);
+            var jobExtra = new BackupJobExtra(job, conditions, new SingleStorageListMerging());
             jobExtra.CreateBackup(DateTime.Parse("7/30/2002"));
             jobExtra.CreateBackup(DateTime.Parse("8/30/2002"));
             jobExtra.CreateBackup(DateTime.Parse("9/30/2002"));
@@ -168,6 +167,43 @@ namespace BackupsExtra
             foreach (RestorePoint restorePoint in restorePoints)
             {
                 Console.WriteLine($"{restorePoint.Id}\t{restorePoint.DateTime}");
+            }
+        }
+
+        private static void BackupExtraTest()
+        {
+            const string localRepositoryPath = @"D:\\OOP\\lab-5\\repo";
+            const string temporaryFilesDirectoryPath = @"D:\\OOP\\lab-5\\temp";
+            var repository = new LocalRepository(localRepositoryPath);
+            var zipper = new SplitStorageCreator(temporaryFilesDirectoryPath);
+            var job = new BackupJob(repository, zipper);
+
+            var backupJobExtra = new BackupJobExtra(job, new StorageConditions(), new SplitStorageListMerging());
+            backupJobExtra.StorageConditions.SetNumberLimit(3);
+            var jobObject1 = new JobObject(@"D:\OOP\lab-5\data\1.txt");
+            var jobObject2 = new JobObject(@"D:\OOP\lab-5\data\2.txt");
+            var jobObject3 = new JobObject(@"D:\OOP\lab-5\data\3.txt");
+            var jobObject4 = new JobObject(@"D:\OOP\lab-5\data\4.txt");
+
+            backupJobExtra.Job.AddJobObject(jobObject1);
+            backupJobExtra.CreateBackup(DateTime.Parse("1/1/2000"));
+
+            backupJobExtra.Job.RemoveJobObject(jobObject1);
+            backupJobExtra.Job.AddJobObject(jobObject2);
+            backupJobExtra.CreateBackup(DateTime.Parse("2/1/2000"));
+
+            backupJobExtra.Job.RemoveJobObject(jobObject2);
+            backupJobExtra.Job.AddJobObject(jobObject3);
+            backupJobExtra.CreateBackup(DateTime.Parse("3/1/2000"));
+
+            backupJobExtra.Job.RemoveJobObject(jobObject3);
+            backupJobExtra.Job.AddJobObject(jobObject4);
+            backupJobExtra.CreateBackup(DateTime.Parse("4/1/2000"));
+
+            Console.WriteLine(backupJobExtra.Job.Repository.GetRestorePoints().Count);
+            foreach (RestorePoint restorePoint in backupJobExtra.Job.Repository.GetRestorePoints())
+            {
+                Console.WriteLine(restorePoint.Storages.Count);
             }
         }
     }
