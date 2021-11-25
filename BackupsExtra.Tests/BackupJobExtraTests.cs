@@ -4,6 +4,7 @@ using Backups.Repo;
 using Backups.Tests;
 using BackupsExtra.JobExtra;
 using BackupsExtra.MergingRestorePoints;
+using BackupsExtra.RepoExtra;
 using NUnit.Framework;
 
 namespace BackupsExtra.Tests
@@ -17,10 +18,10 @@ namespace BackupsExtra.Tests
         {
             const string localRepositoryPath = @"D:\\OOP\\lab-5\\repo";
             var repository = new LocalRepository(localRepositoryPath);
+            var repositoryExtra = new LocalRepositoryExtra(repository);
             var zipper = new TestStorageCreator();
-            var job = new BackupJob(repository, zipper);
             
-            _backupJobExtra = new BackupJobExtra(job, new StorageConditions(), new SingleStorageListMerging());
+            _backupJobExtra = new BackupJobExtra(new StorageConditions(), new SingleStorageListMerging(), repositoryExtra, zipper);
         }
 
         [Test]
