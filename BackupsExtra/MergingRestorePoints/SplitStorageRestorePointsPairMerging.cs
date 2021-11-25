@@ -33,7 +33,7 @@ namespace BackupsExtra.MergingRestorePoints
                     storages.Add(storage);
             }
 
-            return new RestorePoint(storages, dateTime, "unnamed", Guid.NewGuid());
+            return new RestorePoint(storages, dateTime, Guid.NewGuid());
         }
     }
 }

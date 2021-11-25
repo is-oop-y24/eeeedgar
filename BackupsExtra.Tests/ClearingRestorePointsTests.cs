@@ -15,10 +15,10 @@ namespace BackupsExtra.Tests
         {
             _restorePoints = new List<RestorePoint>();
             var storages = new List<Storage>();
-            var rs1 = new RestorePoint(storages, DateTime.Parse("1/1/2021"), "somebody", Guid.NewGuid());
-            var rs2 = new RestorePoint(storages, DateTime.Parse("1/30/2021"), "once", Guid.NewGuid());
-            var rs3 = new RestorePoint(storages, DateTime.Parse("2/19/2021"), "told", Guid.NewGuid());
-            var rs4 = new RestorePoint(storages, DateTime.Parse("12/29/1924"), "me", Guid.NewGuid());
+            var rs1 = new RestorePoint(storages, DateTime.Parse("1/1/2021"), Guid.NewGuid());
+            var rs2 = new RestorePoint(storages, DateTime.Parse("1/30/2021"), Guid.NewGuid());
+            var rs3 = new RestorePoint(storages, DateTime.Parse("2/19/2021"), Guid.NewGuid());
+            var rs4 = new RestorePoint(storages, DateTime.Parse("12/29/1924"), Guid.NewGuid());
             _restorePoints.Add(rs1);
             _restorePoints.Add(rs2);
             _restorePoints.Add(rs3);

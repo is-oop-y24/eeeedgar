@@ -21,7 +21,7 @@ namespace BackupsExtra.MergingRestorePoints
         {
             List<Storage> storages = _restorePoint1.DateTime > _restorePoint2.DateTime ? _restorePoint1.Storages : _restorePoint2.Storages;
             DateTime dateTime = _restorePoint1.DateTime > _restorePoint2.DateTime ? _restorePoint1.DateTime : _restorePoint2.DateTime;
-            return new RestorePoint(storages, dateTime, "unnamed", Guid.NewGuid());
+            return new RestorePoint(storages, dateTime, Guid.NewGuid());
         }
     }
 }

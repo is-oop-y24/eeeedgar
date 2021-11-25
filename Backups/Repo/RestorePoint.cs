@@ -5,17 +5,15 @@ namespace Backups.Repo
 {
     public class RestorePoint
     {
-        public RestorePoint(List<Storage> storages, DateTime dateTime, string name, Guid id = default)
+        public RestorePoint(List<Storage> storages, DateTime dateTime, Guid id = default)
         {
             Id = id == default ? Guid.NewGuid() : id;
             Storages = storages;
             DateTime = dateTime;
-            Name = name;
         }
 
         public Guid Id { get; }
         public DateTime DateTime { get; }
         public List<Storage> Storages { get; }
-        public string Name { get; }
     }
 }

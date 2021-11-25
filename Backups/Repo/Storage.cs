@@ -6,13 +6,15 @@ namespace Backups.Repo
 {
     public class Storage
     {
-        public Storage(Guid id = default)
+        public Storage(string path, Guid id = default)
         {
+            Path = path;
             Id = id == default ? Guid.NewGuid() : id;
             JobObjects = new List<JobObject>();
         }
 
         public Guid Id { get; }
         public List<JobObject> JobObjects { get; }
+        public string Path { get; }
     }
 }

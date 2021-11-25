@@ -1,9 +1,7 @@
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Net.Sockets;
 using Backups.Client;
-using Backups.TemporaryLocalData;
 
 namespace Backups.Repo
 {
@@ -18,28 +16,28 @@ namespace Backups.Repo
         public Sender Sender { get; }
         public List<RestorePoint> RestorePoints { get; }
 
-        public void UploadVersion(TemporaryLocalRestorePoint temporaryLocalRestorePoint)
+        public void UploadVersion(RestorePoint temporaryRestorePoint)
         {
-            string restorePointName = RestorePointName();
             using NetworkStream stream = Sender.Client.GetStream();
-            foreach (TemporaryLocalStorage localStorage in temporaryLocalRestorePoint.BufferStorages)
+            foreach (Storage localStorage in temporaryRestorePoint.Storages)
             {
-                Sender.SendFile(localStorage.TemporaryPath, restorePointName, stream);
+                Sender.SendFile(localStorage.Path, temporaryRestorePoint.Id.ToString(), stream);
             }
 
-            var storages = temporaryLocalRestorePoint.BufferStorages.Select(bufferStorage => bufferStorage.Storage).ToList();
-            var restorePoint = new RestorePoint(storages, temporaryLocalRestorePoint.DateTime, restorePointName);
+            var storages = new List<Storage>();
+            foreach (Storage temporaryStorage in temporaryRestorePoint.Storages)
+            {
+                string filename = Path.GetFileName(temporaryStorage.Path);
+                storages.Add(new Storage(filename, temporaryStorage.Id));
+            }
+
+            var restorePoint = new RestorePoint(storages, temporaryRestorePoint.DateTime, temporaryRestorePoint.Id);
             RestorePoints.Add(restorePoint);
         }
 
         public List<RestorePoint> GetRestorePoints()
         {
             return RestorePoints;
-        }
-
-        private string RestorePointName()
-        {
-            return Path.GetFileNameWithoutExtension(Path.GetRandomFileName());
         }
     }
 }

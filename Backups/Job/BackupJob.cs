@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using Backups.Repo;
-using Backups.TemporaryLocalData;
 using Backups.Tools;
 using Backups.Zippers;
 
@@ -43,12 +42,12 @@ namespace Backups.Job
         public void CreateBackup(DateTime backupDateTime = default)
         {
             DateTime date = backupDateTime == default ? DateTime.Now : backupDateTime;
-            List<TemporaryLocalStorage> temporaryLocalStorages = StorageCreator.Compress(JobObjects);
-            var temporaryLocalRestorePoint = new TemporaryLocalRestorePoint(temporaryLocalStorages, date);
-            Repository.UploadVersion(temporaryLocalRestorePoint);
-            foreach (TemporaryLocalStorage localStorage in temporaryLocalStorages)
+            List<Storage> temporaryStorages = StorageCreator.Compress(JobObjects);
+            var temporaryRestorePoint = new RestorePoint(temporaryStorages, date);
+            Repository.UploadVersion(temporaryRestorePoint);
+            foreach (Storage temporaryStorage in temporaryStorages)
             {
-                File.Delete(localStorage.TemporaryPath);
+                File.Delete(temporaryStorage.Path);
             }
         }
     }

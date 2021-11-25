@@ -29,8 +29,8 @@ namespace BackupsExtra.Tests
         [Test]
         public void CreateSingleStorageRestorePointsAndMergeThem_CheckResult()
         {
-            var storage1 = new Storage();
-            var storage2 = new Storage();
+            var storage1 = new Storage(string.Empty);
+            var storage2 = new Storage(string.Empty);
             
             storage1.JobObjects.Add(_jobObjects[0]);
             storage1.JobObjects.Add(_jobObjects[1]);
@@ -44,8 +44,8 @@ namespace BackupsExtra.Tests
             var dateTime1 = DateTime.Parse("7/30/2002");
             var dateTime2 = DateTime.Parse("8/22/1998");
 
-            var restorePoint1 = new RestorePoint(storages1, dateTime1, "okay", Guid.NewGuid());
-            var restorePoint2 = new RestorePoint(storages2, dateTime2, "okay", Guid.NewGuid());
+            var restorePoint1 = new RestorePoint(storages1, dateTime1, Guid.NewGuid());
+            var restorePoint2 = new RestorePoint(storages2, dateTime2, Guid.NewGuid());
 
             RestorePoint resultRestorePoint = new SingleStorageRestorePointsPairMerging(restorePoint1, restorePoint2).Execute();
             
@@ -60,9 +60,9 @@ namespace BackupsExtra.Tests
         [Test]
         public void CreateSplitStorageRestorePointsAndMergeThem_CheckResult()
         {
-            var storage1 = new Storage();
-            var storage2 = new Storage();
-            var storage3 = new Storage();
+            var storage1 = new Storage(string.Empty);
+            var storage2 = new Storage(string.Empty);
+            var storage3 = new Storage(string.Empty);
             
             storage1.JobObjects.Add(_jobObjects[0]);
             storage2.JobObjects.Add(_jobObjects[1]);
@@ -75,8 +75,8 @@ namespace BackupsExtra.Tests
             var dateTime1 = DateTime.Parse("7/30/2002");
             var dateTime2 = DateTime.Parse("8/22/1998");
 
-            var restorePoint1 = new RestorePoint(storages1, dateTime1, "okay", Guid.NewGuid());
-            var restorePoint2 = new RestorePoint(storages2, dateTime2, "okay", Guid.NewGuid());
+            var restorePoint1 = new RestorePoint(storages1, dateTime1, Guid.NewGuid());
+            var restorePoint2 = new RestorePoint(storages2, dateTime2, Guid.NewGuid());
 
             RestorePoint resultRestorePoint = new SplitStorageRestorePointsPairMerging(restorePoint1, restorePoint2).Execute();
             
@@ -95,9 +95,9 @@ namespace BackupsExtra.Tests
         [Test]
         public void MergeSingleStorageRestorePointList_CheckResult()
         {
-            var storage1 = new Storage();
-            var storage2 = new Storage();
-            var storage3 = new Storage();
+            var storage1 = new Storage(string.Empty);
+            var storage2 = new Storage(string.Empty);
+            var storage3 = new Storage(string.Empty);
             
             storage1.JobObjects.Add(_jobObjects[0]);
             
@@ -113,9 +113,9 @@ namespace BackupsExtra.Tests
             var dateTime2 = DateTime.Parse("8/22/1998");
             var dateTime3 = DateTime.Parse("8/22/2000");
 
-            var restorePoint1 = new RestorePoint(storages1, dateTime1, "okay", Guid.NewGuid());
-            var restorePoint2 = new RestorePoint(storages2, dateTime2, "okay", Guid.NewGuid());
-            var restorePoint3 = new RestorePoint(storages3, dateTime3, "okay", Guid.NewGuid());
+            var restorePoint1 = new RestorePoint(storages1, dateTime1, Guid.NewGuid());
+            var restorePoint2 = new RestorePoint(storages2, dateTime2, Guid.NewGuid());
+            var restorePoint3 = new RestorePoint(storages3, dateTime3, Guid.NewGuid());
 
             var restorePoints = new List<RestorePoint> { restorePoint1, restorePoint2, restorePoint3 };
 
@@ -128,9 +128,9 @@ namespace BackupsExtra.Tests
         [Test]
         public void MergeSplitStorageRestorePointList_CheckResult()
         {
-            var storage1 = new Storage();
-            var storage2 = new Storage();
-            var storage3 = new Storage();
+            var storage1 = new Storage(string.Empty);
+            var storage2 = new Storage(string.Empty);
+            var storage3 = new Storage(string.Empty);
             
             storage1.JobObjects.Add(_jobObjects[0]);
             
@@ -146,9 +146,9 @@ namespace BackupsExtra.Tests
             var dateTime2 = DateTime.Parse("8/22/1998");
             var dateTime3 = DateTime.Parse("8/22/2000");
 
-            var restorePoint1 = new RestorePoint(storages1, dateTime1, "okay", Guid.NewGuid());
-            var restorePoint2 = new RestorePoint(storages2, dateTime2, "okay", Guid.NewGuid());
-            var restorePoint3 = new RestorePoint(storages3, dateTime3, "okay", Guid.NewGuid());
+            var restorePoint1 = new RestorePoint(storages1, dateTime1, Guid.NewGuid());
+            var restorePoint2 = new RestorePoint(storages2, dateTime2, Guid.NewGuid());
+            var restorePoint3 = new RestorePoint(storages3, dateTime3, Guid.NewGuid());
 
             var restorePoints = new List<RestorePoint> { restorePoint1, restorePoint2, restorePoint3 };
 

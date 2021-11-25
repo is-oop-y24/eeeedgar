@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Backups.TemporaryLocalData;
 using Backups.Tools;
 
 namespace Backups.Repo
@@ -16,14 +15,21 @@ namespace Backups.Repo
 
         public string LocationPath { get; }
         public List<RestorePoint> RestorePoints { get; }
-        public void UploadVersion(TemporaryLocalRestorePoint temporaryLocalRestorePoint)
+        public void UploadVersion(RestorePoint temporaryRestorePoint)
         {
-            string restorePointName = RestorePointName();
-            DirectoryInfo repositoryRestorePointDirectory = Directory.CreateDirectory(Path.Combine(LocationPath, restorePointName));
-            foreach (TemporaryLocalStorage localStorage in temporaryLocalRestorePoint.BufferStorages)
-                File.Copy(localStorage.TemporaryPath, Path.Combine(repositoryRestorePointDirectory.FullName, Path.GetFileName(localStorage.TemporaryPath) ?? throw new BackupsException("wrong archive path")));
-            var storages = temporaryLocalRestorePoint.BufferStorages.Select(bufferStorage => bufferStorage.Storage).ToList();
-            var restorePoint = new RestorePoint(storages, temporaryLocalRestorePoint.DateTime, restorePointName);
+            DirectoryInfo repositoryRestorePointDirectory = Directory.CreateDirectory(Path.Combine(LocationPath, temporaryRestorePoint.Id.ToString()));
+            foreach (Storage localStorage in temporaryRestorePoint.Storages)
+                File.Copy(localStorage.Path, Path.Combine(repositoryRestorePointDirectory.FullName, Path.GetFileName(localStorage.Path) ?? throw new BackupsException("wrong archive path")));
+
+            // var storages = new List<Storage>(temporaryRestorePoint.Storages);
+            var storages = new List<Storage>();
+            foreach (Storage temporaryStorage in temporaryRestorePoint.Storages)
+            {
+                string filename = Path.GetFileName(temporaryStorage.Path);
+                storages.Add(new Storage(filename, temporaryStorage.Id));
+            }
+
+            var restorePoint = new RestorePoint(storages, temporaryRestorePoint.DateTime, temporaryRestorePoint.Id);
             RestorePoints.Add(restorePoint);
         }
 
