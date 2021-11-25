@@ -3,24 +3,30 @@ using System.Collections.Generic;
 using System.Linq;
 using Backups.Job;
 using Backups.Repo;
+using Backups.Zippers;
 using BackupsExtra.ClearingRestorePoints;
 using BackupsExtra.Commands;
 using BackupsExtra.MergingRestorePoints;
+using BackupsExtra.RepoExtra;
 
 namespace BackupsExtra.JobExtra
 {
     public class BackupJobExtra
     {
-        public BackupJobExtra(BackupJob job, StorageConditions storageConditions, IListMerging merging)
+        public BackupJobExtra(StorageConditions storageConditions, IListMerging merging, IRepositoryExtra repositoryExtra, IStorageCreator storageCreator, Guid id = default)
         {
-            Job = job;
+            Id = id == default ? Guid.NewGuid() : id;
+            RepositoryExtra = repositoryExtra;
+            Job = new BackupJob(repositoryExtra.Repository(), storageCreator, Id);
             StorageConditions = storageConditions;
             Merging = merging;
         }
 
+        public Guid Id { get; }
         public BackupJob Job { get; }
         public StorageConditions StorageConditions { get; }
         public IListMerging Merging { get; }
+        public IRepositoryExtra RepositoryExtra { get; }
 
         public void CreateBackup(DateTime backupDateTime = default)
         {
@@ -29,25 +35,25 @@ namespace BackupsExtra.JobExtra
             List<RestorePoint> restorePoints = Job.Repository.GetRestorePoints();
 
             List<RestorePoint> exceededRestorePoints = GetExceededRestorePoints(restorePoints);
-            if (exceededRestorePoints.Count > 0)
-            {
-                RestorePoint exceededRestorePointsMerge = Merging.Execute(exceededRestorePoints);
 
-                foreach (RestorePoint exceededRestorePoint in exceededRestorePoints)
-                {
-                    restorePoints.Remove(exceededRestorePoint);
-                }
-
-                RestorePoint oldestNotExceededRestorePoint = OldestRestorePointFromTheList(restorePoints);
-
-                var exceededAndLast = new List<RestorePoint>
-                    { exceededRestorePointsMerge, oldestNotExceededRestorePoint };
-                restorePoints.Remove(oldestNotExceededRestorePoint);
-                RestorePoint merged = Merging.Execute(exceededAndLast);
-                Console.WriteLine($"merged: {merged.Storages.Count}");
-                restorePoints.Add(merged);
-            }
-
+            // if (exceededRestorePoints.Count > 0)
+            // {
+            //     RestorePoint exceededRestorePointsMerge = Merging.Execute(exceededRestorePoints);
+            //
+            //     foreach (RestorePoint exceededRestorePoint in exceededRestorePoints)
+            //     {
+            //         restorePoints.Remove(exceededRestorePoint);
+            //     }
+            //
+            //     RestorePoint oldestNotExceededRestorePoint = OldestRestorePointFromTheList(restorePoints);
+            //
+            //     var exceededAndLast = new List<RestorePoint>
+            //         { exceededRestorePointsMerge, oldestNotExceededRestorePoint };
+            //     restorePoints.Remove(oldestNotExceededRestorePoint);
+            //     RestorePoint merged = Merging.Execute(exceededAndLast);
+            //     Console.WriteLine($"merged: {merged.Storages.Count}");
+            //     restorePoints.Add(merged);
+            // }
             SortRestorePointsByDate(restorePoints);
         }
 
