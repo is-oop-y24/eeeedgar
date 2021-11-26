@@ -35,25 +35,11 @@ namespace BackupsExtra.JobExtra
             List<RestorePoint> restorePoints = Job.Repository.GetRestorePoints();
 
             List<RestorePoint> exceededRestorePoints = GetExceededRestorePoints(restorePoints);
+            foreach (RestorePoint exceededRestorePoint in exceededRestorePoints)
+            {
+                RepositoryExtra.DeleteRestorePoint(exceededRestorePoint.Id);
+            }
 
-            // if (exceededRestorePoints.Count > 0)
-            // {
-            //     RestorePoint exceededRestorePointsMerge = Merging.Execute(exceededRestorePoints);
-            //
-            //     foreach (RestorePoint exceededRestorePoint in exceededRestorePoints)
-            //     {
-            //         restorePoints.Remove(exceededRestorePoint);
-            //     }
-            //
-            //     RestorePoint oldestNotExceededRestorePoint = OldestRestorePointFromTheList(restorePoints);
-            //
-            //     var exceededAndLast = new List<RestorePoint>
-            //         { exceededRestorePointsMerge, oldestNotExceededRestorePoint };
-            //     restorePoints.Remove(oldestNotExceededRestorePoint);
-            //     RestorePoint merged = Merging.Execute(exceededAndLast);
-            //     Console.WriteLine($"merged: {merged.Storages.Count}");
-            //     restorePoints.Add(merged);
-            // }
             SortRestorePointsByDate(restorePoints);
         }
 
