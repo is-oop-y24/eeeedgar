@@ -24,7 +24,7 @@ namespace Backups.Job
 
         public void AddJobObject(JobObject jobObject)
         {
-            if (JobObjects.Find(o => o.Equals(jobObject)) != null)
+            if (JobObjects.Find(o => o.Path == jobObject.Path) != null)
                 throw new BackupsException("job object is already added");
             JobObjects.Add(jobObject);
         }
@@ -43,11 +43,15 @@ namespace Backups.Job
         {
             DateTime date = backupDateTime == default ? DateTime.Now : backupDateTime;
             List<Storage> temporaryStorages = StorageCreator.Compress(JobObjects);
-            var temporaryRestorePoint = new RestorePoint(temporaryStorages, date);
-            Repository.UploadVersion(temporaryRestorePoint);
-            foreach (Storage temporaryStorage in temporaryStorages)
+            Repository.UploadVersion(temporaryStorages, date);
+            DeleteTemporaryStorages(temporaryStorages);
+        }
+
+        private void DeleteTemporaryStorages(List<Storage> storages)
+        {
+            foreach (Storage storage in storages)
             {
-                File.Delete(temporaryStorage.Path);
+                File.Delete(storage.Path);
             }
         }
     }

@@ -1,6 +1,6 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using Backups.Tools;
 
 namespace Backups.Repo
@@ -15,21 +15,22 @@ namespace Backups.Repo
 
         public string LocationPath { get; }
         public List<RestorePoint> RestorePoints { get; }
-        public void UploadVersion(RestorePoint temporaryRestorePoint)
+        public void UploadVersion(List<Storage> temporaryStorages, DateTime datetime)
         {
-            DirectoryInfo repositoryRestorePointDirectory = Directory.CreateDirectory(Path.Combine(LocationPath, temporaryRestorePoint.Id.ToString()));
-            foreach (Storage localStorage in temporaryRestorePoint.Storages)
-                File.Copy(localStorage.Path, Path.Combine(repositoryRestorePointDirectory.FullName, Path.GetFileName(localStorage.Path) ?? throw new BackupsException("wrong archive path")));
+            SaveRestorePointFiles(temporaryStorages);
 
-            // var storages = new List<Storage>(temporaryRestorePoint.Storages);
             var storages = new List<Storage>();
-            foreach (Storage temporaryStorage in temporaryRestorePoint.Storages)
+            foreach (Storage temporaryStorage in temporaryStorages)
             {
+                Console.WriteLine($"old path: {temporaryStorage.Path}");
                 string filename = Path.GetFileName(temporaryStorage.Path);
-                storages.Add(new Storage(filename, temporaryStorage.Id));
+                Console.WriteLine($"new path: {filename}");
+                var storage = new Storage(filename, temporaryStorage.Id);
+                storage.JobObjects.AddRange(temporaryStorage.JobObjects);
+                storages.Add(storage);
             }
 
-            var restorePoint = new RestorePoint(storages, temporaryRestorePoint.DateTime, temporaryRestorePoint.Id);
+            var restorePoint = new RestorePoint(storages, datetime, Guid.NewGuid());
             RestorePoints.Add(restorePoint);
         }
 
@@ -41,6 +42,12 @@ namespace Backups.Repo
         private string RestorePointName()
         {
             return Path.GetFileNameWithoutExtension(Path.GetRandomFileName());
+        }
+
+        private void SaveRestorePointFiles(List<Storage> temporaryStorages)
+        {
+            foreach (Storage localStorage in temporaryStorages)
+                File.Copy(localStorage.Path, Path.Combine(LocationPath, Path.GetFileName(localStorage.Path) ?? throw new BackupsException("wrong archive path")));
         }
     }
 }

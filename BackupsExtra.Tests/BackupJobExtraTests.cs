@@ -1,10 +1,8 @@
-using System;
 using Backups.Job;
 using Backups.Repo;
 using Backups.Tests;
 using BackupsExtra.JobExtra;
 using BackupsExtra.MergingRestorePoints;
-using BackupsExtra.RepoExtra;
 using NUnit.Framework;
 
 namespace BackupsExtra.Tests
@@ -18,21 +16,21 @@ namespace BackupsExtra.Tests
         {
             const string localRepositoryPath = @"D:\\OOP\\lab-5\\repo";
             var repository = new LocalRepository(localRepositoryPath);
-            var repositoryExtra = new LocalRepositoryExtra(repository);
             var zipper = new TestStorageCreator();
+            var job = new BackupJob(repository, zipper);
             
-            _backupJobExtra = new BackupJobExtra(new StorageConditions(), new SingleStorageListMerging(), repositoryExtra, zipper);
+            _backupJobExtra = new BackupJobExtra(job, new StorageConditions(), new SingleStorageListMerging());
         }
 
         [Test]
         public void SetRestorePointsNumberLimitAndExceedIt_CheckRestorePointsNumber()
         {
             _backupJobExtra.StorageConditions.SetNumberLimit(3);
-            _backupJobExtra.CreateBackup(DateTime.Parse("7/30/2002"));
-            _backupJobExtra.CreateBackup(DateTime.Parse("8/30/2002"));
-            _backupJobExtra.CreateBackup(DateTime.Parse("9/30/2002"));
-            _backupJobExtra.CreateBackup(DateTime.Parse("10/30/2002"));
-            _backupJobExtra.CreateBackup(DateTime.Parse("11/30/2002"));
+            for (int i = 0; i < 9; i++)
+            {
+                _backupJobExtra.CreateBackup();
+            }
+
             Assert.AreEqual(_backupJobExtra.StorageConditions.NumberLimit, _backupJobExtra.Job.Repository.GetRestorePoints().Count);
         }
     }

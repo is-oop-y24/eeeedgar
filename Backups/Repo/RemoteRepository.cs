@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net.Sockets;
@@ -16,22 +17,22 @@ namespace Backups.Repo
         public Sender Sender { get; }
         public List<RestorePoint> RestorePoints { get; }
 
-        public void UploadVersion(RestorePoint temporaryRestorePoint)
+        public void UploadVersion(List<Storage> temporaryStorages, DateTime datetime)
         {
             using NetworkStream stream = Sender.Client.GetStream();
-            foreach (Storage localStorage in temporaryRestorePoint.Storages)
+            foreach (Storage localStorage in temporaryStorages)
             {
-                Sender.SendFile(localStorage.Path, temporaryRestorePoint.Id.ToString(), stream);
+                Sender.SendFile(localStorage.Path, Path.GetFileName(localStorage.Path), stream);
             }
 
             var storages = new List<Storage>();
-            foreach (Storage temporaryStorage in temporaryRestorePoint.Storages)
+            foreach (Storage temporaryStorage in temporaryStorages)
             {
                 string filename = Path.GetFileName(temporaryStorage.Path);
                 storages.Add(new Storage(filename, temporaryStorage.Id));
             }
 
-            var restorePoint = new RestorePoint(storages, temporaryRestorePoint.DateTime, temporaryRestorePoint.Id);
+            var restorePoint = new RestorePoint(storages, datetime, Guid.NewGuid());
             RestorePoints.Add(restorePoint);
         }
 

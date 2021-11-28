@@ -3,21 +3,18 @@ using System.Collections.Generic;
 using System.Linq;
 using Backups.Job;
 using Backups.Repo;
-using Backups.Zippers;
 using BackupsExtra.ClearingRestorePoints;
 using BackupsExtra.Commands;
 using BackupsExtra.MergingRestorePoints;
-using BackupsExtra.RepoExtra;
 
 namespace BackupsExtra.JobExtra
 {
     public class BackupJobExtra
     {
-        public BackupJobExtra(StorageConditions storageConditions, IListMerging merging, IRepositoryExtra repositoryExtra, IStorageCreator storageCreator, Guid id = default)
+        public BackupJobExtra(BackupJob job, StorageConditions storageConditions, IListMerging merging, Guid id = default)
         {
             Id = id == default ? Guid.NewGuid() : id;
-            RepositoryExtra = repositoryExtra;
-            Job = new BackupJob(repositoryExtra.Repository(), storageCreator, Id);
+            Job = job;
             StorageConditions = storageConditions;
             Merging = merging;
         }
@@ -26,24 +23,42 @@ namespace BackupsExtra.JobExtra
         public BackupJob Job { get; }
         public StorageConditions StorageConditions { get; }
         public IListMerging Merging { get; }
-        public IRepositoryExtra RepositoryExtra { get; }
 
         public void CreateBackup(DateTime backupDateTime = default)
         {
             DateTime date = backupDateTime == default ? DateTime.Now : backupDateTime;
             Job.CreateBackup(date);
-            List<RestorePoint> restorePoints = Job.Repository.GetRestorePoints();
+            ClearRestorePoints();
+        }
 
-            List<RestorePoint> exceededRestorePoints = GetExceededRestorePoints(restorePoints);
+        public void ClearRestorePoints()
+        {
+            List<RestorePoint> restorePoints = Job.Repository.GetRestorePoints();
+            List<RestorePoint> exceededRestorePoints =
+                GetExceededRestorePoints(restorePoints);
+            List<RestorePoint> activeRestorePoints =
+                GetActiveRestorePoints(restorePoints);
+
+            var restorePointsToMerge = new List<RestorePoint>(exceededRestorePoints);
+            if (activeRestorePoints.Count > 0)
+            {
+                RestorePoint oldestActiveRestorePoint = OldestRestorePoint(activeRestorePoints);
+                restorePointsToMerge.Add(oldestActiveRestorePoint);
+                restorePoints.Remove(oldestActiveRestorePoint);
+            }
+
+            RestorePoint mergeResult = Merging.Execute(restorePointsToMerge);
+
+            restorePoints.Add(mergeResult);
             foreach (RestorePoint exceededRestorePoint in exceededRestorePoints)
             {
-                RepositoryExtra.DeleteRestorePoint(exceededRestorePoint.Id);
+                restorePoints.Remove(exceededRestorePoint);
             }
 
             SortRestorePointsByDate(restorePoints);
         }
 
-        private RestorePoint OldestRestorePointFromTheList(List<RestorePoint> restorePoints)
+        private RestorePoint OldestRestorePoint(List<RestorePoint> restorePoints)
         {
             RestorePoint oldestNotExceededRestorePoint = restorePoints.First();
             foreach (RestorePoint restorePoint in restorePoints)
@@ -83,6 +98,19 @@ namespace BackupsExtra.JobExtra
             }
 
             return exceededRestorePoints;
+        }
+
+        private List<RestorePoint> GetActiveRestorePoints(List<RestorePoint> restorePoints)
+        {
+            List<RestorePoint> exceededRestorePoints = GetExceededRestorePoints(restorePoints);
+            var activeRestorePoints = new List<RestorePoint>(restorePoints);
+            foreach (RestorePoint restorePoint in restorePoints)
+            {
+                if (exceededRestorePoints.Contains(restorePoint))
+                    activeRestorePoints.Remove(restorePoint);
+            }
+
+            return activeRestorePoints;
         }
 
         private void SortRestorePointsByDate(List<RestorePoint> restorePoints)

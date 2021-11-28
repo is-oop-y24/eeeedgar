@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using Backups.Job;
 using Backups.Repo;
@@ -9,7 +8,6 @@ using BackupsExtra.ClearingRestorePoints;
 using BackupsExtra.Commands;
 using BackupsExtra.JobExtra;
 using BackupsExtra.MergingRestorePoints;
-using BackupsExtra.RepoExtra;
 
 namespace BackupsExtra
 {
@@ -87,6 +85,8 @@ namespace BackupsExtra
                     RestorePoint restorePoint = command.Execute();
                     string log = command.Log();
                     Console.WriteLine(log);
+                    Console.WriteLine(restorePoint.Storages.Count);
+                    Console.WriteLine(restorePoint.Storages.First().JobObjects.Count);
                 }
 
                 Console.WriteLine("-------------");
@@ -155,10 +155,10 @@ namespace BackupsExtra
             const string temporaryFilesDirectoryPath = @"D:\\OOP\\lab-5\\temp";
 
             var repository = new LocalRepository(localRepositoryPath);
-            var repositoryExtra = new LocalRepositoryExtra(repository);
             var zipper = new SplitStorageCreator(temporaryFilesDirectoryPath);
 
-            var backupJobExtra = new BackupJobExtra(new StorageConditions(), new SplitStorageListMerging(), repositoryExtra, zipper);
+            var job = new BackupJob(repository, zipper);
+            var backupJobExtra = new BackupJobExtra(job, new StorageConditions(), new SplitStorageListMerging());
             backupJobExtra.StorageConditions.SetNumberLimit(3);
             var jobObject1 = new JobObject(@"D:\OOP\lab-5\data\1.txt");
             var jobObject2 = new JobObject(@"D:\OOP\lab-5\data\2.txt");
@@ -166,32 +166,40 @@ namespace BackupsExtra
             var jobObject4 = new JobObject(@"D:\OOP\lab-5\data\4.txt");
 
             backupJobExtra.Job.AddJobObject(jobObject1);
-            backupJobExtra.CreateBackup(DateTime.Parse("1/1/2000"));
+            backupJobExtra.Job.CreateBackup(DateTime.Parse("1/1/2000"));
 
             backupJobExtra.Job.RemoveJobObject(jobObject1);
             backupJobExtra.Job.AddJobObject(jobObject2);
-            backupJobExtra.CreateBackup(DateTime.Parse("2/1/2000"));
+            backupJobExtra.Job.CreateBackup(DateTime.Parse("2/1/2000"));
 
             backupJobExtra.Job.RemoveJobObject(jobObject2);
             backupJobExtra.Job.AddJobObject(jobObject3);
-            backupJobExtra.CreateBackup(DateTime.Parse("3/1/2000"));
+            backupJobExtra.Job.CreateBackup(DateTime.Parse("3/1/2000"));
 
             backupJobExtra.Job.RemoveJobObject(jobObject3);
             backupJobExtra.Job.AddJobObject(jobObject4);
-            backupJobExtra.CreateBackup(DateTime.Parse("4/1/2000"));
+            backupJobExtra.Job.CreateBackup(DateTime.Parse("4/1/2000"));
 
-            Console.WriteLine(backupJobExtra.Job.Repository.GetRestorePoints().Count);
-            foreach (RestorePoint restorePoint in backupJobExtra.Job.Repository.GetRestorePoints())
+            DisplayRestorePoints(backupJobExtra.Job.Repository.GetRestorePoints());
+
+            backupJobExtra.ClearRestorePoints();
+
+            DisplayRestorePoints(backupJobExtra.Job.Repository.GetRestorePoints());
+        }
+
+        private static void DisplayRestorePoints(List<RestorePoint> restorePoints)
+        {
+            int i = 0;
+            foreach (RestorePoint restorePoint in restorePoints)
             {
-                Console.WriteLine(restorePoint.Id);
+                Console.WriteLine($"{i++}\t{restorePoint.Id}");
                 foreach (Storage storage in restorePoint.Storages)
                 {
                     Console.WriteLine(storage.Path);
                 }
             }
 
-            Guid id = backupJobExtra.Job.Repository.GetRestorePoints().Last().Id;
-            backupJobExtra.RepositoryExtra.DeleteRestorePoint(id);
+            Console.WriteLine("---------------");
         }
     }
 }

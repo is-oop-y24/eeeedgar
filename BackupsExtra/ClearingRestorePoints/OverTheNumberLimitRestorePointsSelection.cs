@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 using Backups.Repo;
 
 namespace BackupsExtra.ClearingRestorePoints
@@ -17,9 +16,7 @@ namespace BackupsExtra.ClearingRestorePoints
 
         public List<RestorePoint> Execute()
         {
-            var copiedPointArray = new RestorePoint[_restorePoints.Count];
-            _restorePoints.CopyTo(copiedPointArray);
-            var points = copiedPointArray.ToList();
+            var points = new List<RestorePoint>(_restorePoints);
             points.Sort((p1, p2) => p1.DateTime.CompareTo(p2.DateTime));
             int exceededNumber = _restorePoints.Count - Limit;
             if (exceededNumber < 0)

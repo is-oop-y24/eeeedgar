@@ -25,8 +25,7 @@ namespace BackupsExtra.MergingRestorePoints
                 _restorePoint1.DateTime < _restorePoint2.DateTime ? _restorePoint1 : _restorePoint2;
             DateTime dateTime = _restorePoint1.DateTime > _restorePoint2.DateTime ? _restorePoint1.DateTime : _restorePoint2.DateTime;
             RestorePoint restorePointNewer = _restorePoint1.DateTime < _restorePoint2.DateTime ? _restorePoint2 : _restorePoint1;
-            var storages = new List<Storage>();
-            storages.AddRange(restorePointNewer.Storages);
+            var storages = new List<Storage>(restorePointNewer.Storages);
             foreach (Storage storage in restorePointElder.Storages)
             {
                 if (storages.Find(s => s.JobObjects.First().Id.Equals(storage.JobObjects.First().Id)) == null)
