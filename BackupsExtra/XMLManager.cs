@@ -3,37 +3,64 @@ using System.Collections.Generic;
 using System.Xml;
 using System.Xml.Linq;
 using Backups.Job;
+using BackupsExtra.JobExtra;
 
 namespace BackupsExtra
 {
     public static class XmlManager
     {
-        public static void CreateBackupJobsXml(List<BackupJob> backupJobs, string path)
+        public static void CreateBackupJobsXml(List<BackupJobExtra> backupJobsExtra, string path = @"D:\\OOP\\lab-5\\backups_extra.xml")
         {
             var xDoc = new XDocument();
-            var xBackupJobs = new XElement("backup_jobs");
-            foreach (BackupJob job in backupJobs)
+            var xBackupJobsExtra = new XElement("backup_jobs_extra");
+            foreach (BackupJobExtra jobExtra in backupJobsExtra)
             {
-                var xBackupJob = new XElement("backup_job");
-                var xBackupJobId = new XAttribute("id", job.Id);
-                xBackupJob.Add(xBackupJobId);
+                var xBackupJobExtra = new XElement("backup_job_extra");
+                var xBackupJobExtraId = new XAttribute("id", jobExtra.Id);
+                var xBackupJobExtraMergingType = new XAttribute("merging_type", jobExtra.Merging.GetType());
+                xBackupJobExtra.Add(xBackupJobExtraId);
+                xBackupJobExtra.Add(xBackupJobExtraMergingType);
 
+                var xStorageConditions = new XElement("storage_conditions");
+
+                var xDeadline = new XElement("deadline");
+                var xHasDeadline = new XAttribute("has_deadline", jobExtra.StorageConditions.HasDeadline);
+                var xDeadlineDate = new XAttribute("date", jobExtra.StorageConditions.Deadline);
+                xDeadline.Add(xHasDeadline);
+                xDeadline.Add(xDeadlineDate);
+
+                var xLimit = new XElement("limit");
+                var xHasLimit = new XAttribute("has_limit", jobExtra.StorageConditions.HasNumberLimit);
+                var xLimitNumber = new XAttribute("number", jobExtra.StorageConditions.NumberLimit);
+                xLimit.Add(xHasLimit);
+                xLimit.Add(xLimitNumber);
+
+                xStorageConditions.Add(xDeadline);
+                xStorageConditions.Add(xLimit);
+
+                xBackupJobExtra.Add(xStorageConditions);
+
+                var xJob = new XElement("backup_job");
                 var xJobObjects = new XElement("job_objects");
-                foreach (JobObject o in job.JobObjects)
+                foreach (JobObject jobObject in jobExtra.Job.JobObjects)
                 {
                     var xJobObject = new XElement("job_object");
-                    var xJobObjectId = new XAttribute("id", o.Id);
+                    var xJobObjectId = new XAttribute("id", jobObject.Id);
+                    var xJobObjectPath = new XAttribute("path", jobObject.Path);
+
                     xJobObject.Add(xJobObjectId);
-                    var xJobObjectPath = new XAttribute("path", o.Path);
                     xJobObject.Add(xJobObjectPath);
+
                     xJobObjects.Add(xJobObject);
                 }
 
-                xBackupJob.Add(xJobObjects);
-                xBackupJobs.Add(xBackupJob);
+                xJob.Add(xJobObjects);
+                xBackupJobExtra.Add(xJob);
+
+                xBackupJobsExtra.Add(xBackupJobExtra);
             }
 
-            xDoc.Add(xBackupJobs);
+            xDoc.Add(xBackupJobsExtra);
             xDoc.Save(path);
         }
 
