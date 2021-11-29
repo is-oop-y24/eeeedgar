@@ -6,6 +6,7 @@ using Backups.Repo;
 using BackupsExtra.ClearingRestorePoints;
 using BackupsExtra.Commands;
 using BackupsExtra.MergingRestorePoints;
+using Newtonsoft.Json;
 
 namespace BackupsExtra.JobExtra
 {
@@ -23,6 +24,25 @@ namespace BackupsExtra.JobExtra
         public BackupJob Job { get; }
         public StorageConditions StorageConditions { get; }
         public IListMerging Merging { get; }
+
+        public static BackupJobExtra Deserialize(string s)
+        {
+            return JsonConvert.DeserializeObject<BackupJobExtra>(s, new JsonSerializerSettings()
+            {
+                TypeNameHandling = TypeNameHandling.All,
+                Formatting = Formatting.Indented,
+            });
+        }
+
+        public string Serialize()
+        {
+            return JsonConvert.SerializeObject(
+                this, new JsonSerializerSettings()
+                {
+                    TypeNameHandling = TypeNameHandling.All,
+                    Formatting = Formatting.Indented,
+                });
+        }
 
         public void CreateBackup(DateTime backupDateTime = default)
         {

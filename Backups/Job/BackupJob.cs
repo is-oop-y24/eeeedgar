@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text.Json.Serialization;
 using Backups.Repo;
 using Backups.Tools;
 using Backups.Zippers;
@@ -15,6 +16,15 @@ namespace Backups.Job
             JobObjects = new List<JobObject>();
             Repository = repository;
             StorageCreator = storageCreator;
+        }
+
+        [JsonConstructor]
+        private BackupJob(Guid id, List<JobObject> jobObjects, IStorageCreator storageCreator, IRepository repository)
+        {
+            Id = id;
+            JobObjects = jobObjects;
+            StorageCreator = storageCreator;
+            Repository = repository;
         }
 
         public Guid Id { get; }
