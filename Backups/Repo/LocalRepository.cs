@@ -22,9 +22,7 @@ namespace Backups.Repo
             var storages = new List<Storage>();
             foreach (Storage temporaryStorage in temporaryStorages)
             {
-                Console.WriteLine($"old path: {temporaryStorage.Path}");
                 string filename = Path.GetFileName(temporaryStorage.Path);
-                Console.WriteLine($"new path: {filename}");
                 var storage = new Storage(filename, temporaryStorage.Id);
                 storage.JobObjects.AddRange(temporaryStorage.JobObjects);
                 storages.Add(storage);

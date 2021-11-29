@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Text;
 using Backups.Job;
 using Backups.Repo;
 using BackupsExtra.ClearingRestorePoints;
@@ -12,12 +14,14 @@ namespace BackupsExtra.JobExtra
 {
     public class BackupJobExtra
     {
-        public BackupJobExtra(BackupJob job, StorageConditions storageConditions, IListMerging merging, Guid id = default)
+        private Stream _stream;
+        public BackupJobExtra(BackupJob job, StorageConditions storageConditions, IListMerging merging, Stream stream = null, Guid id = default)
         {
             Id = id == default ? Guid.NewGuid() : id;
             Job = job;
             StorageConditions = storageConditions;
             Merging = merging;
+            _stream = stream;
         }
 
         public Guid Id { get; }
@@ -67,7 +71,9 @@ namespace BackupsExtra.JobExtra
                 restorePoints.Remove(oldestActiveRestorePoint);
             }
 
-            RestorePoint mergeResult = Merging.Execute(restorePointsToMerge);
+            RestorePoint mergeResult = Merging.Execute(restorePointsToMerge, DateTime.Now);
+            string log = Merging.Log();
+            _stream?.Write(Encoding.Unicode.GetBytes(log));
 
             restorePoints.Add(mergeResult);
             foreach (RestorePoint exceededRestorePoint in exceededRestorePoints)
@@ -100,6 +106,8 @@ namespace BackupsExtra.JobExtra
                 var command = new SelectExceededCommand(selection, DateTime.Now);
                 List<RestorePoint> outdatedRestorePoints = command.Execute();
                 Console.WriteLine(command.Log());
+                string log = command.Log();
+                _stream?.Write(Encoding.Unicode.GetBytes(log));
                 exceededRestorePoints.AddRange(outdatedRestorePoints);
             }
 
@@ -109,7 +117,8 @@ namespace BackupsExtra.JobExtra
                     new OverTheNumberLimitRestorePointsSelection(restorePoints, StorageConditions.NumberLimit);
                 var command = new SelectExceededCommand(selection, DateTime.Now);
                 List<RestorePoint> overNumberLimitRestorePoints = command.Execute();
-                Console.WriteLine(command.Log());
+                string log = command.Log();
+                _stream?.Write(Encoding.Unicode.GetBytes(log));
                 foreach (RestorePoint overNumberLimitRestorePoint in overNumberLimitRestorePoints)
                 {
                     if (!exceededRestorePoints.Contains(overNumberLimitRestorePoint))

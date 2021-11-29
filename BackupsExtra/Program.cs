@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using Backups.Job;
 using Backups.Repo;
@@ -15,7 +16,6 @@ namespace BackupsExtra
     {
         private static void Main()
         {
-            BackupExtraTest();
         }
 
         private static void ShowLogs()
@@ -53,7 +53,7 @@ namespace BackupsExtra
 
                     var merging = new SingleStorageRestorePointsPairMerging(restorePoint1, restorePoint2);
 
-                    var command = new MergeCommand(merging, DateTime.Now);
+                    var command = new MergeCommand(merging, DateTime.Now, "Single");
                     RestorePoint restorePoint = command.Execute();
                     string log = command.Log();
                     Console.WriteLine(log);
@@ -81,7 +81,7 @@ namespace BackupsExtra
                     var restorePoint2 = new RestorePoint(storages2, dateTime2, Guid.NewGuid());
 
                     var merging = new SplitStorageRestorePointsPairMerging(restorePoint1, restorePoint2);
-                    var command = new MergeCommand(merging, DateTime.Now);
+                    var command = new MergeCommand(merging, DateTime.Now, "Split");
                     RestorePoint restorePoint = command.Execute();
                     string log = command.Log();
                     Console.WriteLine(log);
@@ -158,8 +158,9 @@ namespace BackupsExtra
             var zipper = new SplitStorageCreator(temporaryFilesDirectoryPath);
 
             var job = new BackupJob(repository, zipper);
-            var backupJobExtra = new BackupJobExtra(job, new StorageConditions(), new SplitStorageListMerging());
-            backupJobExtra.StorageConditions.SetNumberLimit(3);
+            using FileStream stream = File.Create(@"D:\OOP\lab-5\data\log.txt");
+            var backupJobExtra = new BackupJobExtra(job, new StorageConditions(), new SplitStorageListMerging(), stream);
+            backupJobExtra.StorageConditions.SetNumberLimit(2);
             var jobObject1 = new JobObject(@"D:\OOP\lab-5\data\1.txt");
             var jobObject2 = new JobObject(@"D:\OOP\lab-5\data\2.txt");
             var jobObject3 = new JobObject(@"D:\OOP\lab-5\data\3.txt");
@@ -180,26 +181,11 @@ namespace BackupsExtra
             backupJobExtra.Job.AddJobObject(jobObject4);
             backupJobExtra.Job.CreateBackup(DateTime.Parse("4/1/2000"));
 
-            DisplayRestorePoints(backupJobExtra.Job.Repository.GetRestorePoints());
-
             backupJobExtra.ClearRestorePoints();
 
-            DisplayRestorePoints(backupJobExtra.Job.Repository.GetRestorePoints());
-        }
+            string a = backupJobExtra.Serialize();
 
-        private static void DisplayRestorePoints(List<RestorePoint> restorePoints)
-        {
-            int i = 0;
-            foreach (RestorePoint restorePoint in restorePoints)
-            {
-                Console.WriteLine($"{i++}\t{restorePoint.Id}");
-                foreach (Storage storage in restorePoint.Storages)
-                {
-                    Console.WriteLine(storage.Path);
-                }
-            }
-
-            Console.WriteLine("---------------");
+            var extra = BackupJobExtra.Deserialize(a);
         }
     }
 }

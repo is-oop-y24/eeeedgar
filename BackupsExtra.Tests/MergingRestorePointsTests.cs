@@ -119,7 +119,7 @@ namespace BackupsExtra.Tests
 
             var restorePoints = new List<RestorePoint> { restorePoint1, restorePoint2, restorePoint3 };
 
-            RestorePoint restorePoint = new SingleStorageListMerging().Execute(restorePoints);
+            RestorePoint restorePoint = new SingleStorageListMerging().Execute(restorePoints, DateTime.Now);
             Assert.AreEqual(1, restorePoint.Storages.Count);
             Assert.AreEqual(1, restorePoint.Storages.First().JobObjects.Count);
             Assert.AreEqual(@"path3", restorePoint.Storages.First().JobObjects.First().Path);
@@ -152,7 +152,7 @@ namespace BackupsExtra.Tests
 
             var restorePoints = new List<RestorePoint> { restorePoint1, restorePoint2, restorePoint3 };
 
-            RestorePoint restorePoint = new SplitStorageListMerging().Execute(restorePoints);
+            RestorePoint restorePoint = new SplitStorageListMerging().Execute(restorePoints, DateTime.Now);
             Assert.AreEqual(3, restorePoint.Storages.Count);
             for (int s = 0; s < restorePoint.Storages.Count; s++)
             {
