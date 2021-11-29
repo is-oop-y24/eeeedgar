@@ -41,7 +41,7 @@ namespace Banks.Tests
             {
                 computedBalance *= 1 + ((decimal) 0.01 / 12);
             }
-            Assert.AreEqual(decimal.Round(computedBalance, 4), decimal.Round(_debitAccount.Balance, 4));
+            Assert.AreEqual(decimal.Round(computedBalance, 0), decimal.Round(_debitAccount.Balance, 0));
         }
     }
 }

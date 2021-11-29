@@ -88,7 +88,7 @@ namespace Banks.Tests
             {
                 computedBalance *= 1 + _conditions.DepositInterest.Count(computedBalance) / 100 / 12;
             }
-            Assert.AreEqual(decimal.Round(computedBalance, 2), decimal.Round(_depositAccount.Balance, 2));
+            Assert.AreEqual(decimal.Round(computedBalance, 0), decimal.Round(_depositAccount.Balance, 0));
         }
     }
 }
