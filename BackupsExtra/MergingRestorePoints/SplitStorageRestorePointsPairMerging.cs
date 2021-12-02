@@ -21,6 +21,12 @@ namespace BackupsExtra.MergingRestorePoints
 
         public RestorePoint Execute()
         {
+            if (_restorePoint1 is null && _restorePoint2 is null)
+                return null;
+            if (_restorePoint1 is null)
+                return new RestorePoint(_restorePoint2.Storages, _restorePoint2.DateTime, Guid.NewGuid());
+            if (_restorePoint2 is null)
+                return new RestorePoint(_restorePoint1.Storages, _restorePoint1.DateTime, Guid.NewGuid());
             RestorePoint restorePointElder =
                 _restorePoint1.DateTime < _restorePoint2.DateTime ? _restorePoint1 : _restorePoint2;
             DateTime dateTime = _restorePoint1.DateTime > _restorePoint2.DateTime ? _restorePoint1.DateTime : _restorePoint2.DateTime;
