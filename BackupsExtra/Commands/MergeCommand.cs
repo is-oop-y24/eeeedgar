@@ -30,7 +30,7 @@ namespace BackupsExtra.Commands
             if (_resultRestorePoint is null)
                 throw new BackupsExtraException("attempt to get log before execution");
             return
-                new LogTemplate().Merge(_storageType, _pairMerging.RestorePoint1(), _pairMerging.RestorePoint2(), _resultRestorePoint, _time);
+                new LogTemplate().Merge(_storageType, _pairMerging.RestorePoint1, _pairMerging.RestorePoint2, _resultRestorePoint, _time);
         }
     }
 }

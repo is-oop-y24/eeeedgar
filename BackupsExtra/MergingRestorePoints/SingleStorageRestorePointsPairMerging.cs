@@ -14,8 +14,8 @@ namespace BackupsExtra.MergingRestorePoints
             _restorePoint2 = restorePoint2;
         }
 
-        public RestorePoint RestorePoint1() => _restorePoint1;
-        public RestorePoint RestorePoint2() => _restorePoint2;
+        public RestorePoint RestorePoint1 => _restorePoint1;
+        public RestorePoint RestorePoint2 => _restorePoint2;
 
         public RestorePoint Execute()
         {
