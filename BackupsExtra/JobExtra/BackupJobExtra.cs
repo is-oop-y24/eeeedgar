@@ -15,9 +15,18 @@ namespace BackupsExtra.JobExtra
     public class BackupJobExtra
     {
         private Stream _logStream;
-        public BackupJobExtra(BackupJob job, StorageConditions storageConditions, IListMerging merging, Stream logStream = null, Guid id = default)
+        public BackupJobExtra(Guid id, BackupJob job, StorageConditions storageConditions, IListMerging merging, Stream logStream = null)
         {
-            Id = id == default ? Guid.NewGuid() : id;
+            Id = id;
+            Job = job;
+            StorageConditions = storageConditions;
+            Merging = merging;
+            _logStream = logStream;
+        }
+
+        public BackupJobExtra(BackupJob job, StorageConditions storageConditions, IListMerging merging, Stream logStream = null)
+        {
+            Id = Guid.NewGuid();
             Job = job;
             StorageConditions = storageConditions;
             Merging = merging;

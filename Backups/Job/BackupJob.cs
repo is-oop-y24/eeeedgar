@@ -10,9 +10,17 @@ namespace Backups.Job
 {
     public class BackupJob
     {
-        public BackupJob(IRepository repository, IStorageCreator storageCreator, Guid id = default)
+        public BackupJob(Guid id, IRepository repository, IStorageCreator storageCreator)
         {
-            Id = id == default ? Guid.NewGuid() : id;
+            Id = id;
+            JobObjects = new List<JobObject>();
+            Repository = repository;
+            StorageCreator = storageCreator;
+        }
+
+        public BackupJob(IRepository repository, IStorageCreator storageCreator)
+        {
+            Id = Guid.NewGuid();
             JobObjects = new List<JobObject>();
             Repository = repository;
             StorageCreator = storageCreator;

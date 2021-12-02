@@ -5,7 +5,7 @@ namespace Backups.Repo
 {
     public class RestorePoint
     {
-        public RestorePoint(List<Storage> storages, DateTime dateTime, Guid id = default)
+        public RestorePoint(List<Storage> storages, DateTime dateTime, Guid id)
         {
             Id = id == default ? Guid.NewGuid() : id;
             Storages = storages;

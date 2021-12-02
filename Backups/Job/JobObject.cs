@@ -4,9 +4,15 @@ namespace Backups.Job
 {
     public class JobObject
     {
-        public JobObject(string path, Guid id = default)
+        public JobObject(Guid id, string path)
         {
-            Id = id == default ? Guid.NewGuid() : id;
+            Id = id;
+            Path = path;
+        }
+
+        public JobObject(string path)
+        {
+            Id = Guid.NewGuid();
             Path = path;
         }
 
