@@ -9,10 +9,7 @@ namespace BackupsExtra.Commands
         public string Merge(string storageType, RestorePoint restorePoint1, RestorePoint restorePoint2, RestorePoint resultRestorePoint, DateTime time)
         {
             return
-            $"{time}\n{storageType}-Storage-Restore-Points Merge:\n" +
-                $"Restore Point 1:\t{restorePoint1.Id}\t{restorePoint1.DateTime}\n" +
-                $"Restore Point 2:\t{restorePoint2.Id}\t{restorePoint2.DateTime}\n" +
-                $"New Restore Point:\t{resultRestorePoint.Id}\t{resultRestorePoint.DateTime}\n";
+                $"{time}\n{storageType}-Storage-Restore-Points Merge:\n{RestorePointLog(restorePoint1)}{RestorePointLog(restorePoint2)}{RestorePointLog(resultRestorePoint)}";
         }
 
         public string ExceededSelection(List<RestorePoint> exceededRestorePoints, DateTime date)
@@ -30,6 +27,13 @@ namespace BackupsExtra.Commands
             }
 
             return answer;
+        }
+
+        private string RestorePointLog(RestorePoint restorePoint)
+        {
+            return restorePoint != null
+                ? $"Restore Point 1:\t{restorePoint.Id}\t{restorePoint.DateTime}\n"
+                : "undefined\n";
         }
     }
 }

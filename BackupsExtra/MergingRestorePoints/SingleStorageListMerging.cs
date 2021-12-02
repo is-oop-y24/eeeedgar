@@ -16,10 +16,10 @@ namespace BackupsExtra.MergingRestorePoints
 
         public RestorePoint Execute(List<RestorePoint> restorePoints, DateTime time)
         {
-            RestorePoint result = restorePoints[0];
-            for (int p = 1; p < restorePoints.Count; p++)
+            RestorePoint result = null;
+            foreach (RestorePoint t in restorePoints)
             {
-                var merging = new SingleStorageRestorePointsPairMerging(result, restorePoints[p]);
+                var merging = new SingleStorageRestorePointsPairMerging(result, t);
                 var command = new MergeCommand(merging, time, "Single");
                 result = command.Execute();
                 _log += command.Log();
