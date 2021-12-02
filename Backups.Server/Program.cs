@@ -30,14 +30,8 @@ namespace Backups.Server
                         string directoryPath = Path.GetDirectoryName(serverFile.Name);
                         if (!Directory.Exists(directoryPath))
                         {
-                            if (directoryPath is null)
-                            {
-                                throw new Exception("WRONG PATH");
-                            }
-                            else
-                            {
+                            if (directoryPath != null)
                                 Directory.CreateDirectory(Path.Combine(location, directoryPath));
-                            }
                         }
 
                         File.WriteAllBytes(Path.Combine(location, serverFile.Name), serverFile.Data);
