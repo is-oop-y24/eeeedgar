@@ -27,10 +27,19 @@ namespace BackupsExtra.MergingRestorePoints
                 return new RestorePoint(_restorePoint2.Storages, _restorePoint2.DateTime, Guid.NewGuid());
             if (_restorePoint2 is null)
                 return new RestorePoint(_restorePoint1.Storages, _restorePoint1.DateTime, Guid.NewGuid());
-            RestorePoint restorePointElder =
-                _restorePoint1.DateTime < _restorePoint2.DateTime ? _restorePoint1 : _restorePoint2;
-            DateTime dateTime = _restorePoint1.DateTime > _restorePoint2.DateTime ? _restorePoint1.DateTime : _restorePoint2.DateTime;
-            RestorePoint restorePointNewer = _restorePoint1.DateTime < _restorePoint2.DateTime ? _restorePoint2 : _restorePoint1;
+            RestorePoint restorePointElder = null;
+            RestorePoint restorePointNewer = null;
+            if (_restorePoint1.DateTime < _restorePoint2.DateTime)
+            {
+                restorePointElder = _restorePoint1;
+                restorePointNewer = _restorePoint2;
+            }
+            else
+            {
+                restorePointElder = _restorePoint2;
+                restorePointNewer = _restorePoint1;
+            }
+
             var storages = new List<Storage>(restorePointNewer.Storages);
             foreach (Storage storage in restorePointElder.Storages)
             {
@@ -38,7 +47,7 @@ namespace BackupsExtra.MergingRestorePoints
                     storages.Add(storage);
             }
 
-            return new RestorePoint(storages, dateTime, Guid.NewGuid());
+            return new RestorePoint(storages, restorePointNewer.DateTime, Guid.NewGuid());
         }
     }
 }
