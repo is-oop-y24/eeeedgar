@@ -1,6 +1,9 @@
+using System.Collections.Generic;
+using System.Linq;
 using Backups.Job;
 using Backups.Repo;
 using Backups.Tests;
+using BackupsExtra.ClearingRestorePoints;
 using BackupsExtra.JobExtra;
 using BackupsExtra.MergingRestorePoints;
 using NUnit.Framework;
@@ -18,20 +21,20 @@ namespace BackupsExtra.Tests
             var repository = new LocalRepository(localRepositoryPath);
             var zipper = new TestStorageCreator();
             var job = new BackupJob(repository, zipper);
-            
-            _backupJobExtra = new BackupJobExtra(job, new StorageConditions(), new SingleStorageListMerging());
+
+            _backupJobExtra = new BackupJobExtra(job, new SingleStorageListMerging(), new List<IExceededRestorePointsSelection>());
         }
 
         [Test]
         public void SetRestorePointsNumberLimitAndExceedIt_CheckRestorePointsNumber()
         {
-            _backupJobExtra.StorageConditions.SetNumberLimit(3);
+            _backupJobExtra.Rules.Add(new OverTheNumberLimitRestorePointsSelection(3));
             for (int i = 0; i < 9; i++)
             {
                 _backupJobExtra.CreateBackup();
             }
 
-            Assert.AreEqual(_backupJobExtra.StorageConditions.NumberLimit, _backupJobExtra.Job.Repository.GetRestorePoints().Count);
+            Assert.AreEqual(3, _backupJobExtra.Job.Repository.GetRestorePoints().Count);
         }
     }
 }
