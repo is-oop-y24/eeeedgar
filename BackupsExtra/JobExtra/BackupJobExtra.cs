@@ -73,25 +73,48 @@ namespace BackupsExtra.JobExtra
             List<RestorePoint> activeRestorePoints =
                 GetActiveRestorePoints(restorePoints, now);
 
-            var restorePointsToMerge = new List<RestorePoint>(exceededRestorePoints);
-            if (activeRestorePoints.Count > 0)
-            {
-                RestorePoint oldestActiveRestorePoint = OldestRestorePoint(activeRestorePoints);
-                restorePointsToMerge.Add(oldestActiveRestorePoint);
-                restorePoints.Remove(oldestActiveRestorePoint);
-            }
+            List<RestorePoint> restorePointsToMerge = SelectPointsToMerge(exceededRestorePoints, activeRestorePoints);
 
-            RestorePoint mergeResult = Merging.Execute(restorePointsToMerge, DateTime.Now);
+            RestorePoint mergeResult = Merge(restorePointsToMerge, now);
+
+            WriteLogIfStreamSet();
+
+            if (mergeResult != null)
+                restorePoints.Add(mergeResult);
+
+            RemoveRestorePoints(restorePoints, restorePointsToMerge);
+            SortRestorePointsByDate(restorePoints);
+        }
+
+        private void WriteLogIfStreamSet()
+        {
             string log = Merging.Log();
             _logStream?.Write(Encoding.Unicode.GetBytes(log));
+        }
 
-            restorePoints.Add(mergeResult);
-            foreach (RestorePoint exceededRestorePoint in exceededRestorePoints)
+        private RestorePoint Merge(List<RestorePoint> restorePointsToMerge, DateTime now)
+        {
+            RestorePoint mergeResult = Merging.Execute(restorePointsToMerge, now);
+            return mergeResult;
+        }
+
+        private List<RestorePoint> SelectPointsToMerge(List<RestorePoint> exceededRestorePoints, List<RestorePoint> activeRestorePoints)
+        {
+            var restorePointsToMerge = new List<RestorePoint>(exceededRestorePoints);
+            if (exceededRestorePoints.Count != 0 && activeRestorePoints.Count > 0)
             {
-                restorePoints.Remove(exceededRestorePoint);
+                restorePointsToMerge.Add(OldestRestorePoint(activeRestorePoints));
             }
 
-            SortRestorePointsByDate(restorePoints);
+            return restorePointsToMerge;
+        }
+
+        private void RemoveRestorePoints(List<RestorePoint> restorePoints, List<RestorePoint> toRemove)
+        {
+            foreach (RestorePoint exceededPoint in toRemove)
+            {
+                restorePoints.Remove(exceededPoint);
+            }
         }
 
         private RestorePoint OldestRestorePoint(List<RestorePoint> restorePoints)
