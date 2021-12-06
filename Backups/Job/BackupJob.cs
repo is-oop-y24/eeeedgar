@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Text.Json.Serialization;
 using Backups.Repo;
 using Backups.Tools;
@@ -57,9 +56,9 @@ namespace Backups.Job
             JobObjects.Find(o => o.Path.Equals(path));
         }
 
-        public void CreateBackup(DateTime backupDateTime = default)
+        public void CreateBackup(DateTime backupDate = default)
         {
-            DateTime date = backupDateTime == default ? DateTime.Now : backupDateTime;
+            DateTime date = backupDate == default ? DateTime.Now : backupDate;
             List<Storage> temporaryStorages = StorageCreator.Compress(JobObjects);
             Repository.UploadVersion(temporaryStorages, date);
         }
