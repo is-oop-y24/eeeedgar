@@ -60,7 +60,7 @@ namespace Backups.Job
         {
             DateTime date = backupDate == default ? DateTime.Now : backupDate;
             List<Storage> temporaryStorages = StorageCreator.Compress(JobObjects);
-            Repository.UploadVersion(temporaryStorages, date);
+            Repository.CreateRestorePoint(temporaryStorages, date);
         }
     }
 }
