@@ -7,7 +7,7 @@ namespace Backups.Server
 {
     internal class Program
     {
-        public static void Main(string[] args)
+        public static void Main()
         {
             var server = new TcpListener(IPAddress.Parse("127.0.0.1"), 1234);
             string location = @"D:\oop\lab-3\server";
@@ -27,13 +27,6 @@ namespace Backups.Server
                     while ((fileNameLength = ReadInt(stream)) != 0)
                     {
                         ServerFile serverFile = ReceiveFile(fileNameLength, stream);
-                        string directoryPath = Path.GetDirectoryName(serverFile.Name);
-                        if (!Directory.Exists(directoryPath))
-                        {
-                            if (directoryPath != null)
-                                Directory.CreateDirectory(Path.Combine(location, directoryPath));
-                        }
-
                         File.WriteAllBytes(Path.Combine(location, serverFile.Name), serverFile.Data);
                     }
                 }

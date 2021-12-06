@@ -16,9 +16,7 @@ namespace Backups.Client
 
         public void SendFile(string path, string pathOnServer, NetworkStream stream)
         {
-            string name = Path.GetFileName(path);
             byte[] data = File.ReadAllBytes(path);
-            // SendString(Path.Combine(directoryName, name), stream);
             SendString(pathOnServer, stream);
             SendByteData(data, stream);
         }
