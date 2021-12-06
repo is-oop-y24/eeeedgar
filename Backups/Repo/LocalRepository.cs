@@ -30,6 +30,7 @@ namespace Backups.Repo
 
             var restorePoint = new RestorePoint(storages, datetime, Guid.NewGuid());
             RestorePoints.Add(restorePoint);
+            DeleteTemporaryStorages(temporaryStorages);
         }
 
         public List<RestorePoint> GetRestorePoints()
@@ -46,6 +47,14 @@ namespace Backups.Repo
         {
             foreach (Storage localStorage in temporaryStorages)
                 File.Copy(localStorage.Path, Path.Combine(LocationPath, Path.GetFileName(localStorage.Path) ?? throw new BackupsException("wrong archive path")));
+        }
+
+        private void DeleteTemporaryStorages(List<Storage> storages)
+        {
+            foreach (Storage storage in storages)
+            {
+                File.Delete(storage.Path);
+            }
         }
     }
 }

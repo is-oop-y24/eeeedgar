@@ -34,11 +34,20 @@ namespace Backups.Repo
 
             var restorePoint = new RestorePoint(storages, datetime, Guid.NewGuid());
             RestorePoints.Add(restorePoint);
+            DeleteTemporaryStorages(temporaryStorages);
         }
 
         public List<RestorePoint> GetRestorePoints()
         {
             return RestorePoints;
+        }
+
+        private void DeleteTemporaryStorages(List<Storage> storages)
+        {
+            foreach (Storage storage in storages)
+            {
+                File.Delete(storage.Path);
+            }
         }
     }
 }

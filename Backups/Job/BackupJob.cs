@@ -62,15 +62,6 @@ namespace Backups.Job
             DateTime date = backupDateTime == default ? DateTime.Now : backupDateTime;
             List<Storage> temporaryStorages = StorageCreator.Compress(JobObjects);
             Repository.UploadVersion(temporaryStorages, date);
-            DeleteTemporaryStorages(temporaryStorages);
-        }
-
-        private void DeleteTemporaryStorages(List<Storage> storages)
-        {
-            foreach (Storage storage in storages)
-            {
-                File.Delete(storage.Path);
-            }
         }
     }
 }
