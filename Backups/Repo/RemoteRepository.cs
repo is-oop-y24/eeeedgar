@@ -17,7 +17,7 @@ namespace Backups.Repo
         public Sender Sender { get; }
         public List<RestorePoint> RestorePoints { get; }
 
-        public void UploadVersion(List<Storage> temporaryStorages, DateTime datetime)
+        public void CreateRestorePoint(List<Storage> temporaryStorages, DateTime datetime)
         {
             using NetworkStream stream = Sender.Client.GetStream();
             foreach (Storage localStorage in temporaryStorages)

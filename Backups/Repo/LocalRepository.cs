@@ -15,7 +15,7 @@ namespace Backups.Repo
 
         public string LocationPath { get; }
         public List<RestorePoint> RestorePoints { get; }
-        public void UploadVersion(List<Storage> temporaryStorages, DateTime datetime)
+        public void CreateRestorePoint(List<Storage> temporaryStorages, DateTime datetime)
         {
             SaveRestorePointFiles(temporaryStorages);
 
