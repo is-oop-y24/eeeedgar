@@ -1,26 +1,22 @@
+using System;
+
 namespace Backups.Job
 {
     public class JobObject
     {
-        public JobObject(string path)
+        public JobObject(Guid id, string path)
         {
+            Id = id;
             Path = path;
         }
 
-        public string Path { get; }
-
-        public override bool Equals(object obj) => this.Equals(obj as JobObject);
-
-        public bool Equals(JobObject jobObject)
+        public JobObject(string path)
         {
-            if (jobObject is null)
-            {
-                return false;
-            }
-
-            return Path.Equals(jobObject.Path);
+            Id = Guid.NewGuid();
+            Path = path;
         }
 
-        public override int GetHashCode() => Path.GetHashCode();
+        public Guid Id { get; }
+        public string Path { get; }
     }
 }

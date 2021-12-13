@@ -1,11 +1,11 @@
+using System;
 using System.Collections.Generic;
-using Backups.TemporaryLocalData;
 
 namespace Backups.Repo
 {
     public interface IRepository
     {
-        void UploadVersion(TemporaryLocalRestorePoint temporaryLocalRestorePoint);
+        void CreateRestorePoint(List<Storage> temporaryStorages, DateTime datetime);
         List<RestorePoint> GetRestorePoints();
     }
 }

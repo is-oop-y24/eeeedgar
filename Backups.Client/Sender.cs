@@ -14,12 +14,10 @@ namespace Backups.Client
 
         public TcpClient Client { get; }
 
-        public void SendFile(string path, string directoryName, NetworkStream stream)
+        public void SendFile(string path, string pathOnServer, NetworkStream stream)
         {
-            string name = Path.GetFileName(path);
             byte[] data = File.ReadAllBytes(path);
-            Console.WriteLine(Path.Combine(directoryName, name));
-            SendString(Path.Combine(directoryName, name), stream);
+            SendString(pathOnServer, stream);
             SendByteData(data, stream);
         }
         private void SendInt(int nextPackageSize, NetworkStream stream)

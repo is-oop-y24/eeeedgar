@@ -1,9 +1,8 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Net.Sockets;
 using Backups.Client;
-using Backups.TemporaryLocalData;
 
 namespace Backups.Repo
 {
@@ -18,18 +17,24 @@ namespace Backups.Repo
         public Sender Sender { get; }
         public List<RestorePoint> RestorePoints { get; }
 
-        public void UploadVersion(TemporaryLocalRestorePoint temporaryLocalRestorePoint)
+        public void CreateRestorePoint(List<Storage> temporaryStorages, DateTime datetime)
         {
-            string restorePointName = RestorePointName();
             using NetworkStream stream = Sender.Client.GetStream();
-            foreach (TemporaryLocalStorage localStorage in temporaryLocalRestorePoint.BufferStorages)
+            foreach (Storage localStorage in temporaryStorages)
             {
-                Sender.SendFile(localStorage.TemporaryPath, restorePointName, stream);
+                Sender.SendFile(localStorage.Path, Path.GetFileName(localStorage.Path), stream);
             }
 
-            var storages = temporaryLocalRestorePoint.BufferStorages.Select(bufferStorage => bufferStorage.Storage).ToList();
-            var restorePoint = new RestorePoint(storages, temporaryLocalRestorePoint.DateTime, temporaryLocalRestorePoint.Id, restorePointName);
+            var storages = new List<Storage>();
+            foreach (Storage temporaryStorage in temporaryStorages)
+            {
+                string filename = Path.GetFileName(temporaryStorage.Path);
+                storages.Add(new Storage(filename, temporaryStorage.Id));
+            }
+
+            var restorePoint = new RestorePoint(storages, datetime, Guid.NewGuid());
             RestorePoints.Add(restorePoint);
+            DeleteTemporaryStorages(temporaryStorages);
         }
 
         public List<RestorePoint> GetRestorePoints()
@@ -37,9 +42,12 @@ namespace Backups.Repo
             return RestorePoints;
         }
 
-        private string RestorePointName()
+        private void DeleteTemporaryStorages(List<Storage> storages)
         {
-            return Path.GetFileNameWithoutExtension(Path.GetRandomFileName());
+            foreach (Storage storage in storages)
+            {
+                File.Delete(storage.Path);
+            }
         }
     }
 }
